@@ -1,10 +1,10 @@
 <form class="filters" (ngSubmit)="submit()">
-  <label>
+  <label id="bairros-marketplace">
     <span>Onde</span>
     <input type="text" name="city" [(ngModel)]="filters.city" placeholder="Curitiba" />
   </label>
 
-  <div class="dropdown-field" #neighborhoodMenu>
+  <div class="dropdown-field" id="bairros-marketplace" #neighborhoodMenu>
     <span>Bairro</span>
     <button type="button" class="dropdown-trigger" (click)="toggleNeighborhoodMenu()" [attr.aria-expanded]="isNeighborhoodMenuOpen">
       <span>{{ selectedNeighborhoodsLabel() }}</span>
@@ -32,7 +32,7 @@
     }
   </div>
 
-  <label>
+  <label id="bairros-marketplace">
     <span>Preço máximo</span>
     <input
       type="text"

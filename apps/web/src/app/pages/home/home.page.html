@@ -10,7 +10,7 @@
 
   <div class="search-rail">
     <form class="home-search" (ngSubmit)="search()">
-      <div class="dropdown-field" #neighborhoodMenu>
+      <div class="dropdown-field" id="bairros" #neighborhoodMenu>
         <span>Bairro</span>
         <button type="button" class="dropdown-trigger" (click)="toggleNeighborhoodMenu()" [attr.aria-expanded]="isNeighborhoodMenuOpen">
           <span>{{ selectedNeighborhoodsLabel() }}</span>
@@ -37,7 +37,7 @@
         }
       </div>
 
-      <label>
+      <label id="bairros">
         <span>Preço máximo</span>
         <input
           type="text"

@@ -11,13 +11,16 @@
 
 .filters label,
 .dropdown-field {
-  display: grid;
+  display: flex;
   gap: 4px;
   padding: 8px 14px;
   border-radius: 999px;
   position: relative;
 }
 
+#bairros-marketplace {
+  display: grid;
+}
 .filters span {
   color: var(--text);
   font-size: 0.78rem;
@@ -35,6 +38,14 @@
   cursor: pointer;
 }
 
+.dropdown-trigger span {
+  color: var(--text);
+  font-size: 0.94rem;
+  font-weight: 500;
+  text-transform: none;
+  flex: 1 1 auto;
+}
+
 .dropdown-panel {
   position: absolute;
   top: calc(100% + 8px);
@@ -43,7 +54,7 @@
   z-index: 10;
   display: grid;
   gap: 8px;
-  max-height: 260px;
+  max-height: 400px;
   padding: 12px;
   overflow-y: auto;
   border: 1px solid var(--border);
