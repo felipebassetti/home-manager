@@ -21,9 +21,11 @@ export class HousesPageComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((params) => {
+      const neighborhoods = params.getAll('neighborhood').filter(Boolean);
+
       this.activeFilters.set({
         city: params.get('city') ?? 'Curitiba',
-        neighborhood: params.get('neighborhood') ?? '',
+        neighborhood: neighborhoods,
         maxPrice: params.get('maxPrice') ? Number(params.get('maxPrice')) : null
       });
 

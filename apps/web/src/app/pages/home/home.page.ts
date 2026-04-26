@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CountUpComponent } from '../../components/count-up/count-up.component';
@@ -20,11 +20,13 @@ import { formatCurrencyInput, parseCurrencyInput } from '../../utils/currency-ma
 export class HomePageComponent implements OnInit {
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
+  @ViewChild('neighborhoodMenu') neighborhoodMenu?: ElementRef<HTMLDivElement>;
 
   readonly houses = signal<HouseSummary[]>([]);
   readonly neighborhoodOptions = curitibaNeighborhoods;
-  searchNeighborhood = '';
+  searchNeighborhoods: string[] = [];
   searchMaxPriceInput = '';
+  isNeighborhoodMenuOpen = false;
   readonly peopleWithHomeTarget = 120;
 
   ngOnInit() {
@@ -44,11 +46,48 @@ export class HomePageComponent implements OnInit {
     this.searchMaxPriceInput = formatCurrencyInput(input.value);
   }
 
+  toggleNeighborhoodMenu() {
+    this.isNeighborhoodMenuOpen = !this.isNeighborhoodMenuOpen;
+  }
+
+  toggleNeighborhood(neighborhood: string) {
+    if (this.searchNeighborhoods.includes(neighborhood)) {
+      this.searchNeighborhoods = this.searchNeighborhoods.filter((item) => item !== neighborhood);
+      return;
+    }
+
+    this.searchNeighborhoods = [...this.searchNeighborhoods, neighborhood];
+  }
+
+  clearNeighborhoods() {
+    this.searchNeighborhoods = [];
+  }
+
+  selectedNeighborhoodsLabel() {
+    if (!this.searchNeighborhoods.length) {
+      return 'Todos os bairros';
+    }
+
+    if (this.searchNeighborhoods.length === 1) {
+      return this.searchNeighborhoods[0];
+    }
+
+    return `${this.searchNeighborhoods.length} bairros selecionados`;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as Node | null;
+    if (!target || !this.neighborhoodMenu?.nativeElement.contains(target)) {
+      this.isNeighborhoodMenuOpen = false;
+    }
+  }
+
   search() {
     this.router.navigate(['/houses'], {
       queryParams: {
         city: 'Curitiba',
-        neighborhood: this.searchNeighborhood.trim() || null,
+        neighborhood: this.searchNeighborhoods.length ? this.searchNeighborhoods : null,
         maxPrice: parseCurrencyInput(this.searchMaxPriceInput)
       }
     });

@@ -89,7 +89,7 @@ export interface HouseDetail extends HouseSummary {
 
 export interface HouseFilters {
   city?: string;
-  neighborhood?: string;
+  neighborhood?: string[];
   maxPrice?: number | null;
 }
 

@@ -4,15 +4,33 @@
     <input type="text" name="city" [(ngModel)]="filters.city" placeholder="Curitiba" />
   </label>
 
-  <label>
+  <div class="dropdown-field" #neighborhoodMenu>
     <span>Bairro</span>
-    <select name="neighborhood" [(ngModel)]="filters.neighborhood">
-      <option value="">Todos os bairros</option>
+    <button type="button" class="dropdown-trigger" (click)="toggleNeighborhoodMenu()" [attr.aria-expanded]="isNeighborhoodMenuOpen">
+      <span>{{ selectedNeighborhoodsLabel() }}</span>
+    </button>
+
+    @if (isNeighborhoodMenuOpen) {
+      <div class="dropdown-panel">
+        <button type="button" class="dropdown-clear" (click)="clearNeighborhoods()">Limpar selecao</button>
+        <label class="checkbox-option">
+          <span>Todos os bairros</span>
+          <input type="checkbox" [checked]="filters.neighborhood?.length === 0" (change)="clearNeighborhoods()" />
+        </label>
+
       @for (neighborhood of neighborhoodOptions; track neighborhood) {
-        <option [value]="neighborhood">{{ neighborhood }}</option>
+        <label class="checkbox-option">
+          <span>{{ neighborhood }}</span>
+          <input
+            type="checkbox"
+            [checked]="filters.neighborhood?.includes(neighborhood)"
+            (change)="toggleNeighborhood(neighborhood)"
+          />
+        </label>
       }
-    </select>
-  </label>
+      </div>
+    }
+  </div>
 
   <label>
     <span>Preço máximo</span>

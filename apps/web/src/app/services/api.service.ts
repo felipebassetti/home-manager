@@ -45,8 +45,10 @@ export class ApiService {
     if (filters.city) {
       params = params.set('city', filters.city);
     }
-    if (filters.neighborhood) {
-      params = params.set('neighborhood', filters.neighborhood);
+    if (filters.neighborhood?.length) {
+      filters.neighborhood.forEach((neighborhood) => {
+        params = params.append('neighborhood', neighborhood);
+      });
     }
     if (filters.maxPrice) {
       params = params.set('maxPrice', String(filters.maxPrice));

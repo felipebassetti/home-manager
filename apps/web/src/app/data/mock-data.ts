@@ -191,11 +191,13 @@ const summarizeHouse = (house: House): HouseSummary => {
 const attachProfile = (userId: string) => profiles.find((profile) => profile.id === userId);
 
 export const listMockHouses = (filters: HouseFilters = {}): HouseSummary[] => {
+  const selectedNeighborhoods = filters.neighborhood?.map((item) => item.toLowerCase()) ?? [];
+
   return houses
     .map(summarizeHouse)
     .filter((house) => (filters.city ? house.city.toLowerCase().includes(filters.city.toLowerCase()) : true))
     .filter((house) =>
-      filters.neighborhood ? house.neighborhood.toLowerCase().includes(filters.neighborhood.toLowerCase()) : true
+      selectedNeighborhoods.length ? selectedNeighborhoods.some((item) => house.neighborhood.toLowerCase() === item) : true
     )
     .filter((house) => (filters.maxPrice ? house.lowestPrice <= filters.maxPrice : true))
     .map((house) => deepClone(house));

@@ -9,11 +9,13 @@
   box-shadow: var(--shadow-md);
 }
 
-.filters label {
+.filters label,
+.dropdown-field {
   display: grid;
   gap: 4px;
   padding: 8px 14px;
   border-radius: 999px;
+  position: relative;
 }
 
 .filters span {
@@ -23,12 +25,66 @@
 }
 
 .filters input,
-.filters select {
+.dropdown-trigger {
   min-height: 30px;
   padding: 0;
   border: 0;
   background: transparent;
   color: var(--text-muted);
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: grid;
+  gap: 8px;
+  max-height: 260px;
+  padding: 12px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.dropdown-clear {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent-strong);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.checkbox-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 0;
+  border-radius: 0;
+}
+
+.checkbox-option input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex: 0 0 auto;
+  accent-color: var(--accent-strong);
+}
+
+.checkbox-option span {
+  color: var(--text);
+  font-size: 0.94rem;
+  font-weight: 500;
+  flex: 1 1 auto;
 }
 
 .actions {
