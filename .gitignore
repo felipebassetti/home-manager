@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.wrangler/
+.angular/
+.DS_Store
+
+apps/web/.angular/
+apps/web/dist/
+apps/api/dist/
+apps/api/.dev.vars
+apps/api/.wrangler/
