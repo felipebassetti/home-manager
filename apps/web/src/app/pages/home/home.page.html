@@ -1,0 +1,44 @@
+<section class="hero">
+  <div class="hero-copy">
+    <span class="eyebrow">MVP operacional</span>
+    <h1>Encontre vagas e gerencie a casa no mesmo fluxo.</h1>
+    <p>
+      O recorte inicial cobre marketplace, entrada de moradores, cobrancas e acompanhamento de pagamento sem depender
+      de banco real nesta primeira rodada.
+    </p>
+
+    <div class="hero-actions">
+      <a routerLink="/houses">Explorar casas</a>
+      <a routerLink="/dashboard" class="secondary">Ver dashboard</a>
+    </div>
+  </div>
+
+  <div class="hero-panel">
+    <div>
+      <strong>3</strong>
+      <span>casas mockadas</span>
+    </div>
+    <div>
+      <strong>6</strong>
+      <span>etapas do fluxo principal</span>
+    </div>
+    <div>
+      <strong>Pix depois</strong>
+      <span>pagamento manual agora</span>
+    </div>
+  </div>
+</section>
+
+<section class="section-head">
+  <div>
+    <h2>Destaques do marketplace</h2>
+    <p>Casas prontas para validar busca, detalhe e candidatura.</p>
+  </div>
+  <a routerLink="/houses">Abrir listagem completa</a>
+</section>
+
+<section class="house-grid">
+  @for (house of houses(); track house.id) {
+    <app-house-card [house]="house" />
+  }
+</section>

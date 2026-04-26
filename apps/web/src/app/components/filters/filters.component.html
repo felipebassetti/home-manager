@@ -1,0 +1,21 @@
+<form class="filters" (ngSubmit)="submit()">
+  <label>
+    <span>Cidade</span>
+    <input type="text" name="city" [(ngModel)]="filters.city" placeholder="Belo Horizonte" />
+  </label>
+
+  <label>
+    <span>Bairro</span>
+    <input type="text" name="neighborhood" [(ngModel)]="filters.neighborhood" placeholder="Savassi" />
+  </label>
+
+  <label>
+    <span>Preco maximo</span>
+    <input type="number" name="maxPrice" [(ngModel)]="filters.maxPrice" placeholder="1200" min="0" />
+  </label>
+
+  <div class="actions">
+    <button type="submit">Filtrar</button>
+    <button type="button" class="secondary" (click)="reset()">Limpar</button>
+  </div>
+</form>

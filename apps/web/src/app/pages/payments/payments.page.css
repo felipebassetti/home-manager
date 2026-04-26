@@ -1,0 +1,88 @@
+.page-head,
+.payment-table header,
+.payment-table article {
+  display: grid;
+  gap: 16px;
+}
+
+.page-head {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  margin-bottom: 18px;
+}
+
+.page-head h1,
+.page-head p {
+  margin: 0;
+}
+
+.page-head p {
+  margin-top: 6px;
+  color: #556273;
+}
+
+.payment-table {
+  border: 1px solid #d8dfeb;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.payment-table header,
+.payment-table article {
+  grid-template-columns: 1.2fr 1fr 120px 120px minmax(220px, 0.8fr);
+  align-items: center;
+  padding: 14px 18px;
+}
+
+.payment-table header {
+  background: #edf2f8;
+  color: #304156;
+  font-weight: 700;
+}
+
+.payment-table article + article {
+  border-top: 1px solid #d8dfeb;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.actions button {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.success {
+  background: #14603b;
+}
+
+.warning {
+  background: #b78103;
+}
+
+.danger {
+  background: #b42318;
+}
+
+@media (max-width: 1100px) {
+  .page-head {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-table header {
+    display: none;
+  }
+
+  .payment-table article {
+    grid-template-columns: 1fr;
+  }
+}

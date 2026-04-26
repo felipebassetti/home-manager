@@ -1,0 +1,31 @@
+<section class="page-head">
+  <div>
+    <h1>Controle de pagamentos</h1>
+    <p>Status manual para o MVP: pending, paid e overdue.</p>
+  </div>
+  <strong>{{ payments().length }} registros</strong>
+</section>
+
+<section class="payment-table">
+  <header>
+    <span>Morador</span>
+    <span>Cobranca</span>
+    <span>Valor</span>
+    <span>Status</span>
+    <span>Acoes</span>
+  </header>
+
+  @for (payment of payments(); track payment.id) {
+    <article>
+      <strong>{{ payment.profile?.name ?? payment.userId }}</strong>
+      <span>{{ payment.charge?.title ?? 'Cobranca manual' }}</span>
+      <span>{{ payment.amount | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
+      <app-payment-status [status]="payment.status" />
+      <div class="actions">
+        <button type="button" class="success" (click)="markAs(payment, 'paid')">Pago</button>
+        <button type="button" class="warning" (click)="markAs(payment, 'pending')">Pendente</button>
+        <button type="button" class="danger" (click)="markAs(payment, 'overdue')">Atrasado</button>
+      </div>
+    </article>
+  }
+</section>

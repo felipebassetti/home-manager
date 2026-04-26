@@ -1,0 +1,45 @@
+<div class="shell">
+  <header class="topbar">
+    <div class="brand-block">
+      <a routerLink="/" class="brand">Republic House</a>
+      <p>Marketplace e operacao financeira para casas compartilhadas.</p>
+    </div>
+
+    <div class="topbar-actions">
+      <span class="mode-badge">Mock first</span>
+
+      <label class="profile-picker">
+        <span>Perfil</span>
+        <select [value]="auth.activeProfile().id" (change)="auth.setActiveProfile($any($event.target).value)">
+          @for (profile of auth.profiles; track profile.id) {
+            <option [value]="profile.id">{{ profile.name }} · {{ profile.accountType }}</option>
+          }
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <nav class="nav-tabs">
+    @for (item of navItems; track item.href) {
+      <a
+        [routerLink]="item.href"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="item.href === '/' ? { exact: true } : { exact: false }"
+      >
+        {{ item.label }}
+      </a>
+    }
+  </nav>
+
+  <main class="page-frame">
+    <section class="identity-strip">
+      <div>
+        <strong>{{ auth.activeProfile().name }}</strong>
+        <span>{{ auth.accountLabel() }}</span>
+      </div>
+      <small>Supabase: {{ auth.isSupabaseConfigured ? 'configurado' : 'pendente' }}</small>
+    </section>
+
+    <router-outlet />
+  </main>
+</div>

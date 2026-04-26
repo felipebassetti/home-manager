@@ -1,0 +1,26 @@
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.status.pending {
+  background: #fff4d6;
+  color: #7a5a00;
+}
+
+.status.paid {
+  background: #e9f5ee;
+  color: #14603b;
+}
+
+.status.overdue {
+  background: #fde8e7;
+  color: #b42318;
+}

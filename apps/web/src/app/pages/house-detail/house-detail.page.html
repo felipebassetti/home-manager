@@ -1,0 +1,114 @@
+@if (house(); as currentHouse) {
+  <section class="hero-detail">
+    <img [src]="currentHouse.imageUrl" [alt]="currentHouse.title" />
+
+    <div class="hero-copy">
+      <div class="hero-head">
+        <div>
+          <h1>{{ currentHouse.title }}</h1>
+          <p>{{ currentHouse.city }} · {{ currentHouse.neighborhood }} · {{ currentHouse.address }}</p>
+        </div>
+        <strong>{{ currentHouse.lowestPrice | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
+      </div>
+
+      <p>{{ currentHouse.description }}</p>
+
+      <div class="amenities">
+        @for (amenity of currentHouse.amenities; track amenity) {
+          <span>{{ amenity }}</span>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="detail-grid">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Quartos e vagas</h2>
+        <span>{{ currentHouse.availableRooms }} disponiveis</span>
+      </div>
+
+      <div class="room-list">
+        @for (room of currentHouse.rooms; track room.id) {
+          <label class="room-row" [class.unavailable]="!room.available">
+            <div>
+              <input
+                type="radio"
+                name="selectedRoom"
+                [value]="room.id"
+                [disabled]="!room.available"
+                (change)="selectedRoomId.set(room.id)"
+              />
+              <div>
+                <strong>{{ room.title }}</strong>
+                <p>{{ room.available ? 'Disponivel agora' : 'Ocupado' }}</p>
+              </div>
+            </div>
+            <strong>{{ room.price | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
+          </label>
+        }
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Aplicar para vaga</h2>
+        <span>{{ auth.activeProfile().accountType }}</span>
+      </div>
+
+      <label>
+        <span>Mensagem para o admin</span>
+        <textarea
+          rows="5"
+          [value]="applicationMessage()"
+          (input)="applicationMessage.set($any($event.target).value)"
+          placeholder="Fale um pouco sobre entrada, rotina e prazo."
+        ></textarea>
+      </label>
+
+      <button type="button" (click)="submitApplication()">Enviar candidatura</button>
+
+      @if (feedback()) {
+        <p class="feedback">{{ feedback() }}</p>
+      }
+    </div>
+  </section>
+
+  <section class="detail-grid">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Cobrancas ativas</h2>
+        <span>{{ currentHouse.charges.length }} itens</span>
+      </div>
+
+      <div class="charge-list">
+        @for (charge of currentHouse.charges; track charge.id) {
+          <article>
+            <strong>{{ charge.title }}</strong>
+            <span>{{ charge.amount | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
+            <small>Vencimento {{ charge.dueDate | date: 'dd/MM/yyyy' }}</small>
+          </article>
+        }
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Pagamentos recentes</h2>
+        <span>{{ currentHouse.payments.length }} lancamentos</span>
+      </div>
+
+      <div class="payment-list">
+        @for (payment of currentHouse.payments; track payment.id) {
+          <article>
+            <div>
+              <strong>{{ payment.profile?.name ?? payment.userId }}</strong>
+              <p>{{ payment.charge?.title ?? 'Cobranca manual' }}</p>
+            </div>
+            <app-payment-status [status]="payment.status" />
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+}

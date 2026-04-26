@@ -1,0 +1,28 @@
+<article class="house-card">
+  <img [src]="house.imageUrl" [alt]="house.title" />
+
+  <div class="card-body">
+    <div class="card-heading">
+      <div>
+        <h3>{{ house.title }}</h3>
+        <p>{{ house.city }} · {{ house.neighborhood }}</p>
+      </div>
+      <strong>{{ house.lowestPrice | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
+    </div>
+
+    <p class="description">{{ house.description }}</p>
+
+    <div class="meta-row">
+      <span>{{ house.availableRooms }} vagas abertas</span>
+      <span>{{ house.rooms.length }} opcoes de quarto</span>
+    </div>
+
+    <div class="amenities">
+      @for (amenity of house.amenities.slice(0, 3); track amenity) {
+        <span>{{ amenity }}</span>
+      }
+    </div>
+
+    <a [routerLink]="['/houses', house.id]" class="action">Ver detalhes</a>
+  </div>
+</article>

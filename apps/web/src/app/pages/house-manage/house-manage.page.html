@@ -1,0 +1,89 @@
+<section class="page-head">
+  <div>
+    <h1>Gestao da casa</h1>
+    <p>Fluxo de criacao da casa e definicao inicial de vagas para validar o painel do admin.</p>
+  </div>
+</section>
+
+<section class="manage-grid">
+  <form class="panel form-grid" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="title">Titulo</label>
+      <input id="title" type="text" formControlName="title" />
+    </div>
+
+    <div class="field field-wide">
+      <label for="description">Descricao</label>
+      <textarea id="description" rows="4" formControlName="description"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="city">Cidade</label>
+      <input id="city" type="text" formControlName="city" />
+    </div>
+
+    <div class="field">
+      <label for="neighborhood">Bairro</label>
+      <input id="neighborhood" type="text" formControlName="neighborhood" />
+    </div>
+
+    <div class="field field-wide">
+      <label for="address">Endereco</label>
+      <input id="address" type="text" formControlName="address" />
+    </div>
+
+    <div class="field field-wide">
+      <label for="imageUrl">Imagem</label>
+      <input id="imageUrl" type="text" formControlName="imageUrl" />
+    </div>
+
+    <div class="field field-wide">
+      <label for="amenities">Amenidades</label>
+      <input id="amenities" type="text" formControlName="amenities" />
+    </div>
+
+    <div class="field field-wide">
+      <div class="subhead">
+        <strong>Quartos e vagas</strong>
+        <button type="button" class="secondary" (click)="addRoom()">Adicionar quarto</button>
+      </div>
+
+      <div class="room-editor" formArrayName="rooms">
+        @for (room of rooms.controls; track $index) {
+          <div class="room-row" [formGroupName]="$index">
+            <input type="text" formControlName="title" placeholder="Titulo" />
+            <input type="number" formControlName="price" placeholder="Preco" min="1" />
+            <label class="checkbox">
+              <input type="checkbox" formControlName="available" />
+              <span>Disponivel</span>
+            </label>
+          </div>
+        }
+      </div>
+    </div>
+
+    <button type="submit">Criar casa</button>
+
+    @if (feedback()) {
+      <p class="feedback">{{ feedback() }}</p>
+    }
+  </form>
+
+  <aside class="panel preview-panel">
+    <h2>Saida esperada</h2>
+    <ul>
+      <li>casa entra na listagem do marketplace</li>
+      <li>admin vira membro automaticamente</li>
+      <li>quartos ficam disponiveis no detalhe da casa</li>
+    </ul>
+
+    @if (createdHouse(); as house) {
+      <article class="preview-card">
+        <img [src]="house.imageUrl" [alt]="house.title" />
+        <strong>{{ house.title }}</strong>
+        <span>{{ house.city }} · {{ house.neighborhood }}</span>
+        <small>{{ house.rooms.length }} quartos cadastrados</small>
+      </article>
+    }
+  </aside>
+</section>

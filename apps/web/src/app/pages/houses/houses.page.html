@@ -1,0 +1,20 @@
+<section class="page-head">
+  <div>
+    <h1>Marketplace de casas compartilhadas</h1>
+    <p>Filtro por cidade, bairro e faixa de preco para validar a navegacao principal.</p>
+  </div>
+  <strong>{{ houses().length }} resultados</strong>
+</section>
+
+<app-filters (filtersChange)="onFiltersChange($event)" />
+
+<section class="results-grid">
+  @for (house of houses(); track house.id) {
+    <app-house-card [house]="house" />
+  } @empty {
+    <div class="empty-state">
+      <strong>Nenhuma casa encontrada</strong>
+      <p>Ajuste os filtros para ampliar a busca.</p>
+    </div>
+  }
+</section>

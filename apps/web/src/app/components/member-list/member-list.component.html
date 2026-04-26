@@ -1,0 +1,15 @@
+<ul class="member-list">
+  @for (member of members; track member.id) {
+    <li>
+      <div>
+        <strong>{{ member.profile?.name ?? member.userId }}</strong>
+        <p>{{ member.profile?.email ?? 'Sem email' }}</p>
+      </div>
+
+      <div class="badges">
+        <span>{{ member.role }}</span>
+        <span>{{ member.status }}</span>
+      </div>
+    </li>
+  }
+</ul>
