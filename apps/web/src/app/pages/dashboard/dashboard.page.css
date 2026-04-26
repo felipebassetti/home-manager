@@ -20,7 +20,7 @@
 .page-head p,
 .panel-head span,
 .list-stack p {
-  color: #556273;
+  color: var(--text-muted);
 }
 
 .stats-grid,
@@ -37,9 +37,10 @@
 .stats-grid article,
 .panel {
   padding: 20px;
-  border: 1px solid #d8dfeb;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .stats-grid article {
@@ -52,7 +53,7 @@
 }
 
 .stats-grid span {
-  color: #556273;
+  color: var(--text-muted);
 }
 
 .dashboard-grid {
@@ -73,8 +74,9 @@
 .list-stack article {
   align-items: center;
   padding: 14px 16px;
-  border: 1px solid #d8dfeb;
+  border: 1px solid var(--border);
   border-radius: 8px;
+  background: var(--surface-subtle);
 }
 
 .inline-meta {

@@ -1,10 +1,11 @@
 .house-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  border: 1px solid #d8dfeb;
+  border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
-  background: #fff;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .house-card img {
@@ -15,7 +16,7 @@
 
 .card-body {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   padding: 18px;
 }
 
@@ -35,7 +36,12 @@
 .card-heading p,
 .description,
 .meta-row {
-  color: #556273;
+  color: var(--text-muted);
+}
+
+.price {
+  color: var(--text);
+  white-space: nowrap;
 }
 
 .meta-row,
@@ -48,7 +54,7 @@
 .amenities span {
   padding: 6px 10px;
   border-radius: 999px;
-  background: #edf2f8;
+  background: var(--surface-muted);
   color: #304156;
   font-size: 0.85rem;
 }
@@ -58,7 +64,7 @@
   width: fit-content;
   padding: 10px 14px;
   border-radius: 8px;
-  background: #1f5eff;
+  background: var(--accent);
   color: #fff;
   text-decoration: none;
   font-weight: 600;

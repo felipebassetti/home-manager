@@ -5,16 +5,16 @@
     <div class="card-heading">
       <div>
         <h3>{{ house.title }}</h3>
-        <p>{{ house.city }} · {{ house.neighborhood }}</p>
+        <p>{{ house.city }} - {{ house.neighborhood }}</p>
       </div>
-      <strong>{{ house.lowestPrice | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
+      <strong class="price">{{ house.lowestPrice | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
     </div>
 
     <p class="description">{{ house.description }}</p>
 
     <div class="meta-row">
       <span>{{ house.availableRooms }} vagas abertas</span>
-      <span>{{ house.rooms.length }} opcoes de quarto</span>
+      <span>{{ house.rooms.length }} tipos de quarto</span>
     </div>
 
     <div class="amenities">

@@ -18,14 +18,15 @@
 
 .page-head p {
   margin-top: 6px;
-  color: #556273;
+  color: var(--text-muted);
 }
 
 .payment-table {
-  border: 1px solid #d8dfeb;
+  border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
-  background: #fff;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .payment-table header,
@@ -36,13 +37,13 @@
 }
 
 .payment-table header {
-  background: #edf2f8;
+  background: var(--surface-muted);
   color: #304156;
   font-weight: 700;
 }
 
 .payment-table article + article {
-  border-top: 1px solid #d8dfeb;
+  border-top: 1px solid var(--border);
 }
 
 .actions {
@@ -54,7 +55,6 @@
 .actions button {
   min-height: 36px;
   padding: 0 10px;
-  border: 0;
   border-radius: 8px;
   color: #fff;
   font-weight: 700;
@@ -62,15 +62,15 @@
 }
 
 .success {
-  background: #14603b;
+  background: var(--success-text);
 }
 
 .warning {
-  background: #b78103;
+  background: var(--warning-text);
 }
 
 .danger {
-  background: #b42318;
+  background: var(--danger-text);
 }
 
 @media (max-width: 1100px) {

@@ -9,19 +9,21 @@
   margin-bottom: 24px;
 }
 
-.hero-detail img {
-  width: 100%;
-  min-height: 100%;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
+.media-panel,
 .hero-copy,
 .panel {
   padding: 20px;
-  border: 1px solid #d8dfeb;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: #fff;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.media-panel img {
+  width: 100%;
+  border-radius: 8px;
+  aspect-ratio: 16 / 11;
+  object-fit: cover;
 }
 
 .hero-copy {
@@ -52,7 +54,7 @@
 .payment-list p,
 .room-row p,
 .feedback {
-  color: #556273;
+  color: var(--text-muted);
 }
 
 .amenities {
@@ -64,7 +66,7 @@
 .amenities span {
   padding: 6px 10px;
   border-radius: 999px;
-  background: #edf2f8;
+  background: var(--surface-muted);
 }
 
 .detail-grid {
@@ -89,8 +91,9 @@
 .payment-list article {
   align-items: center;
   padding: 14px 16px;
-  border: 1px solid #d8dfeb;
+  border: 1px solid var(--border);
   border-radius: 8px;
+  background: var(--surface-subtle);
 }
 
 .room-row > div:first-child {
@@ -106,20 +109,18 @@
 textarea,
 button {
   width: 100%;
-  border-radius: 8px;
 }
 
 textarea {
   min-height: 130px;
-  border: 1px solid #c8d3e1;
   padding: 12px;
   resize: vertical;
+  background: var(--surface);
 }
 
 button {
   min-height: 44px;
-  border: 0;
-  background: #1f5eff;
+  background: var(--accent);
   color: #fff;
   font-weight: 700;
   cursor: pointer;

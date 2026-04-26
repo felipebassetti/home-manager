@@ -2,6 +2,29 @@
   box-sizing: border-box;
 }
 
+:root {
+  color-scheme: light;
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-subtle: #f8fafc;
+  --surface-muted: #eef2f6;
+  --border: #d7dde5;
+  --border-strong: #bcc6d2;
+  --text: #16202b;
+  --text-muted: #5d6977;
+  --text-soft: #7f8a97;
+  --accent: #1769e0;
+  --accent-strong: #0f56bb;
+  --success-bg: #e8f5ec;
+  --success-text: #1e6a3f;
+  --warning-bg: #fff4db;
+  --warning-text: #8c5f00;
+  --danger-bg: #fdeceb;
+  --danger-text: #b42318;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-md: 0 10px 30px rgba(16, 24, 40, 0.06);
+}
+
 html,
 body {
   margin: 0;
@@ -10,12 +33,13 @@ body {
     "Segoe UI",
     Roboto,
     sans-serif;
-  background: #f3f5f8;
-  color: #142033;
+  background: var(--bg);
+  color: var(--text);
 }
 
 body {
   min-height: 100vh;
+  line-height: 1.45;
 }
 
 img {
@@ -28,4 +52,23 @@ input,
 textarea,
 select {
   font: inherit;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+button,
+select {
+  background: var(--surface);
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin-top: 0;
 }

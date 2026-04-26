@@ -1,9 +1,9 @@
 <section class="page-head">
   <div>
     <h1>Marketplace de casas compartilhadas</h1>
-    <p>Filtro por cidade, bairro e faixa de preco para validar a navegacao principal.</p>
+    <p>Busque por cidade, bairro e faixa de preco para comparar oferta e disponibilidade.</p>
   </div>
-  <strong>{{ houses().length }} resultados</strong>
+  <strong class="result-count">{{ houses().length }} resultados</strong>
 </section>
 
 <app-filters (filtersChange)="onFiltersChange($event)" />

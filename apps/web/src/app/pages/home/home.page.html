@@ -1,38 +1,72 @@
-<section class="hero">
-  <div class="hero-copy">
-    <span class="eyebrow">MVP operacional</span>
-    <h1>Encontre vagas e gerencie a casa no mesmo fluxo.</h1>
-    <p>
-      O recorte inicial cobre marketplace, entrada de moradores, cobrancas e acompanhamento de pagamento sem depender
-      de banco real nesta primeira rodada.
-    </p>
-
-    <div class="hero-actions">
-      <a routerLink="/houses">Explorar casas</a>
-      <a routerLink="/dashboard" class="secondary">Ver dashboard</a>
-    </div>
+<section class="overview-head">
+  <div>
+    <span class="eyebrow">Workspace do MVP</span>
+    <h1>Operacao de casas compartilhadas em um fluxo unico.</h1>
+    <p>Marketplace, gestao da casa e controle financeiro no mesmo painel de trabalho.</p>
   </div>
-
-  <div class="hero-panel">
-    <div>
-      <strong>3</strong>
-      <span>casas mockadas</span>
-    </div>
-    <div>
-      <strong>6</strong>
-      <span>etapas do fluxo principal</span>
-    </div>
-    <div>
-      <strong>Pix depois</strong>
-      <span>pagamento manual agora</span>
-    </div>
+  <div class="head-actions">
+    <a routerLink="/houses">Abrir marketplace</a>
+    <a routerLink="/house-manage" class="secondary">Cadastrar casa</a>
   </div>
+</section>
+
+<section class="summary-grid">
+  <article>
+    <strong>{{ houses().length }}</strong>
+    <span>casas na vitrine</span>
+  </article>
+  <article>
+    <strong>{{ totalAvailableRooms() }}</strong>
+    <span>vagas abertas</span>
+  </article>
+  <article>
+    <strong>{{ totalCities() }}</strong>
+    <span>cidades atendidas</span>
+  </article>
+  <article>
+    <strong>manual agora</strong>
+    <span>pagamento por status no MVP</span>
+  </article>
+</section>
+
+<section class="workbench-grid">
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Fluxo principal</h2>
+        <p>O que precisa funcionar bem nesta fase.</p>
+      </div>
+    </div>
+    <ol class="flow-list">
+      <li>listar casas e vagas</li>
+      <li>ver detalhe e disponibilidade</li>
+      <li>receber candidatura</li>
+      <li>cadastrar casa e quartos</li>
+      <li>acompanhar dashboard operacional</li>
+      <li>atualizar pagamentos manualmente</li>
+    </ol>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Prioridades de produto</h2>
+        <p>Recorte atual do Republic House.</p>
+      </div>
+    </div>
+    <ul class="priority-list">
+      <li>busca clara para visitante</li>
+      <li>rotina eficiente para admin da casa</li>
+      <li>leitura imediata de inadimplencia</li>
+      <li>estrutura pronta para integrar Supabase e Cloudflare</li>
+    </ul>
+  </article>
 </section>
 
 <section class="section-head">
   <div>
-    <h2>Destaques do marketplace</h2>
-    <p>Casas prontas para validar busca, detalhe e candidatura.</p>
+    <h2>Listagens em destaque</h2>
+    <p>Cards reais do marketplace para validar leitura, comparacao e entrada no detalhe.</p>
   </div>
   <a routerLink="/houses">Abrir listagem completa</a>
 </section>

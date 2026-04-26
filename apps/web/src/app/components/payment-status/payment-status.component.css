@@ -11,16 +11,16 @@
 }
 
 .status.pending {
-  background: #fff4d6;
-  color: #7a5a00;
+  background: var(--warning-bg);
+  color: var(--warning-text);
 }
 
 .status.paid {
-  background: #e9f5ee;
-  color: #14603b;
+  background: var(--success-bg);
+  color: var(--success-text);
 }
 
 .status.overdue {
-  background: #fde8e7;
-  color: #b42318;
+  background: var(--danger-bg);
+  color: var(--danger-text);
 }

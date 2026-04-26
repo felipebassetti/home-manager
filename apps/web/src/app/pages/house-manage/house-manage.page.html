@@ -1,7 +1,7 @@
 <section class="page-head">
   <div>
     <h1>Gestao da casa</h1>
-    <p>Fluxo de criacao da casa e definicao inicial de vagas para validar o painel do admin.</p>
+    <p>Cadastre a casa, organize quartos e publique a estrutura inicial da operacao.</p>
   </div>
 </section>
 
@@ -81,7 +81,7 @@
       <article class="preview-card">
         <img [src]="house.imageUrl" [alt]="house.title" />
         <strong>{{ house.title }}</strong>
-        <span>{{ house.city }} · {{ house.neighborhood }}</span>
+        <span>{{ house.city }} - {{ house.neighborhood }}</span>
         <small>{{ house.rooms.length }} quartos cadastrados</small>
       </article>
     }

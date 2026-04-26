@@ -19,4 +19,12 @@ export class HomePageComponent implements OnInit {
   ngOnInit() {
     this.api.listHouses().subscribe((houses) => this.houses.set(houses.slice(0, 3)));
   }
+
+  totalAvailableRooms() {
+    return this.houses().reduce((total, house) => total + house.availableRooms, 0);
+  }
+
+  totalCities() {
+    return new Set(this.houses().map((house) => house.city)).size;
+  }
 }

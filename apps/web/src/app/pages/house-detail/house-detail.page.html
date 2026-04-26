@@ -1,12 +1,14 @@
 @if (house(); as currentHouse) {
   <section class="hero-detail">
-    <img [src]="currentHouse.imageUrl" [alt]="currentHouse.title" />
+    <div class="media-panel">
+      <img [src]="currentHouse.imageUrl" [alt]="currentHouse.title" />
+    </div>
 
     <div class="hero-copy">
       <div class="hero-head">
         <div>
           <h1>{{ currentHouse.title }}</h1>
-          <p>{{ currentHouse.city }} · {{ currentHouse.neighborhood }} · {{ currentHouse.address }}</p>
+          <p>{{ currentHouse.city }} - {{ currentHouse.neighborhood }} - {{ currentHouse.address }}</p>
         </div>
         <strong>{{ currentHouse.lowestPrice | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
       </div>

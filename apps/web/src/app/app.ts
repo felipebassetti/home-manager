@@ -10,11 +10,11 @@ import { AuthService } from './services/auth.service';
 })
 export class App {
   protected readonly navItems = [
-    { href: '/', label: 'Inicio' },
-    { href: '/houses', label: 'Marketplace' },
-    { href: '/dashboard', label: 'Dashboard' },
-    { href: '/house-manage', label: 'Gestao da casa' },
-    { href: '/payments', label: 'Pagamentos' }
+    { href: '/', label: 'Visao geral', description: 'Resumo e proximas acoes' },
+    { href: '/houses', label: 'Marketplace', description: 'Busca de casas e vagas' },
+    { href: '/dashboard', label: 'Dashboard', description: 'Operacao da casa' },
+    { href: '/house-manage', label: 'Gestao da casa', description: 'Cadastro e configuracao' },
+    { href: '/payments', label: 'Pagamentos', description: 'Cobrancas e status' }
   ];
 
   constructor(protected readonly auth: AuthService) {}
