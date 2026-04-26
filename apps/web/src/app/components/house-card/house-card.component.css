@@ -1,23 +1,40 @@
 .house-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
+  gap: 12px;
+}
+
+.image-frame {
+  position: relative;
 }
 
 .house-card img {
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 1 / 0.92;
   object-fit: cover;
+  border-radius: 18px;
+}
+
+.listing-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
 }
 
 .card-body {
   display: grid;
-  gap: 12px;
-  padding: 18px;
+  gap: 8px;
+  padding: 0 2px;
 }
 
 .card-heading {
@@ -33,6 +50,10 @@
   margin: 0;
 }
 
+.card-heading h3 {
+  font-size: 1rem;
+}
+
 .card-heading p,
 .description,
 .meta-row {
@@ -42,6 +63,7 @@
 .price {
   color: var(--text);
   white-space: nowrap;
+  font-size: 0.98rem;
 }
 
 .meta-row,
@@ -51,21 +73,24 @@
   gap: 8px;
 }
 
+.meta-row {
+  font-size: 0.9rem;
+}
+
 .amenities span {
   padding: 6px 10px;
   border-radius: 999px;
   background: var(--surface-muted);
-  color: #304156;
-  font-size: 0.85rem;
+  color: #5c534d;
+  font-size: 0.82rem;
 }
 
 .action {
   display: inline-flex;
   width: fit-content;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
+  margin-top: 2px;
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 700;
 }

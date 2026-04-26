@@ -1,5 +1,8 @@
 <article class="house-card">
-  <img [src]="house.imageUrl" [alt]="house.title" />
+  <div class="image-frame">
+    <img [src]="house.imageUrl" [alt]="house.title" />
+    <span class="listing-badge">{{ house.availableRooms }} vagas</span>
+  </div>
 
   <div class="card-body">
     <div class="card-heading">
@@ -13,8 +16,8 @@
     <p class="description">{{ house.description }}</p>
 
     <div class="meta-row">
-      <span>{{ house.availableRooms }} vagas abertas</span>
       <span>{{ house.rooms.length }} tipos de quarto</span>
+      <span>a partir de mensalidade individual</span>
     </div>
 
     <div class="amenities">
@@ -23,6 +26,6 @@
       }
     </div>
 
-    <a [routerLink]="['/houses', house.id]" class="action">Ver detalhes</a>
+    <a [routerLink]="['/houses', house.id]" class="action">Ver acomodação</a>
   </div>
 </article>

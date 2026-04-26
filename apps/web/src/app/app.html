@@ -1,36 +1,23 @@
 <div class="shell">
-  <aside class="sidebar">
-    <div class="brand-panel">
+  <header class="topbar">
+    <div class="topbar-main">
       <a routerLink="/" class="brand">Republic House</a>
-      <p>Marketplace e operacao de casas compartilhadas.</p>
+
+      <nav class="nav-tabs">
+        @for (item of navItems; track item.href) {
+          <a
+            [routerLink]="item.href"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="item.href === '/' ? { exact: true } : { exact: false }"
+          >
+            {{ item.label }}
+          </a>
+        }
+      </nav>
     </div>
 
-    <nav class="nav-list">
-      @for (item of navItems; track item.href) {
-        <a
-          [routerLink]="item.href"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="item.href === '/' ? { exact: true } : { exact: false }"
-        >
-          <span class="nav-label">{{ item.label }}</span>
-          <small>{{ item.description }}</small>
-        </a>
-      }
-    </nav>
-
-    <section class="sidebar-card">
-      <strong>Modo atual</strong>
-      <p>Frontend em mock para validar fluxo, estrutura e linguagem visual.</p>
-      <span class="mode-badge">Mock first</span>
-    </section>
-  </aside>
-
-  <main class="workspace">
-    <header class="workspace-bar">
-      <div>
-        <strong>{{ auth.activeProfile().name }}</strong>
-        <p>{{ auth.accountLabel() }} - Supabase {{ auth.isSupabaseConfigured ? 'configurado' : 'pendente' }}</p>
-      </div>
+    <div class="topbar-actions">
+      <div class="mode-badge">Mock first</div>
 
       <label class="profile-picker">
         <span>Perfil ativo</span>
@@ -40,10 +27,23 @@
           }
         </select>
       </label>
-    </header>
+    </div>
+  </header>
 
-    <section class="page-frame">
-      <router-outlet />
+  <main class="page-frame">
+    <section class="context-strip">
+      <div class="context-copy">
+        <strong>{{ auth.activeProfile().name }}</strong>
+        <p>{{ auth.accountLabel() }} - Supabase {{ auth.isSupabaseConfigured ? 'configurado' : 'pendente' }}</p>
+      </div>
+
+      <div class="context-links">
+        @for (item of navItems; track item.href) {
+          <a [routerLink]="item.href">{{ item.shortLabel }}</a>
+        }
+      </div>
     </section>
+
+    <router-outlet />
   </main>
 </div>

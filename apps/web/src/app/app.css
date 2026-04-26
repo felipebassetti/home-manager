@@ -3,150 +3,148 @@
 }
 
 .shell {
-  display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
 }
 
-.sidebar {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
   gap: 24px;
-  padding: 28px 20px;
-  border-right: 1px solid var(--border);
-  background: var(--surface);
+  align-items: center;
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
 }
 
-.brand-panel {
+.topbar-main {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 28px;
 }
 
 .brand {
   text-decoration: none;
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   font-weight: 700;
+  color: var(--accent);
 }
 
-.brand-panel p,
-.sidebar-card p,
-.workspace-bar p,
-.nav-list small {
-  margin: 0;
-  color: var(--text-muted);
-}
-
-.nav-list {
-  display: grid;
-  gap: 6px;
-}
-
-.nav-list a {
-  display: grid;
-  gap: 2px;
-  padding: 12px 14px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  text-decoration: none;
-  color: var(--text-muted);
-}
-
-.nav-list a.active {
-  border-color: #c9d7ef;
-  background: #eef4ff;
-  color: var(--accent-strong);
-}
-
-.nav-label {
-  font-weight: 600;
-}
-
-.sidebar-card {
-  display: grid;
+.nav-tabs {
+  display: flex;
   gap: 10px;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface-subtle);
+  align-items: center;
+}
+
+.nav-tabs a {
+  padding: 10px 12px;
+  border-radius: 999px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.nav-tabs a.active,
+.nav-tabs a:hover {
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .mode-badge {
   display: inline-flex;
-  width: fit-content;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: var(--success-bg);
-  color: var(--success-text);
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.workspace {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  min-width: 0;
-}
-
-.workspace-bar {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  padding: 24px 28px 0;
-}
-
-.workspace-bar strong {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 1rem;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
 }
 
 .profile-picker {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-width: 240px;
-  font-size: 0.9rem;
+  min-width: 230px;
   color: var(--text-muted);
+  font-size: 0.88rem;
 }
 
 .profile-picker select {
-  min-height: 44px;
+  min-height: 42px;
   padding: 0 12px;
+  border-radius: 999px;
   border-color: var(--border);
   box-shadow: var(--shadow-sm);
 }
 
 .page-frame {
-  max-width: 1340px;
-  padding: 20px 28px 32px;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 22px 24px 40px;
 }
 
-@media (max-width: 900px) {
-  .shell {
-    grid-template-columns: 1fr;
-  }
+.context-strip {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  padding: 0 4px 18px;
+}
 
-  .sidebar {
-    border-right: 0;
-    border-bottom: 1px solid var(--border);
-  }
+.context-copy p {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+}
 
-  .workspace-bar,
-  .page-frame {
-    padding-inline: 16px;
-  }
+.context-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 
-  .workspace-bar,
-  .profile-picker {
-    width: 100%;
-  }
+.context-links a {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
 
-  .workspace-bar {
+@media (max-width: 980px) {
+  .topbar,
+  .topbar-main,
+  .topbar-actions,
+  .context-strip {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+  }
+
+  .nav-tabs,
+  .context-links {
+    overflow-x: auto;
+  }
+
+  .page-frame,
+  .topbar {
+    padding-inline: 16px;
   }
 }

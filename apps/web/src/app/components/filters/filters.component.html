@@ -1,6 +1,6 @@
 <form class="filters" (ngSubmit)="submit()">
   <label>
-    <span>Cidade</span>
+    <span>Onde</span>
     <input type="text" name="city" [(ngModel)]="filters.city" placeholder="Belo Horizonte" />
   </label>
 
@@ -15,7 +15,7 @@
   </label>
 
   <div class="actions">
-    <button type="submit">Filtrar</button>
+    <button type="submit">Buscar</button>
     <button type="button" class="secondary" (click)="reset()">Limpar</button>
   </div>
 </form>

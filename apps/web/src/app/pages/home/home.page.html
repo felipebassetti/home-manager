@@ -1,19 +1,35 @@
-<section class="overview-head">
-  <div>
-    <span class="eyebrow">Workspace do MVP</span>
-    <h1>Operacao de casas compartilhadas em um fluxo unico.</h1>
-    <p>Marketplace, gestao da casa e controle financeiro no mesmo painel de trabalho.</p>
+<section class="discover-head">
+  <div class="discover-copy">
+    <span class="eyebrow">Marketplace inspirado em hospedagem</span>
+    <h1>Encontre casas compartilhadas com a mesma clareza de uma busca de estadia.</h1>
+    <p>Busque por cidade, compare vagas e acompanhe a operacao da casa com um frontend mais convidativo.</p>
   </div>
-  <div class="head-actions">
-    <a routerLink="/houses">Abrir marketplace</a>
-    <a routerLink="/house-manage" class="secondary">Cadastrar casa</a>
+</section>
+
+<section class="search-shell">
+  <div class="search-pill">
+    <div class="search-item">
+      <strong>Onde</strong>
+      <span>Belo Horizonte, Curitiba, Sao Paulo</span>
+    </div>
+    <div class="search-divider"></div>
+    <div class="search-item">
+      <strong>Faixa de preco</strong>
+      <span>ate R$ 1.200 por mes</span>
+    </div>
+    <div class="search-divider"></div>
+    <div class="search-item">
+      <strong>Perfil</strong>
+      <span>visitante, morador ou admin</span>
+    </div>
+    <a routerLink="/houses" class="search-action">Buscar vagas</a>
   </div>
 </section>
 
 <section class="summary-grid">
   <article>
     <strong>{{ houses().length }}</strong>
-    <span>casas na vitrine</span>
+    <span>casas em destaque</span>
   </article>
   <article>
     <strong>{{ totalAvailableRooms() }}</strong>
@@ -24,51 +40,32 @@
     <span>cidades atendidas</span>
   </article>
   <article>
-    <strong>manual agora</strong>
-    <span>pagamento por status no MVP</span>
+    <strong>manual</strong>
+    <span>status financeiro no MVP</span>
   </article>
 </section>
 
-<section class="workbench-grid">
-  <article class="panel">
-    <div class="panel-head">
-      <div>
-        <h2>Fluxo principal</h2>
-        <p>O que precisa funcionar bem nesta fase.</p>
-      </div>
-    </div>
-    <ol class="flow-list">
-      <li>listar casas e vagas</li>
-      <li>ver detalhe e disponibilidade</li>
-      <li>receber candidatura</li>
-      <li>cadastrar casa e quartos</li>
-      <li>acompanhar dashboard operacional</li>
-      <li>atualizar pagamentos manualmente</li>
-    </ol>
+<section class="feature-strip">
+  <article class="feature-card">
+    <h2>Buscar</h2>
+    <p>Navegacao orientada por cidade, bairro, preco e leitura visual das listagens.</p>
   </article>
-
-  <article class="panel">
-    <div class="panel-head">
-      <div>
-        <h2>Prioridades de produto</h2>
-        <p>Recorte atual do Republic House.</p>
-      </div>
-    </div>
-    <ul class="priority-list">
-      <li>busca clara para visitante</li>
-      <li>rotina eficiente para admin da casa</li>
-      <li>leitura imediata de inadimplencia</li>
-      <li>estrutura pronta para integrar Supabase e Cloudflare</li>
-    </ul>
+  <article class="feature-card">
+    <h2>Aplicar</h2>
+    <p>Detalhe da casa com vagas, mensagem ao admin e cobrancas visiveis.</p>
+  </article>
+  <article class="feature-card">
+    <h2>Operar</h2>
+    <p>Dashboard, cadastro de casa e acompanhamento de pagamentos no mesmo sistema.</p>
   </article>
 </section>
 
 <section class="section-head">
   <div>
-    <h2>Listagens em destaque</h2>
-    <p>Cards reais do marketplace para validar leitura, comparacao e entrada no detalhe.</p>
+    <h2>Acomodações compartilhadas em destaque</h2>
+    <p>Cards mais visuais para leitura rápida, comparação e entrada no detalhe.</p>
   </div>
-  <a routerLink="/houses">Abrir listagem completa</a>
+  <a routerLink="/houses">Explorar todas</a>
 </section>
 
 <section class="house-grid">
