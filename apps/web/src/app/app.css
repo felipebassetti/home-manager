@@ -380,7 +380,7 @@
 .page-frame {
   max-width: 1240px;
   margin: 0 auto;
-  margin-top: var(--topbar-offset);
+  margin-top: 30px;
   padding: 20px 20px 40px;
 }
 
