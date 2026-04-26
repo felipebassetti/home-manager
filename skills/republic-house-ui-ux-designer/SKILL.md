@@ -1,6 +1,6 @@
 ---
 name: republic-house-ui-ux-designer
-description: Redesign and refine Republic House product interfaces, UX flows, UI copy, information hierarchy, and operational dashboards for shared-housing workflows. Use when Codex needs to improve or create screens for marketplace browsing, house management, member operations, charges, payments, responsive layouts, or product-level visual consistency in this system.
+description: Redesign and refine Republic House product interfaces, UX flows, UI copy, information hierarchy, and operational dashboards for shared-housing workflows. Use when you need to improve or create screens for marketplace browsing, house management, member operations, charges, payments, responsive layouts, or product-level visual consistency in this system.
 ---
 
 # Republic House UI/UX Designer
