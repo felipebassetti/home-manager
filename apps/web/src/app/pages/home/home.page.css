@@ -1,7 +1,7 @@
 .discover-head {
   display: grid;
   gap: 18px;
-  max-width: 840px;
+  width: 100%;
   padding: 12px 2px 28px;
 }
 
@@ -72,6 +72,7 @@
   grid-template-columns: minmax(0, 1fr) minmax(240px, 330px);
   gap: 12px;
   align-items: start;
+  width: 100%;
 }
 
 .home-search {
