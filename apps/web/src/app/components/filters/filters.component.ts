@@ -13,7 +13,7 @@ export class FiltersComponent {
   @Output() filtersChange = new EventEmitter<HouseFilters>();
 
   readonly filters: HouseFilters = {
-    city: '',
+    city: 'Curitiba',
     neighborhood: '',
     maxPrice: null
   };
@@ -27,7 +27,7 @@ export class FiltersComponent {
   }
 
   reset() {
-    this.filters.city = '';
+    this.filters.city = 'Curitiba';
     this.filters.neighborhood = '';
     this.filters.maxPrice = null;
     this.submit();

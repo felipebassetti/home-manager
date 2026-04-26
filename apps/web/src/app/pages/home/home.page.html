@@ -1,71 +1,52 @@
 <section class="discover-head">
   <div class="discover-copy">
-    <span class="eyebrow">Marketplace inspirado em hospedagem</span>
-    <h1>Encontre casas compartilhadas com a mesma clareza de uma busca de estadia.</h1>
-    <p>Busque por cidade, compare vagas e acompanhe a operacao da casa com um frontend mais convidativo.</p>
+    <span class="eyebrow">Curitiba</span>
+    <h1>
+      Marketplace e gestao para
+      <span class="gradient-text">casas compartilhadas em Curitiba</span>.
+    </h1>
+    <p>O MVP agora esta concentrado em Curitiba, com descoberta de vagas e operacao da casa no mesmo produto.</p>
+  </div>
+
+  <div class="discover-actions">
+    <a routerLink="/houses" class="discover-action">Explorar marketplace</a>
   </div>
 </section>
 
-<section class="search-shell">
-  <div class="search-pill">
-    <div class="search-item">
-      <strong>Onde</strong>
-      <span>Belo Horizonte, Curitiba, Sao Paulo</span>
+<section class="logo-loop-section">
+  <div class="section-label">
+    <span>Ecossistema local</span>
+    <p>Referencias de bairros e polos proximos para orientar a operacao inicial.</p>
+  </div>
+
+  <div class="logo-loop" aria-label="Bairros e polos locais">
+    <div class="logo-track">
+      @for (item of localLoopItems; track item) {
+        <span>{{ item }}</span>
+      }
+      @for (item of localLoopItems; track item + '-clone-a') {
+        <span>{{ item }}</span>
+      }
     </div>
-    <div class="search-divider"></div>
-    <div class="search-item">
-      <strong>Faixa de preco</strong>
-      <span>ate R$ 1.200 por mes</span>
-    </div>
-    <div class="search-divider"></div>
-    <div class="search-item">
-      <strong>Perfil</strong>
-      <span>visitante, morador ou admin</span>
-    </div>
-    <a routerLink="/houses" class="search-action">Buscar vagas</a>
   </div>
 </section>
 
-<section class="summary-grid">
-  <article>
-    <strong>{{ houses().length }}</strong>
-    <span>casas em destaque</span>
-  </article>
-  <article>
-    <strong>{{ totalAvailableRooms() }}</strong>
-    <span>vagas abertas</span>
-  </article>
-  <article>
-    <strong>{{ totalCities() }}</strong>
-    <span>cidades atendidas</span>
-  </article>
-  <article>
-    <strong>manual</strong>
-    <span>status financeiro no MVP</span>
-  </article>
-</section>
-
-<section class="feature-strip">
-  <article class="feature-card">
-    <h2>Buscar</h2>
-    <p>Navegacao orientada por cidade, bairro, preco e leitura visual das listagens.</p>
-  </article>
-  <article class="feature-card">
-    <h2>Aplicar</h2>
-    <p>Detalhe da casa com vagas, mensagem ao admin e cobrancas visiveis.</p>
-  </article>
-  <article class="feature-card">
-    <h2>Operar</h2>
-    <p>Dashboard, cadastro de casa e acompanhamento de pagamentos no mesmo sistema.</p>
-  </article>
+<section class="magic-bento">
+  @for (card of bentoCards; track card.title) {
+    <article class="bento-card spotlight-card" [class]="card.tone">
+      <span class="bento-eyebrow">{{ card.eyebrow }}</span>
+      <h2>{{ card.title }}</h2>
+      <p>{{ card.description }}</p>
+    </article>
+  }
 </section>
 
 <section class="section-head">
   <div>
-    <h2>Acomodações compartilhadas em destaque</h2>
-    <p>Cards mais visuais para leitura rápida, comparação e entrada no detalhe.</p>
+    <h2>Casas em destaque</h2>
+    <p>Uma selecao inicial para entrar no fluxo de busca e comparar opcoes rapidamente.</p>
   </div>
-  <a routerLink="/houses">Explorar todas</a>
+  <a routerLink="/houses">Ver todas</a>
 </section>
 
 <section class="house-grid">

@@ -15,7 +15,7 @@ export class HousesPageComponent implements OnInit {
   private readonly api = inject(ApiService);
 
   readonly houses = signal<HouseSummary[]>([]);
-  readonly activeFilters = signal<HouseFilters>({});
+  readonly activeFilters = signal<HouseFilters>({ city: 'Curitiba' });
 
   ngOnInit() {
     this.load();

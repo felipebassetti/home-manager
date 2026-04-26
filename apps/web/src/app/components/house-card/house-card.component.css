@@ -1,7 +1,26 @@
 .house-card {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 12px;
+  overflow: hidden;
+}
+
+.house-card::before {
+  content: '';
+  position: absolute;
+  inset: -18% auto auto -10%;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.24s ease;
+}
+
+.house-card:hover::before {
+  opacity: 1;
 }
 
 .image-frame {
@@ -35,6 +54,10 @@
   display: grid;
   gap: 8px;
   padding: 0 2px;
+}
+
+.house-card:hover .action {
+  color: var(--accent-strong);
 }
 
 .card-heading {

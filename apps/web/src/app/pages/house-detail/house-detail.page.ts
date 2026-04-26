@@ -34,6 +34,22 @@ export class HouseDetailPageComponent implements OnInit {
     });
   }
 
+  applicationStepState(step: 1 | 2 | 3) {
+    if (step === 1) {
+      return this.selectedRoomId() ? 'done' : 'active';
+    }
+
+    if (step === 2) {
+      if (this.feedback()) {
+        return 'done';
+      }
+
+      return this.applicationMessage().trim().length >= 12 ? 'active' : 'pending';
+    }
+
+    return this.feedback() ? 'done' : 'pending';
+  }
+
   submitApplication() {
     const house = this.house();
     if (!house) {

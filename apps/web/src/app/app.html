@@ -1,48 +1,111 @@
 <div class="shell">
   <header class="topbar">
-    <div class="topbar-main">
-      <a routerLink="/" class="brand">Republic House</a>
+    <a routerLink="/" class="brand">Republic House</a>
 
+    <div class="nav-shell">
       <nav class="nav-tabs">
-        @for (item of navItems; track item.href) {
+        @for (item of marketplaceNavItems; track item.href) {
           <a
             [routerLink]="item.href"
             routerLinkActive="active"
             [routerLinkActiveOptions]="item.href === '/' ? { exact: true } : { exact: false }"
           >
-            {{ item.label }}
+            <span>{{ item.label }}</span>
           </a>
         }
       </nav>
     </div>
 
-    <div class="topbar-actions">
-      <div class="mode-badge">Mock first</div>
+    <div class="topbar-side">
+      @if (isAdmin()) {
+        <a
+          routerLink="/dashboard"
+          class="workspace-entry"
+          [class.active]="isManagementRoute()"
+          aria-label="Abrir painel do gestor"
+          title="Abrir painel do gestor"
+        >
+          <span class="workspace-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path
+                d="M3.75 5.25a1.5 1.5 0 0 1 1.5-1.5h4.5a1.5 1.5 0 0 1 1.5 1.5v4.5a1.5 1.5 0 0 1-1.5 1.5h-4.5a1.5 1.5 0 0 1-1.5-1.5zm9 0a1.5 1.5 0 0 1 1.5-1.5h4.5a1.5 1.5 0 0 1 1.5 1.5v4.5a1.5 1.5 0 0 1-1.5 1.5h-4.5a1.5 1.5 0 0 1-1.5-1.5zm-9 9a1.5 1.5 0 0 1 1.5-1.5h4.5a1.5 1.5 0 0 1 1.5 1.5v4.5a1.5 1.5 0 0 1-1.5 1.5h-4.5a1.5 1.5 0 0 1-1.5-1.5zm12.75-1.5a.75.75 0 0 1 .75.75v1.126a2.625 2.625 0 1 1 1.5 0V13.5a.75.75 0 0 1 1.5 0v1.126a2.625 2.625 0 1 1-1.5 0V13.5a.75.75 0 0 1 .75-.75"
+              />
+            </svg>
+          </span>
+          <span class="workspace-copy">
+            <strong>Gestao</strong>
+            <small>Moradores e cobrancas</small>
+          </span>
+        </a>
+      }
 
-      <label class="profile-picker">
-        <span>Perfil ativo</span>
-        <select [value]="auth.activeProfile().id" (change)="auth.setActiveProfile($any($event.target).value)">
-          @for (profile of auth.profiles; track profile.id) {
-            <option [value]="profile.id">{{ profile.name }} - {{ profile.accountType }}</option>
-          }
-        </select>
-      </label>
+      <details class="account-menu">
+        <summary class="account-trigger">
+          <div class="account-avatar">{{ profileInitials() }}</div>
+
+          <div class="account-copy">
+            <strong>{{ auth.activeProfile().name }}</strong>
+            <span>{{ auth.accountLabel() }}</span>
+          </div>
+
+          <span class="account-chevron" aria-hidden="true">
+            <svg viewBox="0 0 20 20" focusable="false">
+              <path d="M5.25 7.5 10 12.25 14.75 7.5" />
+            </svg>
+          </span>
+        </summary>
+
+        <div class="account-panel">
+          <div class="account-panel-header">
+            <div class="profile-avatar profile-avatar-large">{{ profileInitials() }}</div>
+
+            <div class="account-panel-copy">
+              <strong>{{ auth.activeProfile().name }}</strong>
+              <span>{{ auth.activeProfile().email }}</span>
+            </div>
+          </div>
+
+          <div class="account-panel-section">
+            <span class="account-section-label">Perfis liberados</span>
+
+            <div class="profile-options">
+              @for (profile of auth.profiles; track profile.id) {
+                <button
+                  type="button"
+                  class="profile-option"
+                  [class.active]="profile.id === auth.activeProfile().id"
+                  (click)="auth.setActiveProfile(profile.id)"
+                >
+                  <span class="profile-option-avatar">{{ profileInitials(profile) }}</span>
+
+                  <span class="profile-option-copy">
+                    <strong>{{ profile.name }}</strong>
+                    <small>{{ profileRoleLabel(profile.accountType) }}</small>
+                  </span>
+
+                  <span class="profile-option-check" aria-hidden="true">
+                    @if (profile.id === auth.activeProfile().id) {
+                      <svg viewBox="0 0 20 20" focusable="false">
+                        <path d="m5.5 10.5 3 3 6-7" />
+                      </svg>
+                    }
+                  </span>
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      </details>
     </div>
   </header>
 
   <main class="page-frame">
-    <section class="context-strip">
-      <div class="context-copy">
-        <strong>{{ auth.activeProfile().name }}</strong>
-        <p>{{ auth.accountLabel() }} - Supabase {{ auth.isSupabaseConfigured ? 'configurado' : 'pendente' }}</p>
-      </div>
-
-      <div class="context-links">
-        @for (item of navItems; track item.href) {
-          <a [routerLink]="item.href">{{ item.shortLabel }}</a>
-        }
-      </div>
-    </section>
+    @if (!isHomeRoute()) {
+      <section class="context-strip">
+        <strong>{{ sectionLabel() }}</strong>
+        <p>{{ sectionDescription() }}</p>
+      </section>
+    }
 
     <router-outlet />
   </main>

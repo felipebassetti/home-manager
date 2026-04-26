@@ -1,5 +1,6 @@
 .hero-detail,
-.detail-grid {
+.detail-grid,
+.detail-stats {
   display: grid;
   gap: 18px;
 }
@@ -74,9 +75,51 @@
   margin-bottom: 18px;
 }
 
+.detail-stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 18px;
+}
+
+.detail-stats article {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.detail-stats strong {
+  font-size: 1.25rem;
+}
+
+.detail-stats span {
+  color: var(--text-muted);
+}
+
 .panel {
+  position: relative;
   display: grid;
   gap: 14px;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: -22% auto auto -10%;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.24s ease;
+}
+
+.panel:hover::before {
+  opacity: 1;
 }
 
 .room-list,
@@ -84,6 +127,61 @@
 .payment-list {
   display: grid;
   gap: 12px;
+}
+
+.application-stepper {
+  display: grid;
+  gap: 10px;
+}
+
+.step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-subtle);
+}
+
+.step strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #efe8e1;
+  color: var(--text);
+  font-size: 0.86rem;
+}
+
+.step div {
+  display: grid;
+  gap: 2px;
+}
+
+.step span {
+  font-weight: 700;
+}
+
+.step small {
+  color: var(--text-muted);
+}
+
+.step.active {
+  border-color: #f1b5c2;
+  background: #fff4f6;
+}
+
+.step.active strong,
+.step.done strong {
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #fff;
+}
+
+.step.done {
+  border-color: #f3d2db;
 }
 
 .room-row,
@@ -128,7 +226,8 @@ button {
 
 @media (max-width: 1000px) {
   .hero-detail,
-  .detail-grid {
+  .detail-grid,
+  .detail-stats {
     grid-template-columns: 1fr;
   }
 }

@@ -23,6 +23,25 @@
     </div>
   </section>
 
+  <section class="detail-stats">
+    <article>
+      <strong>{{ currentHouse.availableRooms }}</strong>
+      <span>vagas abertas</span>
+    </article>
+    <article>
+      <strong>{{ currentHouse.rooms.length }}</strong>
+      <span>quartos cadastrados</span>
+    </article>
+    <article>
+      <strong>{{ currentHouse.charges.length }}</strong>
+      <span>cobrancas ativas</span>
+    </article>
+    <article>
+      <strong>{{ currentHouse.payments.length }}</strong>
+      <span>pagamentos no historico</span>
+    </article>
+  </section>
+
   <section class="detail-grid">
     <div class="panel">
       <div class="panel-head">
@@ -58,6 +77,32 @@
         <span>{{ auth.activeProfile().accountType }}</span>
       </div>
 
+      <div class="application-stepper">
+        <article class="step" [class.active]="applicationStepState(1) === 'active'" [class.done]="applicationStepState(1) === 'done'">
+          <strong>1</strong>
+          <div>
+            <span>Escolha a vaga</span>
+            <small>Selecione um quarto disponivel.</small>
+          </div>
+        </article>
+
+        <article class="step" [class.active]="applicationStepState(2) === 'active'" [class.done]="applicationStepState(2) === 'done'">
+          <strong>2</strong>
+          <div>
+            <span>Apresente seu perfil</span>
+            <small>Explique entrada, rotina e prazo.</small>
+          </div>
+        </article>
+
+        <article class="step" [class.active]="applicationStepState(3) === 'active'" [class.done]="applicationStepState(3) === 'done'">
+          <strong>3</strong>
+          <div>
+            <span>Aguarde retorno</span>
+            <small>O gestor recebe a candidatura no painel.</small>
+          </div>
+        </article>
+      </div>
+
       <label>
         <span>Mensagem para o admin</span>
         <textarea
@@ -79,7 +124,7 @@
   <section class="detail-grid">
     <div class="panel">
       <div class="panel-head">
-        <h2>Cobrancas ativas</h2>
+        <h2>Cobrancas</h2>
         <span>{{ currentHouse.charges.length }} itens</span>
       </div>
 
@@ -96,7 +141,7 @@
 
     <div class="panel">
       <div class="panel-head">
-        <h2>Pagamentos recentes</h2>
+        <h2>Pagamentos</h2>
         <span>{{ currentHouse.payments.length }} lancamentos</span>
       </div>
 

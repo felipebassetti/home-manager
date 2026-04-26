@@ -1,4 +1,4 @@
-<article class="house-card">
+<article class="house-card spotlight-card">
   <div class="image-frame">
     <img [src]="house.imageUrl" [alt]="house.title" />
     <span class="listing-badge">{{ house.availableRooms }} vagas</span>
@@ -16,16 +16,10 @@
     <p class="description">{{ house.description }}</p>
 
     <div class="meta-row">
-      <span>{{ house.rooms.length }} tipos de quarto</span>
-      <span>a partir de mensalidade individual</span>
+      <span>{{ house.rooms.length }} quartos</span>
+      <span>{{ house.availableRooms }} disponiveis</span>
     </div>
 
-    <div class="amenities">
-      @for (amenity of house.amenities.slice(0, 3); track amenity) {
-        <span>{{ amenity }}</span>
-      }
-    </div>
-
-    <a [routerLink]="['/houses', house.id]" class="action">Ver acomodação</a>
+    <a [routerLink]="['/houses', house.id]" class="action">Ver detalhes</a>
   </div>
 </article>

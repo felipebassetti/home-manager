@@ -15,16 +15,44 @@ export class HomePageComponent implements OnInit {
   private readonly api = inject(ApiService);
 
   readonly houses = signal<HouseSummary[]>([]);
+  readonly localLoopItems = [
+    'Centro',
+    'Batel',
+    'Reboucas',
+    'UFPR',
+    'PUCPR',
+    'UTFPR',
+    'Shopping Estacao',
+    'Jardim Botanico'
+  ];
+  readonly bentoCards = [
+    {
+      eyebrow: 'Marketplace',
+      title: 'Busca direta por bairro',
+      description: 'Comece por Curitiba e compare vagas com filtros simples, sem desviar para fluxos de gestao.',
+      tone: 'primary'
+    },
+    {
+      eyebrow: 'Gestao',
+      title: 'Operacao da casa no mesmo sistema',
+      description: 'Moradores, cobrancas e pagamentos ficam agrupados em uma area separada para o gestor.',
+      tone: 'secondary'
+    },
+    {
+      eyebrow: 'Financeiro',
+      title: 'Cobranca clara por morador',
+      description: 'Status de pagamento e vencimento aparecem cedo, sem depender de integracao externa no MVP.',
+      tone: 'muted'
+    },
+    {
+      eyebrow: 'Cidade foco',
+      title: 'Curitiba primeiro',
+      description: 'Produto, filtros e dados mockados foram ajustados para validar o fluxo local antes de expandir.',
+      tone: 'soft'
+    }
+  ];
 
   ngOnInit() {
     this.api.listHouses().subscribe((houses) => this.houses.set(houses.slice(0, 3)));
-  }
-
-  totalAvailableRooms() {
-    return this.houses().reduce((total, house) => total + house.availableRooms, 0);
-  }
-
-  totalCities() {
-    return new Set(this.houses().map((house) => house.city)).size;
   }
 }
