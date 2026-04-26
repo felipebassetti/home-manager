@@ -1,15 +1,14 @@
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MemberListComponent } from '../../components/member-list/member-list.component';
-import { PaymentStatusComponent } from '../../components/payment-status/payment-status.component';
 import { SpotlightCardDirective } from '../../directives/spotlight-card.directive';
 import type { HouseDetail } from '../../models/domain.models';
 import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [CommonModule, RouterLink, CurrencyPipe, MemberListComponent, PaymentStatusComponent, SpotlightCardDirective],
+  imports: [CommonModule, RouterLink, MemberListComponent, SpotlightCardDirective],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.css'
 })
