@@ -1,4 +1,4 @@
-<article class="house-card spotlight-card">
+<article class="house-card spotlight-card" appSpotlightCard>
   <div class="image-frame">
     <img [src]="house.imageUrl" [alt]="house.title" />
     <span class="listing-badge">{{ house.availableRooms }} vagas</span>
@@ -8,7 +8,7 @@
     <div class="card-heading">
       <div>
         <h3>{{ house.title }}</h3>
-        <p>{{ house.city }} - {{ house.neighborhood }}</p>
+        <p>{{ house.city }} • {{ house.neighborhood }}</p>
       </div>
       <strong class="price">{{ house.lowestPrice | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
     </div>

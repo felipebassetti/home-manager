@@ -50,16 +50,16 @@ export class App {
   }
 
   protected sectionLabel() {
-    return this.isManagementRoute() ? 'Area de gestao' : 'Marketplace';
+    return this.isManagementRoute() ? 'Área de gestão' : 'Marketplace';
   }
 
   protected sectionDescription() {
     if (this.isManagementRoute()) {
       return this.isAdmin()
-        ? 'Funcoes administrativas liberadas para o gestor da casa.'
-        : 'Esta area concentra operacao, cobrancas e administracao.';
+        ? 'Funções administrativas liberadas para o gestor da casa.'
+        : 'Esta área concentra operação, cobranças e administração.';
     }
 
-    return 'Busca, comparacao e candidatura para vagas em casas compartilhadas.';
+    return 'Busca, comparação e candidatura para vagas em casas compartilhadas.';
   }
 }

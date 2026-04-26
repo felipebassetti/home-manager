@@ -1,0 +1,7 @@
+.count-up {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}

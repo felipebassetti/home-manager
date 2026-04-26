@@ -36,6 +36,15 @@
 
 .stats-grid article,
 .panel {
+  position: relative;
+  overflow: hidden;
+  --spotlight-x: 50%;
+  --spotlight-y: 50%;
+  --spotlight-opacity: 0;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
   padding: 20px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -46,6 +55,27 @@
 .stats-grid article {
   display: grid;
   gap: 6px;
+}
+
+.stats-grid article::before,
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    240px circle at var(--spotlight-x) var(--spotlight-y),
+    rgba(255, 56, 92, 0.16),
+    rgba(255, 56, 92, 0) 64%
+  );
+  opacity: var(--spotlight-opacity);
+  pointer-events: none;
+}
+
+.stats-grid article:hover,
+.panel:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .stats-grid strong {

@@ -4,23 +4,37 @@
   grid-template-columns: minmax(0, 1fr);
   gap: 12px;
   overflow: hidden;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  --spotlight-x: 50%;
+  --spotlight-y: 50%;
+  --spotlight-opacity: 0;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .house-card::before {
   content: '';
   position: absolute;
-  inset: -18% auto auto -10%;
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
-  opacity: 0;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    240px circle at var(--spotlight-x) var(--spotlight-y),
+    rgba(255, 56, 92, 0.18),
+    rgba(255, 56, 92, 0) 64%
+  );
+  opacity: var(--spotlight-opacity);
   pointer-events: none;
-  transition: opacity 0.24s ease;
 }
 
-.house-card:hover::before {
-  opacity: 1;
+.house-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .image-frame {
@@ -31,7 +45,7 @@
   width: 100%;
   aspect-ratio: 1 / 0.92;
   object-fit: cover;
-  border-radius: 18px;
+  border-radius: 14px;
 }
 
 .listing-badge {
@@ -53,7 +67,7 @@
 .card-body {
   display: grid;
   gap: 8px;
-  padding: 0 2px;
+  padding: 0 2px 2px;
 }
 
 .house-card:hover .action {

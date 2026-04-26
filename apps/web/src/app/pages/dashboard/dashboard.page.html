@@ -1,78 +1,48 @@
-@if (house(); as currentHouse) {
-  <section class="page-head">
-    <div>
-      <h1>Dashboard da casa</h1>
-      <p>{{ currentHouse.title }} - {{ currentHouse.city }} - {{ currentHouse.neighborhood }}</p>
-    </div>
-  </section>
+<section class="page-head">
+  <div>
+    <h1>Painel do gestor</h1>
+    <p>Visão geral das casas administradas, com acesso rápido para abrir cada detalhe.</p>
+  </div>
+</section>
 
-  <section class="stats-grid">
-    <article>
-      <strong>{{ currentHouse.members.length }}</strong>
-      <span>moradores e admin</span>
-    </article>
-    <article>
-      <strong>{{ currentHouse.applications.length }}</strong>
-      <span>candidaturas em aberto</span>
-    </article>
-    <article>
-      <strong>{{ countPayments('pending') }}</strong>
-      <span>pagamentos pendentes</span>
-    </article>
-    <article>
-      <strong>{{ countPayments('overdue') }}</strong>
-      <span>pagamentos atrasados</span>
-    </article>
-  </section>
+<section class="stats-grid">
+  <article class="spotlight-card" appSpotlightCard>
+    <strong>{{ managedHouses().length }}</strong>
+    <span>casas geridas</span>
+  </article>
+  <article class="spotlight-card" appSpotlightCard>
+    <strong>{{ totalRooms() }}</strong>
+    <span>quartos cadastrados</span>
+  </article>
+  <article class="spotlight-card" appSpotlightCard>
+    <strong>{{ totalMembers() }}</strong>
+    <span>moradores ativos</span>
+  </article>
+  <article class="spotlight-card" appSpotlightCard>
+    <strong>{{ countPayments('pending') }}</strong>
+    <span>pagamentos pendentes</span>
+  </article>
+</section>
 
-  <section class="dashboard-grid">
-    <div class="panel">
+<section class="dashboard-grid">
+  @for (house of managedHouses(); track house.id) {
+    <article class="panel spotlight-card managed-house" appSpotlightCard>
       <div class="panel-head">
-        <h2>Moradores</h2>
-        <span>status atual</span>
-      </div>
-      <app-member-list [members]="currentHouse.members" />
-    </div>
-
-    <div class="panel">
-      <div class="panel-head">
-        <h2>Cobrancas</h2>
-        <span>{{ currentHouse.charges.length }} registros</span>
+        <div>
+          <h2>{{ house.title }}</h2>
+          <span>{{ house.city }} • {{ house.neighborhood }}</span>
+        </div>
+        <a [routerLink]="['/houses', house.id]">Abrir detalhes</a>
       </div>
 
-      <div class="list-stack">
-        @for (charge of currentHouse.charges; track charge.id) {
-          <article>
-            <div>
-              <strong>{{ charge.title }}</strong>
-              <p>Vence em {{ charge.dueDate | date: 'dd/MM/yyyy' }}</p>
-            </div>
-            <strong>{{ charge.amount | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
-          </article>
-        }
+      <div class="managed-metrics">
+        <span>{{ house.availableRooms }} vagas abertas</span>
+        <span>{{ house.applications.length }} candidaturas</span>
+        <span>{{ house.charges.length }} cobranças</span>
+        <span>{{ house.payments.length }} pagamentos</span>
       </div>
-    </div>
-  </section>
 
-  <section class="panel">
-    <div class="panel-head">
-      <h2>Pagamentos</h2>
-      <span>acompanhamento manual</span>
-    </div>
-
-    <div class="list-stack">
-      @for (payment of currentHouse.payments; track payment.id) {
-        <article>
-          <div>
-            <strong>{{ payment.profile?.name ?? payment.userId }}</strong>
-            <p>{{ payment.charge?.title ?? 'Cobranca manual' }}</p>
-          </div>
-          <div class="inline-meta">
-            <strong>{{ payment.amount | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
-            <app-payment-status [status]="payment.status" />
-          </div>
-        </article>
-      }
-    </div>
-  </section>
-}
+      <app-member-list [members]="house.members" />
+    </article>
+  }
+</section>

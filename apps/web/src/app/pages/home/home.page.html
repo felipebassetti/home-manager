@@ -2,49 +2,61 @@
   <div class="discover-copy">
     <span class="eyebrow">Curitiba</span>
     <h1>
-      Marketplace e gestao para
-      <span class="gradient-text">casas compartilhadas em Curitiba</span>.
+      Encontre vagas por
+      <span class="gradient-text">bairro e preço</span>.
     </h1>
-    <p>O MVP agora esta concentrado em Curitiba, com descoberta de vagas e operacao da casa no mesmo produto.</p>
+    <p>Busque direto no mercado de Curitiba com um fluxo curto e simples.</p>
   </div>
 
-  <div class="discover-actions">
-    <a routerLink="/houses" class="discover-action">Explorar marketplace</a>
-  </div>
-</section>
+  <div class="search-rail">
+    <form class="home-search" (ngSubmit)="search()">
+      <label>
+        <span>Bairro</span>
+        <select name="neighborhood" [(ngModel)]="searchNeighborhood">
+          <option value="">Todos os bairros</option>
+          @for (neighborhood of neighborhoodOptions; track neighborhood) {
+            <option [value]="neighborhood">{{ neighborhood }}</option>
+          }
+        </select>
+      </label>
 
-<section class="logo-loop-section">
-  <div class="section-label">
-    <span>Ecossistema local</span>
-    <p>Referencias de bairros e polos proximos para orientar a operacao inicial.</p>
-  </div>
+      <label>
+        <span>Preço máximo</span>
+        <input
+          type="text"
+          name="maxPrice"
+          [value]="searchMaxPriceInput"
+          (input)="onPriceInput($event)"
+          placeholder="R$ 1.200"
+          inputmode="numeric"
+        />
+      </label>
 
-  <div class="logo-loop" aria-label="Bairros e polos locais">
-    <div class="logo-track">
-      @for (item of localLoopItems; track item) {
-        <span>{{ item }}</span>
-      }
-      @for (item of localLoopItems; track item + '-clone-a') {
-        <span>{{ item }}</span>
-      }
+      <button type="submit">Pesquisar</button>
+    </form>
+
+    <div class="quick-stats" aria-label="Resumo rápido">
+      <article class="quick-stat spotlight-card" appSpotlightCard>
+        <span>Imóveis disponíveis</span>
+        <strong>
+          <app-count-up [value]="totalAvailableRooms()" prefix="+ de " />
+        </strong>
+      </article>
+
+      <article class="quick-stat spotlight-card" appSpotlightCard>
+        <span>Pessoas com lar</span>
+        <strong>
+          <app-count-up [value]="peopleWithHomeTarget" prefix="+ de " />
+        </strong>
+      </article>
     </div>
   </div>
-</section>
-
-<section class="magic-bento">
-  @for (card of bentoCards; track card.title) {
-    <article class="bento-card spotlight-card" [class]="card.tone">
-      <span class="bento-eyebrow">{{ card.eyebrow }}</span>
-      <h2>{{ card.title }}</h2>
-      <p>{{ card.description }}</p>
-    </article>
-  }
 </section>
 
 <section class="section-head">
   <div>
     <h2>Casas em destaque</h2>
-    <p>Uma selecao inicial para entrar no fluxo de busca e comparar opcoes rapidamente.</p>
+    <p>Uma seleção inicial para entrar no fluxo de busca e comparar opções rapidamente.</p>
   </div>
   <a routerLink="/houses">Ver todas</a>
 </section>

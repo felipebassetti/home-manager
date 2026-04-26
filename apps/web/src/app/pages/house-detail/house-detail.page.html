@@ -1,14 +1,14 @@
 @if (house(); as currentHouse) {
   <section class="hero-detail">
-    <div class="media-panel">
+    <div class="media-panel spotlight-card" appSpotlightCard>
       <img [src]="currentHouse.imageUrl" [alt]="currentHouse.title" />
     </div>
 
-    <div class="hero-copy">
+    <div class="hero-copy spotlight-card" appSpotlightCard>
       <div class="hero-head">
         <div>
           <h1>{{ currentHouse.title }}</h1>
-          <p>{{ currentHouse.city }} - {{ currentHouse.neighborhood }} - {{ currentHouse.address }}</p>
+          <p>{{ currentHouse.city }} • {{ currentHouse.neighborhood }} • {{ currentHouse.address }}</p>
         </div>
         <strong>{{ currentHouse.lowestPrice | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
       </div>
@@ -24,29 +24,29 @@
   </section>
 
   <section class="detail-stats">
-    <article>
+    <article class="spotlight-card" appSpotlightCard>
       <strong>{{ currentHouse.availableRooms }}</strong>
       <span>vagas abertas</span>
     </article>
-    <article>
+    <article class="spotlight-card" appSpotlightCard>
       <strong>{{ currentHouse.rooms.length }}</strong>
       <span>quartos cadastrados</span>
     </article>
-    <article>
+    <article class="spotlight-card" appSpotlightCard>
       <strong>{{ currentHouse.charges.length }}</strong>
-      <span>cobrancas ativas</span>
+      <span>cobranças ativas</span>
     </article>
-    <article>
+    <article class="spotlight-card" appSpotlightCard>
       <strong>{{ currentHouse.payments.length }}</strong>
-      <span>pagamentos no historico</span>
+      <span>pagamentos no histórico</span>
     </article>
   </section>
 
   <section class="detail-grid">
-    <div class="panel">
+    <div class="panel spotlight-card" appSpotlightCard>
       <div class="panel-head">
         <h2>Quartos e vagas</h2>
-        <span>{{ currentHouse.availableRooms }} disponiveis</span>
+        <span>{{ currentHouse.availableRooms }} disponíveis</span>
       </div>
 
       <div class="room-list">
@@ -62,7 +62,7 @@
               />
               <div>
                 <strong>{{ room.title }}</strong>
-                <p>{{ room.available ? 'Disponivel agora' : 'Ocupado' }}</p>
+                <p>{{ room.available ? 'Disponível agora' : 'Ocupado' }}</p>
               </div>
             </div>
             <strong>{{ room.price | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
@@ -71,7 +71,7 @@
       </div>
     </div>
 
-    <div class="panel">
+    <div class="panel spotlight-card" appSpotlightCard>
       <div class="panel-head">
         <h2>Aplicar para vaga</h2>
         <span>{{ auth.activeProfile().accountType }}</span>
@@ -82,7 +82,7 @@
           <strong>1</strong>
           <div>
             <span>Escolha a vaga</span>
-            <small>Selecione um quarto disponivel.</small>
+            <small>Selecione um quarto disponível.</small>
           </div>
         </article>
 
@@ -104,7 +104,7 @@
       </div>
 
       <label>
-        <span>Mensagem para o admin</span>
+        <span>Mensagem para o gestor</span>
         <textarea
           rows="5"
           [value]="applicationMessage()"
@@ -122,9 +122,9 @@
   </section>
 
   <section class="detail-grid">
-    <div class="panel">
+    <div class="panel spotlight-card" appSpotlightCard>
       <div class="panel-head">
-        <h2>Cobrancas</h2>
+        <h2>Cobranças</h2>
         <span>{{ currentHouse.charges.length }} itens</span>
       </div>
 
@@ -139,10 +139,10 @@
       </div>
     </div>
 
-    <div class="panel">
+    <div class="panel spotlight-card" appSpotlightCard>
       <div class="panel-head">
         <h2>Pagamentos</h2>
-        <span>{{ currentHouse.payments.length }} lancamentos</span>
+        <span>{{ currentHouse.payments.length }} lançamentos</span>
       </div>
 
       <div class="payment-list">
@@ -150,7 +150,7 @@
           <article>
             <div>
               <strong>{{ payment.profile?.name ?? payment.userId }}</strong>
-              <p>{{ payment.charge?.title ?? 'Cobranca manual' }}</p>
+              <p>{{ payment.charge?.title ?? 'Cobrança manual' }}</p>
             </div>
             <app-payment-status [status]="payment.status" />
           </article>

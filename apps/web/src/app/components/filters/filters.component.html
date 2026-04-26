@@ -6,12 +6,24 @@
 
   <label>
     <span>Bairro</span>
-    <input type="text" name="neighborhood" [(ngModel)]="filters.neighborhood" placeholder="Centro, Batel ou Reboucas" />
+    <select name="neighborhood" [(ngModel)]="filters.neighborhood">
+      <option value="">Todos os bairros</option>
+      @for (neighborhood of neighborhoodOptions; track neighborhood) {
+        <option [value]="neighborhood">{{ neighborhood }}</option>
+      }
+    </select>
   </label>
 
   <label>
-    <span>Preco maximo</span>
-    <input type="number" name="maxPrice" [(ngModel)]="filters.maxPrice" placeholder="1200" min="0" />
+    <span>Preço máximo</span>
+    <input
+      type="text"
+      name="maxPrice"
+      [value]="maxPriceInput"
+      (input)="onPriceInput($event)"
+      placeholder="R$ 1.200"
+      inputmode="numeric"
+    />
   </label>
 
   <div class="actions">

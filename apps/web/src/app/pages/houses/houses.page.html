@@ -1,12 +1,12 @@
 <section class="page-head">
   <div>
     <h1>Casas compartilhadas em Curitiba</h1>
-    <p>Comecamos por Curitiba, com busca por bairro e comparacao simples de vagas disponiveis.</p>
+    <p>Busque por bairro e preço máximo para filtrar as vagas rapidamente.</p>
   </div>
   <strong class="result-count">{{ houses().length }} resultados</strong>
 </section>
 
-<app-filters (filtersChange)="onFiltersChange($event)" />
+<app-filters [initialFilters]="activeFilters()" (filtersChange)="onFiltersChange($event)" />
 
 <section class="results-grid">
   @for (house of houses(); track house.id) {

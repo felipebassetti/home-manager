@@ -22,7 +22,8 @@
   font-weight: 700;
 }
 
-.filters input {
+.filters input,
+.filters select {
   min-height: 30px;
   padding: 0;
   border: 0;

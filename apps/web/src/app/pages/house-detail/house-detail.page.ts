@@ -3,13 +3,14 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { PaymentStatusComponent } from '../../components/payment-status/payment-status.component';
+import { SpotlightCardDirective } from '../../directives/spotlight-card.directive';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
 import type { HouseDetail } from '../../models/domain.models';
 
 @Component({
   selector: 'app-house-detail-page',
-  imports: [CommonModule, FormsModule, CurrencyPipe, DatePipe, PaymentStatusComponent],
+  imports: [CommonModule, FormsModule, CurrencyPipe, DatePipe, PaymentStatusComponent, SpotlightCardDirective],
   templateUrl: './house-detail.page.html',
   styleUrl: './house-detail.page.css'
 })

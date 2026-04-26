@@ -61,13 +61,13 @@ const houses: House[] = [
   {
     id: 'house-curitiba-reboucas',
     ownerId: 'user-admin-1',
-    title: 'Rep Reboucas',
-    description: 'Opcao economica para quem precisa de acesso rapido a campus, terminal e rotina compartilhada com custos previsiveis.',
+    title: 'Rep Rebouças',
+    description: 'Opção econômica para quem precisa de acesso rápido a campus, terminal e rotina compartilhada com custos previsíveis.',
     city: 'Curitiba',
-    neighborhood: 'Reboucas',
+    neighborhood: 'Rebouças',
     address: 'Rua Chile, 1490',
     imageUrl: 'assets/images/house-savassi.png',
-    amenities: ['contas inclusas', 'espaco de estudo', 'mercado perto'],
+    amenities: ['contas inclusas', 'espaço de estudo', 'mercado perto'],
     createdAt: '2026-04-12T15:00:00.000Z'
   }
 ];

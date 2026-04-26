@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FiltersComponent } from '../../components/filters/filters.component';
 import { HouseCardComponent } from '../../components/house-card/house-card.component';
 import type { HouseFilters, HouseSummary } from '../../models/domain.models';
@@ -12,13 +13,22 @@ import { ApiService } from '../../services/api.service';
   styleUrl: './houses.page.css'
 })
 export class HousesPageComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
   private readonly api = inject(ApiService);
 
   readonly houses = signal<HouseSummary[]>([]);
   readonly activeFilters = signal<HouseFilters>({ city: 'Curitiba' });
 
   ngOnInit() {
-    this.load();
+    this.route.queryParamMap.subscribe((params) => {
+      this.activeFilters.set({
+        city: params.get('city') ?? 'Curitiba',
+        neighborhood: params.get('neighborhood') ?? '',
+        maxPrice: params.get('maxPrice') ? Number(params.get('maxPrice')) : null
+      });
+
+      this.load();
+    });
   }
 
   onFiltersChange(filters: HouseFilters) {
