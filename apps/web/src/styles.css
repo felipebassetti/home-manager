@@ -25,8 +25,15 @@
   --shadow-md: 0 18px 40px rgba(0, 0, 0, 0.08);
 }
 
+@property --beam-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
 html,
 body {
+  height: 100%;
   margin: 0;
   font-family:
     Inter,
@@ -38,8 +45,9 @@ body {
 }
 
 body {
-  min-height: 100vh;
   line-height: 1.45;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 img {
@@ -75,4 +83,59 @@ h3,
 h4,
 p {
   margin-top: 0;
+}
+
+.spotlight-card {
+  position: relative;
+  isolation: isolate;
+  --beam-angle: 0deg;
+  --beam-opacity: 0.48;
+  --beam-width: 2.5px;
+}
+
+.spotlight-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: var(--beam-width);
+  border-radius: inherit;
+  background:
+    conic-gradient(
+      from var(--beam-angle),
+      rgba(255, 255, 255, 0) 0deg,
+      rgba(255, 255, 255, 0) 210deg,
+      rgba(255, 122, 89, 0.88) 248deg,
+      rgba(255, 56, 92, 1) 286deg,
+      rgba(255, 196, 113, 0.92) 320deg,
+      rgba(255, 255, 255, 0) 360deg
+    );
+  opacity: var(--beam-opacity);
+  pointer-events: none;
+  animation: border-beam-spin 6.8s linear infinite;
+  filter: saturate(1.14) brightness(1.05) drop-shadow(0 0 12px rgba(255, 56, 92, 0.22));
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.spotlight-card:hover::after {
+  --beam-opacity: 0.78;
+  filter: saturate(1.22) brightness(1.08) drop-shadow(0 0 16px rgba(255, 56, 92, 0.32));
+}
+
+@keyframes border-beam-spin {
+  to {
+    --beam-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-card::after {
+    animation: none;
+  }
 }

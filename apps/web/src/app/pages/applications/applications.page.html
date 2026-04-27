@@ -1,0 +1,57 @@
+<section class="page-head">
+  <div>
+    <h1>Suas candidaturas</h1>
+    <p>Acompanhe o retorno de cada casa e espere contato direto quando houver interesse.</p>
+  </div>
+</section>
+
+@if (!auth.isAuthenticated()) {
+  <section class="empty-panel spotlight-card" appSpotlightCard>
+    <strong>Entre para acompanhar suas candidaturas.</strong>
+    <a routerLink="/login">Fazer login</a>
+  </section>
+} @else {
+  <section class="filter-row">
+    @for (filter of ['all', 'submitted', 'in_review', 'contact_soon', 'rejected']; track filter) {
+      <button type="button" [class.active]="activeFilter() === filter" (click)="activeFilter.set($any(filter))">
+        {{ filterLabel($any(filter)) }}
+      </button>
+    }
+  </section>
+
+  <section class="applications-list">
+    @for (application of visibleApplications(); track application.id) {
+      <article class="application-card spotlight-card" appSpotlightCard>
+        <div class="application-head">
+          <div>
+            <strong>{{ application.houseTitle }}</strong>
+            <p>{{ application.houseCity }} - {{ application.houseNeighborhood }}</p>
+          </div>
+          <span class="status-pill" [ngClass]="application.status">{{ statusLabel(application.status) }}</span>
+        </div>
+
+        <div class="application-meta">
+          <span>{{ application.roomTitle ?? 'Qualquer vaga' }}</span>
+          <span>Enviada em {{ application.createdAt | date: 'dd/MM/yyyy' }}</span>
+          <span>Atualizada em {{ application.statusUpdatedAt | date: 'dd/MM/yyyy' }}</span>
+        </div>
+
+        <p class="message">{{ application.message }}</p>
+
+        <div class="contact-meta">
+          <span>{{ application.contactPhone }}</span>
+          @if (application.contactInstagram) {
+            <span>{{ application.contactInstagram }}</span>
+          }
+        </div>
+
+        <a [routerLink]="['/houses', application.houseId]">Abrir casa</a>
+      </article>
+    } @empty {
+      <article class="empty-panel spotlight-card" appSpotlightCard>
+        <strong>Nenhuma candidatura por aqui.</strong>
+        <p>Quando voce enviar uma candidatura, ela vai aparecer nesta aba.</p>
+      </article>
+    }
+  </section>
+}

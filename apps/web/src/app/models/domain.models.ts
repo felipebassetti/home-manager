@@ -1,5 +1,6 @@
 export type MemberRole = 'admin' | 'member';
-export type ApplicationStatus = 'pending' | 'approved' | 'rejected';
+export type AccountType = 'house-admin' | 'super-admin' | 'member' | 'visitor';
+export type ApplicationStatus = 'submitted' | 'in_review' | 'contact_soon' | 'rejected';
 export type PaymentStatus = 'pending' | 'paid' | 'overdue';
 
 export interface Profile {
@@ -9,7 +10,7 @@ export interface Profile {
 }
 
 export interface ActiveProfile extends Profile {
-  accountType: 'admin' | 'member' | 'visitor';
+  accountType: AccountType;
 }
 
 export interface Room {
@@ -29,6 +30,7 @@ export interface House {
   neighborhood: string;
   address: string;
   imageUrl: string;
+  galleryImages?: string[];
   amenities: string[];
   createdAt: string;
 }
@@ -49,8 +51,12 @@ export interface Application {
   roomId: string | null;
   userId: string;
   message: string;
+  contactPhone: string;
+  contactInstagram: string | null;
   status: ApplicationStatus;
   createdAt: string;
+  statusUpdatedAt: string;
+  profile?: Profile;
 }
 
 export interface MonthlyCharge {
@@ -87,6 +93,13 @@ export interface HouseDetail extends HouseSummary {
   payments: Payment[];
 }
 
+export interface ApplicationListItem extends Application {
+  houseTitle: string;
+  houseNeighborhood: string;
+  houseCity: string;
+  roomTitle: string | null;
+}
+
 export interface HouseFilters {
   city?: string;
   neighborhood?: string[];
@@ -110,6 +123,13 @@ export interface CreateApplicationInput {
   roomId: string | null;
   userId: string;
   message: string;
+  contactPhone: string;
+  contactInstagram?: string | null;
+}
+
+export interface UpdateApplicationStatusInput {
+  applicationId: string;
+  status: ApplicationStatus;
 }
 
 export interface AddMemberInput {

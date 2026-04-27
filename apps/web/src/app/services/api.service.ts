@@ -8,13 +8,16 @@ import {
   createMockCharge,
   createMockHouse,
   getMockHouseById,
+  listMockApplicationsByUser,
   listMockHouses,
   listMockPayments,
+  updateMockApplicationStatus,
   upsertMockPayment
 } from '../data/mock-data';
 import type {
   AddMemberInput,
   Application,
+  ApplicationListItem,
   CreateApplicationInput,
   CreateChargeInput,
   CreateHouseInput,
@@ -23,6 +26,7 @@ import type {
   HouseSummary,
   MonthlyCharge,
   Payment,
+  UpdateApplicationStatusInput,
   UpsertPaymentInput
 } from '../models/domain.models';
 
@@ -90,6 +94,29 @@ export class ApiService {
     return this.http.post<ApiResponse<Application>>(`${this.baseUrl}/applications`, input).pipe(
       map((response) => response.data),
       catchError(() => of(createMockApplication(input)))
+    );
+  }
+
+  listApplicationsByUser(userId: string) {
+    if (this.useMockApi) {
+      return of(listMockApplicationsByUser(userId)).pipe(delay(120));
+    }
+
+    const params = new HttpParams().set('userId', userId);
+    return this.http.get<ApiResponse<ApplicationListItem[]>>(`${this.baseUrl}/applications`, { params }).pipe(
+      map((response) => response.data),
+      catchError(() => of(listMockApplicationsByUser(userId)))
+    );
+  }
+
+  updateApplicationStatus(input: UpdateApplicationStatusInput) {
+    if (this.useMockApi) {
+      return of(updateMockApplicationStatus(input)).pipe(delay(120));
+    }
+
+    return this.http.patch<ApiResponse<Application>>(`${this.baseUrl}/applications/${input.applicationId}`, input).pipe(
+      map((response) => response.data),
+      catchError(() => of(updateMockApplicationStatus(input)))
     );
   }
 

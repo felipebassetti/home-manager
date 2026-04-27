@@ -1,0 +1,116 @@
+.page-head {
+  margin-bottom: 18px;
+}
+
+.page-head h1,
+.page-head p,
+.message {
+  margin: 0;
+}
+
+.page-head p,
+.application-head p,
+.application-meta,
+.contact-meta,
+.empty-panel p,
+.message {
+  color: var(--text-muted);
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.filter-row button,
+.status-pill,
+.application-card a,
+.empty-panel a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.filter-row button {
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.filter-row button.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #fff;
+}
+
+.applications-list {
+  display: grid;
+  gap: 16px;
+}
+
+.application-card,
+.empty-panel {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.application-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.application-head strong {
+  font-size: 1.05rem;
+}
+
+.application-meta,
+.contact-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.application-meta span,
+.contact-meta span {
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: var(--surface-subtle);
+}
+
+.status-pill {
+  color: #fff;
+}
+
+.status-pill.submitted {
+  background: #b7791f;
+}
+
+.status-pill.in_review {
+  background: #2563eb;
+}
+
+.status-pill.contact_soon {
+  background: #0f9d58;
+}
+
+.status-pill.rejected {
+  background: #b42318;
+}
+
+.application-card a,
+.empty-panel a {
+  width: fit-content;
+  background: var(--surface-muted);
+}

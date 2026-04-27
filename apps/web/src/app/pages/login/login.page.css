@@ -1,0 +1,76 @@
+.login-shell {
+  display: grid;
+  place-items: center;
+  min-height: min(720px, calc(100vh - var(--topbar-offset) - 60px));
+}
+
+.login-card {
+  display: grid;
+  gap: 22px;
+  width: min(520px, 100%);
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: var(--shadow-md);
+}
+
+.login-copy h1,
+.login-copy p {
+  margin: 0;
+}
+
+.login-copy {
+  display: grid;
+  gap: 10px;
+}
+
+.eyebrow {
+  color: var(--accent-strong);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.login-form {
+  display: grid;
+  gap: 14px;
+}
+
+.login-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.login-form span {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+.login-form input {
+  min-height: 50px;
+  padding: 0 14px;
+  border-radius: 14px;
+  background: var(--surface-subtle);
+}
+
+.login-form button {
+  min-height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.login-form button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.error-message {
+  margin: 0;
+  color: var(--danger-text);
+}

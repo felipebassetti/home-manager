@@ -1,19 +1,72 @@
 @if (house(); as currentHouse) {
   <section class="hero-detail">
     <div class="media-panel spotlight-card" appSpotlightCard>
-      <img [src]="currentHouse.imageUrl" [alt]="currentHouse.title" />
+      <button type="button" class="gallery-frame" (click)="openGallery()">
+        <img
+          [src]="galleryImages()[selectedImageIndex()]"
+          [alt]="currentHouse.title + ' - imagem ' + (selectedImageIndex() + 1)"
+        />
+
+        <span class="fullscreen-chip">Tela cheia</span>
+      </button>
+
+      @if (galleryImages().length > 1) {
+        <div class="gallery-thumbs" aria-label="Miniaturas da galeria">
+          @for (image of galleryImages(); track $index) {
+            <button
+              type="button"
+              class="thumb"
+              [class.active]="selectedImageIndex() === $index"
+              (click)="selectImage($index)"
+            >
+              <img [src]="image" [alt]="currentHouse.title + ' miniatura ' + ($index + 1)" />
+            </button>
+          }
+        </div>
+      }
+
+      <p class="media-hint">Clique na imagem para abrir o carrossel em tela cheia.</p>
     </div>
 
     <div class="hero-copy spotlight-card" appSpotlightCard>
       <div class="hero-head">
         <div>
+          <p class="eyebrow">{{ auth.profileRoleLabel(auth.activeProfile().accountType) }}</p>
           <h1>{{ currentHouse.title }}</h1>
-          <p>{{ currentHouse.city }} • {{ currentHouse.neighborhood }} • {{ currentHouse.address }}</p>
+          <p>{{ currentHouse.city }} - {{ currentHouse.neighborhood }}</p>
+
+          @if (isVisitor()) {
+            <span class="address-note">Endereco completo liberado apos candidatura aprovada.</span>
+          } @else {
+            <span class="address-note">{{ currentHouse.address }}</span>
+          }
         </div>
+
         <strong>{{ currentHouse.lowestPrice | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
       </div>
 
       <p>{{ currentHouse.description }}</p>
+
+      <div class="hero-chips">
+        <span>{{ currentHouse.availableRooms }} vagas abertas</span>
+        <span>{{ currentHouse.rooms.length }} quartos</span>
+        @if (canSeeFinancials()) {
+          <span>{{ currentHouse.charges.length }} cobrancas</span>
+          <span>{{ currentHouse.payments.length }} pagamentos</span>
+        }
+      </div>
+
+      <div class="hero-actions">
+        @if (!isAuthenticated()) {
+          <button type="button" class="hero-action" (click)="goToLogin()">Entrar para me candidatar</button>
+        } @else if (isVisitor()) {
+          <a href="#application-section" class="hero-action">Quero me candidatar</a>
+        } @else if (isMember()) {
+          <span class="status-pill">Voce ja e morador</span>
+        } @else {
+          <span class="status-pill">Acesso administrativo</span>
+        }
+      </div>
 
       <div class="amenities">
         @for (amenity of currentHouse.amenities; track amenity) {
@@ -33,129 +86,343 @@
       <span>quartos cadastrados</span>
     </article>
     <article class="spotlight-card" appSpotlightCard>
-      <strong>{{ currentHouse.charges.length }}</strong>
-      <span>cobranças ativas</span>
+      <strong>{{ currentHouse.lowestPrice | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
+      <span>preco inicial</span>
     </article>
     <article class="spotlight-card" appSpotlightCard>
-      <strong>{{ currentHouse.payments.length }}</strong>
-      <span>pagamentos no histórico</span>
+      @if (canManageHouse()) {
+        <strong>{{ managedApplications().length }}</strong>
+        <span>candidaturas totais</span>
+      } @else if (isMember()) {
+        <strong>{{ visiblePayments().length }}</strong>
+        <span>pagamentos vinculados</span>
+      } @else {
+        <strong>Full</strong>
+        <span>carrossel em tela cheia</span>
+      }
     </article>
   </section>
 
   <section class="detail-grid">
     <div class="panel spotlight-card" appSpotlightCard>
       <div class="panel-head">
-        <h2>Quartos e vagas</h2>
-        <span>{{ currentHouse.availableRooms }} disponíveis</span>
+        <h2>{{ isVisitor() ? 'Vagas abertas' : 'Quartos e vagas' }}</h2>
+        <span>{{ visibleRooms().length }} visiveis</span>
       </div>
 
       <div class="room-list">
-        @for (room of currentHouse.rooms; track room.id) {
-          <label class="room-row" [class.unavailable]="!room.available">
+        @for (room of visibleRooms(); track room.id) {
+          <article class="room-row" [class.unavailable]="!room.available">
             <div>
-              <input
-                type="radio"
-                name="selectedRoom"
-                [value]="room.id"
-                [disabled]="!room.available"
-                (change)="selectedRoomId.set(room.id)"
-              />
-              <div>
+              <div class="room-copy">
                 <strong>{{ room.title }}</strong>
-                <p>{{ room.available ? 'Disponível agora' : 'Ocupado' }}</p>
+                <p>{{ room.available ? 'Disponivel agora' : 'Ocupado' }}</p>
               </div>
             </div>
+
             <strong>{{ room.price | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
-          </label>
-        }
-      </div>
-    </div>
-
-    <div class="panel spotlight-card" appSpotlightCard>
-      <div class="panel-head">
-        <h2>Aplicar para vaga</h2>
-        <span>{{ auth.activeProfile().accountType }}</span>
-      </div>
-
-      <div class="application-stepper">
-        <article class="step" [class.active]="applicationStepState(1) === 'active'" [class.done]="applicationStepState(1) === 'done'">
-          <strong>1</strong>
-          <div>
-            <span>Escolha a vaga</span>
-            <small>Selecione um quarto disponível.</small>
-          </div>
-        </article>
-
-        <article class="step" [class.active]="applicationStepState(2) === 'active'" [class.done]="applicationStepState(2) === 'done'">
-          <strong>2</strong>
-          <div>
-            <span>Apresente seu perfil</span>
-            <small>Explique entrada, rotina e prazo.</small>
-          </div>
-        </article>
-
-        <article class="step" [class.active]="applicationStepState(3) === 'active'" [class.done]="applicationStepState(3) === 'done'">
-          <strong>3</strong>
-          <div>
-            <span>Aguarde retorno</span>
-            <small>O gestor recebe a candidatura no painel.</small>
-          </div>
-        </article>
-      </div>
-
-      <label>
-        <span>Mensagem para o gestor</span>
-        <textarea
-          rows="5"
-          [value]="applicationMessage()"
-          (input)="applicationMessage.set($any($event.target).value)"
-          placeholder="Fale um pouco sobre entrada, rotina e prazo."
-        ></textarea>
-      </label>
-
-      <button type="button" (click)="submitApplication()">Enviar candidatura</button>
-
-      @if (feedback()) {
-        <p class="feedback">{{ feedback() }}</p>
-      }
-    </div>
-  </section>
-
-  <section class="detail-grid">
-    <div class="panel spotlight-card" appSpotlightCard>
-      <div class="panel-head">
-        <h2>Cobranças</h2>
-        <span>{{ currentHouse.charges.length }} itens</span>
-      </div>
-
-      <div class="charge-list">
-        @for (charge of currentHouse.charges; track charge.id) {
-          <article>
-            <strong>{{ charge.title }}</strong>
-            <span>{{ charge.amount | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
-            <small>Vencimento {{ charge.dueDate | date: 'dd/MM/yyyy' }}</small>
           </article>
         }
       </div>
     </div>
 
-    <div class="panel spotlight-card" appSpotlightCard>
-      <div class="panel-head">
-        <h2>Pagamentos</h2>
-        <span>{{ currentHouse.payments.length }} lançamentos</span>
-      </div>
+    @if (!isAuthenticated()) {
+      <div id="application-section" class="panel spotlight-card" appSpotlightCard>
+        <div class="panel-head">
+          <h2>Aplicar para a vaga</h2>
+          <span>Login necessario</span>
+        </div>
 
-      <div class="payment-list">
-        @for (payment of currentHouse.payments; track payment.id) {
-          <article>
+        <p class="empty-state">Voce pode explorar a casa livremente, mas precisa entrar com email e senha para enviar candidatura.</p>
+        <button type="button" class="primary-action" (click)="goToLogin()">Entrar para continuar</button>
+      </div>
+    } @else if (isVisitor()) {
+      <div id="application-section" class="panel spotlight-card" appSpotlightCard>
+        <div class="panel-head">
+          <h2>Aplicar para a vaga</h2>
+          <span>{{ applicationStepLabel() }}</span>
+        </div>
+
+        <div class="application-stepper">
+          <article class="step" [class.active]="applicationStepState(1) === 'active'" [class.done]="applicationStepState(1) === 'done'">
+            <strong>1</strong>
             <div>
-              <strong>{{ payment.profile?.name ?? payment.userId }}</strong>
-              <p>{{ payment.charge?.title ?? 'Cobrança manual' }}</p>
+              <span>Escolha a vaga</span>
+              <small>Selecione um quarto disponivel.</small>
             </div>
-            <app-payment-status [status]="payment.status" />
           </article>
+
+          <article class="step" [class.active]="applicationStepState(2) === 'active'" [class.done]="applicationStepState(2) === 'done'">
+            <strong>2</strong>
+            <div>
+              <span>Apresente seu perfil</span>
+              <small>Explique entrada, rotina e prazo.</small>
+            </div>
+          </article>
+
+          <article class="step" [class.active]="applicationStepState(3) === 'active'" [class.done]="applicationStepState(3) === 'done'">
+            <strong>3</strong>
+            <div>
+              <span>Aguarde retorno</span>
+              <small>Se houver interesse, o gestor entra em contato direto.</small>
+            </div>
+          </article>
+        </div>
+
+        <div class="room-selection">
+          <span>Escolha a vaga</span>
+          <div class="room-list room-picker">
+            @for (room of visibleRooms(); track room.id) {
+              <label class="room-row room-choice" [class.selected]="selectedRoomId() === room.id">
+                <div>
+                  <input
+                    type="radio"
+                    name="selectedRoom"
+                    [value]="room.id"
+                    [checked]="selectedRoomId() === room.id"
+                    (change)="selectedRoomId.set(room.id)"
+                  />
+                  <div class="room-copy">
+                    <strong>{{ room.title }}</strong>
+                    <p>Selecione para enviar candidatura.</p>
+                  </div>
+                </div>
+                <strong>{{ room.price | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
+              </label>
+            }
+          </div>
+        </div>
+
+        <label>
+          <span>Mensagem para o gestor</span>
+          <textarea
+            rows="5"
+            [value]="applicationMessage()"
+            (input)="applicationMessage.set($any($event.target).value)"
+            placeholder="Fale um pouco sobre entrada, rotina e prazo."
+          ></textarea>
+        </label>
+
+        <div class="contact-grid">
+          <label>
+            <span>Whatsapp ou telefone</span>
+            <input
+              type="text"
+              [value]="contactPhone()"
+              (input)="contactPhone.set($any($event.target).value)"
+              placeholder="+55 41 99999-0000"
+            />
+          </label>
+
+          <label>
+            <span>Instagram</span>
+            <input
+              type="text"
+              [value]="contactInstagram()"
+              (input)="contactInstagram.set($any($event.target).value)"
+              placeholder="@seuinstagram"
+            />
+          </label>
+        </div>
+
+        <button type="button" class="primary-action" (click)="submitApplication()" [disabled]="isSubmittingApplication()">
+          {{ isSubmittingApplication() ? 'Enviando...' : 'Enviar candidatura' }}
+        </button>
+
+        @if (applicationError()) {
+          <p class="feedback error-text">{{ applicationError() }}</p>
+        }
+
+        @if (feedback()) {
+          <p class="feedback">{{ feedback() }}</p>
+        }
+      </div>
+    } @else if (canManageHouse()) {
+      <div class="panel spotlight-card" appSpotlightCard>
+        <div class="panel-head">
+          <h2>Candidaturas</h2>
+          <span>{{ managedApplications().length }} totais</span>
+        </div>
+
+        <div class="hero-chips">
+          <span>{{ countApplicationsByStatus('submitted') }} enviadas</span>
+          <span>{{ countApplicationsByStatus('in_review') }} em analise</span>
+          <span>{{ countApplicationsByStatus('contact_soon') }} contato</span>
+          <span>{{ countApplicationsByStatus('rejected') }} rejeitadas</span>
+        </div>
+
+        <div class="application-list">
+          @if (managedApplications().length) {
+            @for (application of managedApplications(); track application.id) {
+              <article class="application-item">
+                <div>
+                  <strong>{{ application.profile?.name ?? application.userId }}</strong>
+                  <p>{{ application.profile?.email ?? 'Sem email' }}</p>
+                  <p>{{ application.roomId ?? 'Qualquer vaga' }}</p>
+                  <p>{{ application.message }}</p>
+
+                  <div class="contact-meta">
+                    <span>{{ application.contactPhone }}</span>
+                    @if (application.contactInstagram) {
+                      <span>{{ application.contactInstagram }}</span>
+                    }
+                  </div>
+
+                  <div class="status-actions">
+                    <span class="application-status" [ngClass]="application.status">
+                      {{ applicationStatusLabel(application.status) }}
+                    </span>
+                    <button type="button" (click)="updateApplicationStatus(application.id, 'in_review')">Em analise</button>
+                    <button type="button" (click)="updateApplicationStatus(application.id, 'contact_soon')">Vai entrar em contato</button>
+                    <button type="button" class="danger" (click)="updateApplicationStatus(application.id, 'rejected')">Rejeitar</button>
+                  </div>
+                </div>
+                <small>{{ application.statusUpdatedAt | date: 'dd/MM/yyyy' }}</small>
+              </article>
+            }
+          } @else {
+            <p class="empty-state">Nao ha candidaturas pendentes no momento.</p>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="panel spotlight-card" appSpotlightCard>
+        <div class="panel-head">
+          <h2>Seu acesso</h2>
+          <span>Morador</span>
+        </div>
+
+        <p class="empty-state">Acompanhe cobrancas e pagamentos vinculados ao seu perfil.</p>
+        <div class="summary-grid">
+          <article>
+            <strong>{{ visiblePayments().length }}</strong>
+            <span>pagamentos visiveis</span>
+          </article>
+          <article>
+            <strong>{{ visiblePaymentCountByStatus('pending') }}</strong>
+            <span>pendentes</span>
+          </article>
+          <article>
+            <strong>{{ visiblePaymentCountByStatus('paid') }}</strong>
+            <span>pagos</span>
+          </article>
+        </div>
+      </div>
+    }
+  </section>
+
+  @if (canSeeFinancials()) {
+    <section class="detail-grid">
+      <div class="panel spotlight-card" appSpotlightCard>
+        <div class="panel-head">
+          <h2>Cobrancas</h2>
+          <span>{{ visibleCharges().length }} itens</span>
+        </div>
+
+        <div class="charge-list">
+          @for (charge of visibleCharges(); track charge.id) {
+            <article>
+              <strong>{{ charge.title }}</strong>
+              <span>{{ charge.amount | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
+              <small>Vencimento {{ charge.dueDate | date: 'dd/MM/yyyy' }}</small>
+            </article>
+          }
+        </div>
+      </div>
+
+      <div class="panel spotlight-card" appSpotlightCard>
+        <div class="panel-head">
+          <h2>Pagamentos</h2>
+          <span>{{ visiblePayments().length }} lancamentos</span>
+        </div>
+
+        <div class="payment-list">
+          @for (payment of visiblePayments(); track payment.id) {
+            <article>
+              <div>
+                <strong>{{ payment.profile?.name ?? payment.userId }}</strong>
+                <p>{{ payment.charge?.title ?? 'Cobranca manual' }}</p>
+              </div>
+              <app-payment-status [status]="payment.status" />
+            </article>
+          }
+        </div>
+      </div>
+    </section>
+  }
+
+  @if (canManageHouse()) {
+    <section class="detail-grid detail-grid-wide">
+      <div class="panel spotlight-card" appSpotlightCard>
+        <div class="panel-head">
+          <h2>Moradores</h2>
+          <span>{{ currentHouse.members.length }} pessoas</span>
+        </div>
+
+        <app-member-list [members]="currentHouse.members" />
+      </div>
+
+      <div class="panel spotlight-card" appSpotlightCard>
+        <div class="panel-head">
+          <h2>Visao administrativa</h2>
+          <span>{{ auth.activeProfile().accountType === 'super-admin' ? 'Global' : 'Casa' }}</span>
+        </div>
+
+        <div class="summary-grid">
+          <article>
+            <strong>{{ currentHouse.availableRooms }}</strong>
+            <span>vagas abertas</span>
+          </article>
+          <article>
+            <strong>{{ currentHouse.applications.length }}</strong>
+            <span>candidaturas totais</span>
+          </article>
+          <article>
+            <strong>{{ currentHouse.payments.length }}</strong>
+            <span>pagamentos totais</span>
+          </article>
+        </div>
+
+        @if (isSuperAdmin()) {
+          <div class="admin-meta">
+            <span>House ID: {{ currentHouse.id }}</span>
+            <span>Owner ID: {{ currentHouse.ownerId }}</span>
+            <span>Criado em: {{ currentHouse.createdAt | date: 'dd/MM/yyyy' }}</span>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  @if (imageViewerOpen()) {
+    <div class="gallery-overlay" role="dialog" aria-modal="true" (click)="closeGallery()">
+      <div class="gallery-modal" (click)="$event.stopPropagation()">
+        <button type="button" class="gallery-close" aria-label="Fechar carrossel" (click)="closeGallery()">X</button>
+
+        <div class="gallery-stage">
+          <button type="button" class="gallery-nav" aria-label="Imagem anterior" (click)="previousImage()">Prev</button>
+          <img
+            [src]="galleryImages()[selectedImageIndex()]"
+            [alt]="currentHouse.title + ' - imagem ampliada ' + (selectedImageIndex() + 1)"
+          />
+          <button type="button" class="gallery-nav" aria-label="Proxima imagem" (click)="nextImage()">Next</button>
+        </div>
+
+        @if (galleryImages().length > 1) {
+          <div class="gallery-strip">
+            @for (image of galleryImages(); track $index) {
+              <button
+                type="button"
+                class="thumb"
+                [class.active]="selectedImageIndex() === $index"
+                (click)="selectImage($index)"
+              >
+                <img [src]="image" [alt]="currentHouse.title + ' miniatura ampliada ' + ($index + 1)" />
+              </button>
+            }
+          </div>
         }
       </div>
     </div>
-  </section>
+  }
 }

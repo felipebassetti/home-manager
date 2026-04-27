@@ -2,9 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { CountUpComponent } from '../../components/count-up/count-up.component';
 import { HouseCardComponent } from '../../components/house-card/house-card.component';
-import { SpotlightCardDirective } from '../../directives/spotlight-card.directive';
 import { curitibaNeighborhoods } from '../../data/curitiba-neighborhoods';
 import { ApiService } from '../../services/api.service';
 import type { HouseSummary } from '../../models/domain.models';
@@ -13,7 +11,7 @@ import { formatCurrencyInput, parseCurrencyInput } from '../../utils/currency-ma
 
 @Component({
   selector: 'app-home-page',
-  imports: [CommonModule, FormsModule, RouterLink, CountUpComponent, SpotlightCardDirective, HouseCardComponent],
+  imports: [CommonModule, FormsModule, RouterLink, HouseCardComponent],
   templateUrl: './home.page.html',
   styleUrl: './home.page.css'
 })
@@ -27,14 +25,9 @@ export class HomePageComponent implements OnInit {
   searchNeighborhoods: string[] = [];
   searchMaxPriceInput = '';
   isNeighborhoodMenuOpen = false;
-  readonly peopleWithHomeTarget = 120;
 
   ngOnInit() {
     this.api.listHouses().subscribe((houses) => this.houses.set(houses.slice(0, 3)));
-  }
-
-  totalAvailableRooms() {
-    return this.houses().reduce((total, house) => total + house.availableRooms, 0);
   }
 
   onPriceInput(event: Event) {

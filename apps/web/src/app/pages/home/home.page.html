@@ -2,8 +2,8 @@
   <div class="discover-copy">
     <span class="eyebrow">Curitiba</span>
     <h1>
-      Encontre vagas por
-      <span class="gradient-text">bairro e preço</span>.
+      Encontre sua moradia por
+      <span class="gradient-text">bairro e preco</span>.
     </h1>
     <p>Busque direto no mercado de Curitiba com um fluxo curto e simples.</p>
   </div>
@@ -38,7 +38,7 @@
       </div>
 
       <label id="bairros">
-        <span>Preço máximo</span>
+        <span>Preco maximo</span>
         <input
           type="text"
           name="maxPrice"
@@ -51,29 +51,13 @@
 
       <button type="submit">Pesquisar</button>
     </form>
-
-    <div class="quick-stats" aria-label="Resumo rápido">
-      <article class="quick-stat spotlight-card" appSpotlightCard>
-        <span>Imóveis disponíveis</span>
-        <strong>
-          <app-count-up [value]="totalAvailableRooms()" prefix="+ de " />
-        </strong>
-      </article>
-
-      <article class="quick-stat spotlight-card" appSpotlightCard>
-        <span>Pessoas com lar</span>
-        <strong>
-          <app-count-up [value]="peopleWithHomeTarget" prefix="+ de " />
-        </strong>
-      </article>
-    </div>
   </div>
 </section>
 
 <section class="section-head">
   <div>
     <h2>Casas em destaque</h2>
-    <p>Uma seleção inicial para entrar no fluxo de busca e comparar opções rapidamente.</p>
+    <p>Uma selecao inicial para entrar no fluxo de busca e comparar opcoes rapidamente.</p>
   </div>
   <a routerLink="/houses">Ver todas</a>
 </section>

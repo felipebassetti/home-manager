@@ -1,0 +1,45 @@
+<section class="login-shell">
+  <article class="login-card spotlight-card" appSpotlightCard>
+    <div class="login-copy">
+      <span class="eyebrow">Acesse sua conta</span>
+      <h1>Entre para enviar e acompanhar candidaturas.</h1>
+      <p>No modo local, use qualquer email e a senha padrao <strong>123456</strong>.</p>
+    </div>
+
+    <form class="login-form" (ngSubmit)="submit()">
+      <label>
+        <span>Email</span>
+        <input
+          type="email"
+          name="email"
+          autocomplete="email"
+          [value]="email()"
+          (input)="email.set($any($event.target).value)"
+          placeholder="voce@email.com"
+          required
+        />
+      </label>
+
+      <label>
+        <span>Senha</span>
+        <input
+          type="password"
+          name="password"
+          autocomplete="current-password"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)"
+          placeholder="123456"
+          required
+        />
+      </label>
+
+      <button type="submit" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Entrando...' : 'Entrar' }}
+      </button>
+
+      @if (errorMessage()) {
+        <p class="error-message">{{ errorMessage() }}</p>
+      }
+    </form>
+  </article>
+</section>
