@@ -383,6 +383,64 @@
   padding: 20px 20px 40px;
 }
 
+.site-footer {
+  margin-top: 28px;
+  border-top: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(8px);
+}
+
+.footer-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.9fr);
+  gap: 32px;
+  padding: 28px 20px 36px;
+}
+
+.footer-brand {
+  display: grid;
+  gap: 10px;
+}
+
+.footer-brand strong {
+  font-size: 1rem;
+}
+
+.footer-brand p {
+  margin: 0;
+  max-width: 320px;
+  color: var(--text-muted);
+}
+
+.footer-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.footer-column {
+  display: grid;
+  gap: 10px;
+}
+
+.footer-column h2 {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text);
+}
+
+.footer-column a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.94rem;
+}
+
+.footer-column a:hover {
+  color: var(--accent-strong);
+}
+
 .context-strip {
   display: grid;
   gap: 4px;
@@ -417,6 +475,11 @@
   .topbar {
     padding-inline: 16px;
   }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+    padding-inline: 16px;
+  }
 }
 
 @media (max-width: 760px) {
@@ -440,6 +503,11 @@
 
   .account-panel {
     width: 100%;
+  }
+
+  .footer-columns {
+    grid-template-columns: 1fr;
+    gap: 18px;
   }
 }
 
