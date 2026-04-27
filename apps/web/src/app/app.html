@@ -48,7 +48,18 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <strong>Republic House</strong>
+        <a routerLink="/" class="footer-brand-link" aria-label="Flashsharing">
+          @if (!logoFallback()) {
+            <img
+              class="footer-brand-logo"
+              [src]="logoSrc"
+              alt="Flashsharing"
+              (error)="logoFallback.set(true)"
+            />
+          } @else {
+            <span class="footer-brand-text">Flashsharing</span>
+          }
+        </a>
         <p>Plataforma para encontrar, anunciar e gerir casas compartilhadas.</p>
       </div>
 
@@ -63,8 +74,6 @@
         <section class="footer-column">
           <h2>Produto</h2>
           <a href="#">Marketplace</a>
-          <a href="#">Gestao</a>
-          <a href="#">Pagamentos</a>
         </section>
 
         <section class="footer-column">
