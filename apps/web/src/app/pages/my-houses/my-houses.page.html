@@ -1,0 +1,70 @@
+<section class="manager-head">
+  <div>
+    <span>Gestao</span>
+    <h1>Minhas casas publicadas</h1>
+    <p>Controle as casas que voce publicou, acompanhe vagas, candidaturas e operacao do dia a dia.</p>
+  </div>
+
+  <a routerLink="/house-manage">Cadastrar casa</a>
+</section>
+
+<section class="summary-row">
+  <article>
+    <strong>{{ visibleHouses().length }}</strong>
+    <span>casas publicadas</span>
+  </article>
+  <article>
+    <strong>{{ totalOpenRooms() }}</strong>
+    <span>vagas abertas</span>
+  </article>
+  <article>
+    <strong>{{ totalApplications() }}</strong>
+    <span>candidaturas</span>
+  </article>
+  <article>
+    <strong>{{ totalPendingPayments() }}</strong>
+    <span>pagamentos a acompanhar</span>
+  </article>
+</section>
+
+@if (isLoading()) {
+  <section class="empty-panel">Carregando casas...</section>
+} @else if (!visibleHouses().length) {
+  <section class="empty-panel">
+    <strong>Nenhuma casa publicada</strong>
+    <p>Cadastre a primeira casa para aparecer no marketplace e comecar a receber candidaturas.</p>
+    <a routerLink="/house-manage">Cadastrar casa</a>
+  </section>
+} @else {
+  <section class="house-admin-list">
+    @for (house of visibleHouses(); track house.id) {
+      <article class="managed-house spotlight-card" appSpotlightCard>
+        <img [src]="house.imageUrl" [alt]="house.title" />
+
+        <div class="house-content">
+          <div class="house-title">
+            <div>
+              <h2>{{ house.title }}</h2>
+              <p>{{ house.city }} - {{ house.neighborhood }}</p>
+            </div>
+            <strong>{{ house.lowestPrice | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
+          </div>
+
+          <p>{{ house.description }}</p>
+
+          <div class="metric-strip">
+            <span>{{ house.availableRooms }} vagas abertas</span>
+            <span>{{ house.rooms.length }} quartos</span>
+            <span>{{ house.applications.length }} candidaturas</span>
+            <span>{{ house.members.length }} moradores</span>
+          </div>
+
+          <div class="house-actions">
+            <a [routerLink]="['/houses', house.id]">Abrir detalhe</a>
+            <a routerLink="/payments">Ver pagamentos</a>
+          </div>
+        </div>
+      </article>
+    }
+  </section>
+}

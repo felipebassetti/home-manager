@@ -1,0 +1,156 @@
+.manager-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.manager-head span {
+  color: var(--accent-strong);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.manager-head h1,
+.manager-head p {
+  margin: 0;
+}
+
+.manager-head p,
+.house-title p,
+.managed-house p,
+.summary-row span,
+.empty-panel p {
+  color: var(--text-muted);
+}
+
+.manager-head a,
+.empty-panel a,
+.house-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.summary-row article,
+.empty-panel,
+.managed-house {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.summary-row article {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+}
+
+.summary-row strong {
+  font-size: 1.55rem;
+}
+
+.empty-panel {
+  display: grid;
+  gap: 10px;
+  padding: 22px;
+}
+
+.empty-panel a {
+  width: fit-content;
+}
+
+.house-admin-list {
+  display: grid;
+  gap: 14px;
+}
+
+.managed-house {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 18px;
+  overflow: hidden;
+  padding: 14px;
+}
+
+.managed-house img {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.house-content {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.house-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.house-title h2,
+.house-title p,
+.managed-house p {
+  margin: 0;
+}
+
+.metric-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.metric-strip span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.house-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.house-actions a:last-child {
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+@media (max-width: 900px) {
+  .manager-head,
+  .house-title {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .summary-row,
+  .managed-house {
+    grid-template-columns: 1fr;
+  }
+}

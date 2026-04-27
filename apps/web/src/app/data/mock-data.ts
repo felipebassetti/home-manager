@@ -236,7 +236,11 @@ export const findMockProfileByEmail = (email: string) => {
   return mockProfiles.find((profile) => profile.email.toLowerCase() === normalizedEmail);
 };
 
-export const registerMockVisitorProfile = (email: string, name?: string): ActiveProfile => {
+export const registerMockProfile = (
+  email: string,
+  name?: string,
+  accountType: AccountType = 'visitor'
+): ActiveProfile => {
   const normalizedEmail = email.trim().toLowerCase();
   const profileName =
     name?.trim() ||
@@ -258,11 +262,15 @@ export const registerMockVisitorProfile = (email: string, name?: string): Active
 
   const activeVisitor = {
     ...baseProfile,
-    accountType: 'visitor' as const
+    accountType
   };
 
   mockProfiles.push(activeVisitor);
   return deepClone(activeVisitor);
+};
+
+export const registerMockVisitorProfile = (email: string, name?: string): ActiveProfile => {
+  return registerMockProfile(email, name, 'visitor');
 };
 
 export const listMockHouses = (filters: HouseFilters = {}): HouseSummary[] => {

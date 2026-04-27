@@ -5,6 +5,8 @@
 
 .shell {
   position: relative;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   isolation: isolate;
   --page-width: min(80vw, calc(100vw - 32px));
@@ -172,15 +174,17 @@
 }
 
 .page-frame {
+  flex: 1 0 auto;
   width: var(--page-width);
   max-width: var(--page-width);
   margin: 0 auto;
-  padding: 12px var(--page-inline) 40px;
+  padding: calc(var(--topbar-offset) + 12px) var(--page-inline) 40px;
   scroll-padding-top: calc(var(--topbar-offset) + 12px);
 }
 
 .site-footer {
-  margin-top: 28px;
+  flex-shrink: 0;
+  margin-top: 0;
   border-top: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(8px);

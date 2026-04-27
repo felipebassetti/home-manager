@@ -1,8 +1,10 @@
 import { Injectable, computed, signal } from '@angular/core';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type User } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
-import { findMockProfileByEmail, mockProfiles, registerMockVisitorProfile } from '../data/mock-data';
+import { findMockProfileByEmail, mockProfiles, registerMockProfile } from '../data/mock-data';
 import type { AccountType, ActiveProfile } from '../models/domain.models';
+
+type PublicAccountType = Extract<AccountType, 'visitor' | 'house-admin'>;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -34,7 +36,7 @@ export class AuthService {
     if (type === 'member') {
       return 'Morador';
     }
-    return 'Visitante';
+    return 'Candidato';
   });
 
   readonly canAccessManagement = computed(() => {
@@ -51,6 +53,25 @@ export class AuthService {
   private readonly supabase = this.isSupabaseConfigured
     ? createClient(environment.supabaseUrl, environment.supabaseAnonKey)
     : null;
+
+  constructor() {
+    if (!this.supabase) {
+      return;
+    }
+
+    void this.restoreSupabaseSession();
+    this.supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session?.user) {
+        this.sessionProfile.set(null);
+        this.clearStoredProfile();
+        return;
+      }
+
+      const profile = this.profileFromSupabaseUser(session.user);
+      this.sessionProfile.set(profile);
+      this.storeProfile(profile);
+    });
+  }
 
   setActiveProfile(profileId: string) {
     if (!this.isAuthenticated()) {
@@ -77,10 +98,10 @@ export class AuthService {
       return 'Morador';
     }
 
-    return 'Visitante';
+    return 'Candidato';
   }
 
-  async signInWithPassword(email: string, password: string) {
+  async signInWithPassword(email: string, password: string, accountType: PublicAccountType = 'visitor') {
     if (!this.supabase) {
       if (password !== '123456') {
         return {
@@ -90,7 +111,7 @@ export class AuthService {
       }
 
       const existingProfile = findMockProfileByEmail(email);
-      const profile = existingProfile ?? registerMockVisitorProfile(email);
+      const profile = existingProfile ?? registerMockProfile(email, undefined, accountType);
       this.sessionProfile.set(profile);
       this.storeProfile(profile);
 
@@ -100,13 +121,45 @@ export class AuthService {
     const result = await this.supabase.auth.signInWithPassword({ email, password });
 
     if (!result.error && result.data.user) {
-      const existingProfile = findMockProfileByEmail(result.data.user.email ?? '');
-      const profile = existingProfile ?? registerMockVisitorProfile(result.data.user.email ?? '');
-      this.sessionProfile.set(profile);
-      this.storeProfile(profile);
+      await this.syncSupabaseProfile(result.data.user, accountType);
     }
 
     return result;
+  }
+
+  async signUpProfile(name: string, email: string, password: string, accountType: PublicAccountType = 'visitor') {
+    if (!this.supabase) {
+      if (password.length < 6) {
+        return {
+          mock: true,
+          error: { message: 'Use uma senha com pelo menos 6 caracteres.' }
+        };
+      }
+
+      const profile = registerMockProfile(email, name, accountType);
+      this.sessionProfile.set(profile);
+      this.storeProfile(profile);
+
+      return { mock: true, user: profile };
+    }
+
+    const result = await this.supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name, account_type: accountType }
+      }
+    });
+
+    if (!result.error && result.data.user) {
+      await this.syncSupabaseProfile(result.data.user, accountType);
+    }
+
+    return result;
+  }
+
+  async signUpVisitor(name: string, email: string, password: string) {
+    return this.signUpProfile(name, email, password, 'visitor');
   }
 
   async signOut() {
@@ -153,5 +206,97 @@ export class AuthService {
     }
 
     localStorage.removeItem(this.storageKey);
+  }
+
+  private async restoreSupabaseSession() {
+    if (!this.supabase) {
+      return;
+    }
+
+    const { data } = await this.supabase.auth.getSession();
+    if (data.session?.user) {
+      const profile = this.profileFromSupabaseUser(data.session.user);
+      this.sessionProfile.set(profile);
+      this.storeProfile(profile);
+      return;
+    }
+
+    this.sessionProfile.set(null);
+    this.clearStoredProfile();
+  }
+
+  private async syncSupabaseProfile(user: User, fallbackAccountType: PublicAccountType) {
+    if (!this.supabase) {
+      return;
+    }
+
+    let syncedUser = user;
+    if (!this.hasAccountTypeMetadata(user)) {
+      const { data } = await this.supabase.auth.updateUser({
+        data: {
+          ...(user.user_metadata ?? {}),
+          account_type: fallbackAccountType
+        }
+      });
+
+      syncedUser = data.user ?? user;
+    }
+
+    const profile = this.profileFromSupabaseUser(syncedUser, fallbackAccountType);
+    this.sessionProfile.set(profile);
+    this.storeProfile(profile);
+  }
+
+  private profileFromSupabaseUser(user: User, fallbackAccountType: AccountType = 'visitor'): ActiveProfile {
+    const metadata = user.user_metadata ?? {};
+    const email = user.email ?? '';
+    const name = this.readMetadataString(metadata['name']) || this.readMetadataString(metadata['full_name']) || this.nameFromEmail(email);
+
+    return {
+      id: user.id,
+      name,
+      email,
+      accountType: this.normalizeAccountType(metadata['account_type'] ?? metadata['accountType'] ?? metadata['role'], fallbackAccountType)
+    };
+  }
+
+  private hasAccountTypeMetadata(user: User) {
+    const metadata = user.user_metadata ?? {};
+    return Boolean(metadata['account_type'] ?? metadata['accountType'] ?? metadata['role']);
+  }
+
+  private normalizeAccountType(value: unknown, fallback: AccountType): AccountType {
+    if (value === 'house-admin' || value === 'gestor' || value === 'manager') {
+      return 'house-admin';
+    }
+
+    if (value === 'super-admin') {
+      return 'super-admin';
+    }
+
+    if (value === 'member' || value === 'morador') {
+      return 'member';
+    }
+
+    if (value === 'visitor' || value === 'candidate' || value === 'candidato') {
+      return 'visitor';
+    }
+
+    return fallback;
+  }
+
+  private readMetadataString(value: unknown) {
+    return typeof value === 'string' ? value.trim() : '';
+  }
+
+  private nameFromEmail(email: string) {
+    return (
+      email
+        .split('@')[0]
+        .split(/[._-]/)
+        .filter(Boolean)
+        .map((part) => part[0]?.toUpperCase() + part.slice(1))
+        .join(' ') || 'Usuario'
+    );
   }
 }

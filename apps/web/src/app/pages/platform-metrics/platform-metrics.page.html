@@ -1,0 +1,69 @@
+<section class="metrics-head">
+  <div>
+    <span>Super admin</span>
+    <h1>Metricas da plataforma</h1>
+    <p>Visao consolidada de oferta, ocupacao, candidaturas e cobrancas em todas as casas.</p>
+  </div>
+</section>
+
+@if (isLoading()) {
+  <section class="empty-panel">Carregando metricas...</section>
+} @else {
+  <section class="metric-grid">
+    <article>
+      <strong>{{ houses().length }}</strong>
+      <span>casas cadastradas</span>
+    </article>
+    <article>
+      <strong>{{ totalOpenRooms() }}/{{ totalRooms() }}</strong>
+      <span>vagas abertas</span>
+    </article>
+    <article>
+      <strong>{{ totalMembers() }}</strong>
+      <span>moradores ativos</span>
+    </article>
+    <article>
+      <strong>{{ totalApplications() }}</strong>
+      <span>candidaturas totais</span>
+    </article>
+    <article>
+      <strong>{{ applicationsInReview() }}</strong>
+      <span>candidaturas em analise</span>
+    </article>
+    <article>
+      <strong>{{ grossCharges() | currency: 'BRL' : 'symbol' : '1.0-0' }}</strong>
+      <span>cobrancas emitidas</span>
+    </article>
+    <article>
+      <strong>{{ paymentsByStatus('paid') }}</strong>
+      <span>pagamentos pagos</span>
+    </article>
+    <article>
+      <strong>{{ paymentsByStatus('overdue') }}</strong>
+      <span>pagamentos atrasados</span>
+    </article>
+  </section>
+
+  <section class="platform-table">
+    <header>
+      <h2>Casas na plataforma</h2>
+      <span>{{ houses().length }} registros</span>
+    </header>
+
+    <div class="table-list">
+      @for (house of houses(); track house.id) {
+        <article>
+          <div>
+            <strong>{{ house.title }}</strong>
+            <p>{{ house.city }} - {{ house.neighborhood }}</p>
+          </div>
+
+          <span>{{ house.availableRooms }} vagas</span>
+          <span>{{ house.applications.length }} candidaturas</span>
+          <span>{{ house.payments.length }} pagamentos</span>
+          <a [routerLink]="['/houses', house.id]">Auditar</a>
+        </article>
+      }
+    </div>
+  </section>
+}

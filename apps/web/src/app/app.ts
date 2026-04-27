@@ -20,7 +20,7 @@ export class App implements AfterViewInit, OnDestroy {
   protected readonly logoFallback = signal(false);
   protected readonly topbarHeight = signal(108);
 
-  private readonly managementRoutes = ['/dashboard', '/house-manage', '/payments'];
+  private readonly managementRoutes = ['/dashboard', '/my-houses', '/admin', '/house-manage', '/payments'];
   private readonly router = inject(Router);
   private resizeObserver?: ResizeObserver;
 
@@ -46,9 +46,19 @@ export class App implements AfterViewInit, OnDestroy {
   }
 
   protected navItems() {
-    return this.auth.canTrackApplications()
-      ? [...this.baseNavItems, { href: '/applications', label: 'Candidaturas' }]
-      : this.baseNavItems;
+    const accountType = this.auth.activeProfile().accountType;
+
+    if (this.auth.canAccessManagement()) {
+      return accountType === 'super-admin'
+        ? [...this.baseNavItems, { href: '/admin', label: 'Metricas' }, { href: '/my-houses', label: 'Casas' }]
+        : [...this.baseNavItems, { href: '/my-houses', label: 'Minhas casas' }];
+    }
+
+    if (this.auth.canTrackApplications()) {
+      return [...this.baseNavItems, { href: '/applications', label: 'Candidaturas' }];
+    }
+
+    return this.baseNavItems;
   }
 
   protected isAuthenticated() {
@@ -83,7 +93,11 @@ export class App implements AfterViewInit, OnDestroy {
 
   protected sectionLabel() {
     if (this.isManagementRoute()) {
-      return this.auth.activeProfile().accountType === 'super-admin' ? 'Area global' : 'Area de gestao';
+      if (this.router.url.startsWith('/admin')) {
+        return 'Area global';
+      }
+
+      return 'Area de gestao';
     }
 
     if (this.router.url.startsWith('/applications')) {
@@ -99,7 +113,7 @@ export class App implements AfterViewInit, OnDestroy {
 
   protected sectionDescription() {
     if (this.isManagementRoute()) {
-      return this.auth.activeProfile().accountType === 'super-admin'
+      return this.router.url.startsWith('/admin')
         ? 'Visao consolidada de casas, cobranca e operacao em multiplos imoveis.'
         : 'Funcoes administrativas liberadas para o gestor da casa.';
     }
@@ -109,7 +123,7 @@ export class App implements AfterViewInit, OnDestroy {
     }
 
     if (this.router.url.startsWith('/login')) {
-      return 'Entre com email e senha para enviar candidatura e acompanhar seu andamento.';
+      return 'Entre como candidato para aplicar em vagas ou como gestor para administrar suas casas.';
     }
 
     return 'Busca, comparacao e candidatura para vagas em casas compartilhadas.';
