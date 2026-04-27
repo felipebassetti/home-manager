@@ -200,8 +200,26 @@
   gap: 10px;
 }
 
-.footer-brand strong {
-  font-size: 1rem;
+.footer-brand-link {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: min(240px, 100%);
+  text-decoration: none;
+}
+
+.footer-brand-logo {
+  display: block;
+  width: auto;
+  height: 48px;
+  object-fit: contain;
+}
+
+.footer-brand-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.02em;
 }
 
 .footer-brand p {
