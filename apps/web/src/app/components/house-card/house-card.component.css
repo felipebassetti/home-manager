@@ -12,6 +12,8 @@
   --spotlight-x: 50%;
   --spotlight-y: 50%;
   --spotlight-opacity: 0;
+  color: inherit;
+  text-decoration: none;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,

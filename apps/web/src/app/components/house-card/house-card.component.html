@@ -1,4 +1,4 @@
-<article class="house-card spotlight-card" appSpotlightCard>
+<a class="house-card spotlight-card" appSpotlightCard [routerLink]="['/houses', house.id]">
   <div class="image-frame">
     <img [src]="house.imageUrl" [alt]="house.title" />
     <span class="listing-badge">{{ house.availableRooms }} vagas</span>
@@ -20,6 +20,6 @@
       <span>{{ house.availableRooms }} disponiveis</span>
     </div>
 
-    <a [routerLink]="['/houses', house.id]" class="action">Ver detalhes</a>
+    <span class="action">Ver detalhes</span>
   </div>
-</article>
+</a>
