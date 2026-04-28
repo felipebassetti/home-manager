@@ -80,6 +80,7 @@
 .home-search {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.7fr) auto;
+  align-items: stretch;
   gap: 10px;
   width: 100%;
   padding: 10px;
@@ -91,18 +92,25 @@
     var(--shadow-md);
 }
 
-.home-search label,
-.dropdown-field {
+.home-search > label,
+.home-search > .dropdown-field {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   gap: 4px;
+  min-height: 68px;
   padding: 8px 12px;
   border-radius: 16px;
   background: var(--surface-subtle);
   position: relative;
 }
 
-#bairros {
-  display: grid;
+.search-field {
+  align-self: stretch;
+}
+
+.search-field > span:first-child {
+  line-height: 1;
 }
 
 .home-search span {
@@ -113,6 +121,7 @@
 }
 
 .home-search input {
+  width: 100%;
   min-height: 28px;
   padding: 0;
   border: 0;
@@ -121,6 +130,9 @@
 }
 
 .dropdown-trigger {
+  display: flex;
+  align-items: center;
+  width: 100%;
   min-height: 28px;
   padding: 0;
   border: 0;

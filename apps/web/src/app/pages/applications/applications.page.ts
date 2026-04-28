@@ -20,6 +20,7 @@ export class ApplicationsPageComponent implements OnInit {
 
   protected readonly activeFilter = signal<ApplicationFilter>('all');
   protected readonly applications = signal<ApplicationListItem[]>([]);
+  protected readonly error = signal('');
 
   protected readonly visibleApplications = computed(() => {
     const filter = this.activeFilter();
@@ -32,8 +33,13 @@ export class ApplicationsPageComponent implements OnInit {
       return;
     }
 
-    this.api.listApplicationsByUser(this.auth.activeProfile().id).subscribe((applications) => {
-      this.applications.set(applications);
+    this.api.listApplicationsByUser(this.auth.activeProfile().id).subscribe({
+      next: (applications) => {
+        this.applications.set(applications);
+      },
+      error: () => {
+        this.error.set('Nao foi possivel carregar suas candidaturas agora.');
+      }
     });
   }
 

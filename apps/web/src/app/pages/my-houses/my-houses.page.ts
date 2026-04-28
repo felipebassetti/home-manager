@@ -18,6 +18,9 @@ export class MyHousesPageComponent implements OnInit {
 
   readonly houses = signal<HouseDetail[]>([]);
   readonly isLoading = signal(true);
+  readonly isSeeding = signal(false);
+  readonly seedFeedback = signal('');
+  readonly seedError = signal('');
 
   readonly visibleHouses = computed(() => {
     const profile = this.auth.activeProfile();
@@ -38,10 +41,38 @@ export class MyHousesPageComponent implements OnInit {
   );
 
   ngOnInit() {
+    this.loadHouses();
+  }
+
+  seedDemoHouses() {
+    if (this.isSeeding()) {
+      return;
+    }
+
+    this.isSeeding.set(true);
+    this.seedFeedback.set('');
+    this.seedError.set('');
+
+    this.api.seedDemoHouses(this.auth.activeProfile().id).subscribe({
+      next: (createdHouses) => {
+        this.seedFeedback.set(`${createdHouses.length} casas teste foram criadas para sua conta.`);
+        this.loadHouses();
+      },
+      error: () => {
+        this.seedError.set('Nao foi possivel criar as casas teste agora.');
+        this.isSeeding.set(false);
+      }
+    });
+  }
+
+  private loadHouses() {
+    this.isLoading.set(true);
+
     this.api.listHouses().subscribe((houses) => {
       if (!houses.length) {
         this.houses.set([]);
         this.isLoading.set(false);
+        this.isSeeding.set(false);
         return;
       }
 
@@ -58,6 +89,7 @@ export class MyHousesPageComponent implements OnInit {
           if (remaining === 0) {
             this.houses.set(details.sort((left, right) => right.createdAt.localeCompare(left.createdAt)));
             this.isLoading.set(false);
+            this.isSeeding.set(false);
           }
         });
       });

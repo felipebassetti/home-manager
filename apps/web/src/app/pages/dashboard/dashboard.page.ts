@@ -5,6 +5,7 @@ import { MemberListComponent } from '../../components/member-list/member-list.co
 import { SpotlightCardDirective } from '../../directives/spotlight-card.directive';
 import type { HouseDetail } from '../../models/domain.models';
 import { ApiService } from '../../services/api.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -14,6 +15,7 @@ import { ApiService } from '../../services/api.service';
 })
 export class DashboardPageComponent implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly auth = inject(AuthService);
 
   readonly managedHouses = signal<HouseDetail[]>([]);
 
@@ -30,7 +32,10 @@ export class DashboardPageComponent implements OnInit {
 
           remaining -= 1;
           if (remaining === 0) {
-            this.managedHouses.set(details);
+            const profile = this.auth.activeProfile();
+            this.managedHouses.set(
+              profile.accountType === 'super-admin' ? details : details.filter((detail) => detail.ownerId === profile.id)
+            );
           }
         });
       });

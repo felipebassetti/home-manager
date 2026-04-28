@@ -11,6 +11,12 @@
     <a routerLink="/login">Fazer login</a>
   </section>
 } @else {
+  @if (error()) {
+    <section class="empty-panel spotlight-card" appSpotlightCard>
+      <strong>{{ error() }}</strong>
+    </section>
+  }
+
   <section class="filter-row">
     @for (filter of ['all', 'submitted', 'in_review', 'contact_soon', 'rejected']; track filter) {
       <button type="button" [class.active]="activeFilter() === filter" (click)="activeFilter.set($any(filter))">

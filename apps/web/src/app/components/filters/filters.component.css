@@ -1,41 +1,68 @@
 .filters {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.1fr) minmax(0, 0.7fr) auto;
+  align-items: stretch;
   gap: 10px;
+  width: 100%;
   padding: 10px;
   border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--surface);
-  box-shadow: var(--shadow-md);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.78),
+    var(--shadow-md);
 }
 
-.filters label,
-.dropdown-field {
+.filters > label,
+.filters > .dropdown-field {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   gap: 4px;
-  padding: 8px 14px;
-  border-radius: 999px;
+  min-height: 68px;
+  padding: 8px 12px;
+  border-radius: 16px;
+  background: var(--surface-subtle);
   position: relative;
 }
 
-#bairros-marketplace {
-  display: grid;
-}
-.filters span {
-  color: var(--text);
-  font-size: 0.78rem;
-  font-weight: 700;
+.search-field {
+  align-self: stretch;
 }
 
-.filters input,
-.dropdown-trigger {
+.search-field > span:first-child {
+  line-height: 1;
+}
+
+.filters span {
+  color: var(--text-soft);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.filters input {
+  width: 100%;
   min-height: 30px;
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--text-muted);
+  color: var(--text);
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 30px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
   text-align: left;
   cursor: pointer;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .dropdown-trigger span {
@@ -58,7 +85,7 @@
   padding: 12px;
   overflow-y: auto;
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 16px;
   background: var(--surface);
   box-shadow: var(--shadow-md);
 }
@@ -81,6 +108,7 @@
   gap: 16px;
   padding: 4px 0;
   border-radius: 0;
+  background: transparent;
 }
 
 .checkbox-option input {
@@ -102,13 +130,13 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 10px;
 }
 
 .actions button {
-  min-height: 46px;
+  min-height: 52px;
   padding: 0 18px;
-  border-radius: 999px;
+  border-radius: 16px;
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
   color: #fff;
   font-weight: 700;
@@ -116,26 +144,28 @@
 }
 
 .actions .secondary {
-  background: var(--surface-muted);
+  background: var(--surface-subtle);
   color: var(--text);
 }
 
-@media (max-width: 980px) {
+@media (max-width: 1100px) {
   .filters {
     grid-template-columns: 1fr;
     border-radius: 24px;
-    padding: 14px;
-  }
-
-  .filters label {
-    padding-inline: 4px;
   }
 
   .actions {
-    justify-content: stretch;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .actions button {
     width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  .actions {
+    grid-template-columns: 1fr;
   }
 }

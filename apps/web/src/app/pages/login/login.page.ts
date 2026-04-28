@@ -41,14 +41,17 @@ export class LoginPageComponent {
   protected acceptedTerms = signal(false);
   protected isSubmitting = signal(false);
   protected errorMessage = signal('');
+  protected successMessage = signal('');
 
   switchMode(mode: LoginMode) {
     this.mode.set(mode);
     this.errorMessage.set('');
+    this.successMessage.set('');
   }
 
   async submit() {
     this.errorMessage.set('');
+    this.successMessage.set('');
     this.isSubmitting.set(true);
 
     if (this.mode() === 'signup' && this.password() !== this.confirmPassword()) {
@@ -71,6 +74,15 @@ export class LoginPageComponent {
 
     if ('error' in result && result.error) {
       this.errorMessage.set(result.error.message);
+      return;
+    }
+
+    if (this.mode() === 'signup' && !this.auth.isAuthenticated()) {
+      this.successMessage.set('Conta criada. Confirme seu email e depois faca login para continuar.');
+      this.password.set('');
+      this.confirmPassword.set('');
+      this.acceptedTerms.set(false);
+      this.mode.set('login');
       return;
     }
 

@@ -308,6 +308,17 @@
   text-align: center;
 }
 
+.success-message {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid #cde7c8;
+  border-radius: 8px;
+  background: #f3fbf1;
+  color: #25603a;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 .form-footer {
   margin: 24px 0 0;
   color: #747384;

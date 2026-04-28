@@ -67,6 +67,10 @@
     @if (feedback()) {
       <p class="feedback">{{ feedback() }}</p>
     }
+
+    @if (error()) {
+      <p class="feedback">{{ error() }}</p>
+    }
   </form>
 
   <aside class="panel preview-panel">

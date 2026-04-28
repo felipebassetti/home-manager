@@ -1,0 +1,8 @@
+project_id = "howeplqipzeavmvhyfba"
+
+[auth]
+enabled = true
+site_url = "http://localhost:4200"
+
+[db]
+major_version = 17

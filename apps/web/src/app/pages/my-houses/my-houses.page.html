@@ -5,8 +5,21 @@
     <p>Controle as casas que voce publicou, acompanhe vagas, candidaturas e operacao do dia a dia.</p>
   </div>
 
-  <a routerLink="/house-manage">Cadastrar casa</a>
+  <div class="manager-actions">
+    <button type="button" class="manager-secondary" (click)="seedDemoHouses()" [disabled]="isSeeding()">
+      {{ isSeeding() ? 'Criando casas teste...' : 'Criar 3 casas teste' }}
+    </button>
+    <a routerLink="/house-manage">Cadastrar casa</a>
+  </div>
 </section>
+
+@if (seedFeedback()) {
+  <section class="status-banner success">{{ seedFeedback() }}</section>
+}
+
+@if (seedError()) {
+  <section class="status-banner error">{{ seedError() }}</section>
+}
 
 <section class="summary-row">
   <article>
@@ -32,8 +45,13 @@
 } @else if (!visibleHouses().length) {
   <section class="empty-panel">
     <strong>Nenhuma casa publicada</strong>
-    <p>Cadastre a primeira casa para aparecer no marketplace e comecar a receber candidaturas.</p>
-    <a routerLink="/house-manage">Cadastrar casa</a>
+    <p>Cadastre a primeira casa para aparecer no marketplace e comecar a receber candidaturas, ou gere um lote demo para testar a plataforma mais rapido.</p>
+    <div class="empty-actions">
+      <button type="button" class="manager-secondary" (click)="seedDemoHouses()" [disabled]="isSeeding()">
+        {{ isSeeding() ? 'Criando casas teste...' : 'Criar 3 casas teste' }}
+      </button>
+      <a routerLink="/house-manage">Cadastrar casa</a>
+    </div>
   </section>
 } @else {
   <section class="house-admin-list">

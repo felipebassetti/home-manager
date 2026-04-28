@@ -240,9 +240,12 @@ export const applications: Application[] = [
     houseId: 'house-curitiba-centro',
     roomId: 'room-centro-2',
     userId: 'user-visitor-1',
-    status: 'pending',
+    contactPhone: '+55 41 99999-1200',
+    contactInstagram: '@diegomartins',
+    status: 'in_review',
     message: 'Procuro vaga para entrar em maio e trabalhar remoto.',
-    createdAt: '2026-04-24T09:00:00.000Z'
+    createdAt: '2026-04-24T09:00:00.000Z',
+    statusUpdatedAt: '2026-04-24T16:00:00.000Z'
   }
 ];
 

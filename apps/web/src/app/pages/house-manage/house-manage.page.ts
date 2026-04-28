@@ -18,6 +18,7 @@ export class HouseManagePageComponent {
 
   readonly createdHouse = signal<HouseDetail | null>(null);
   readonly feedback = signal('');
+  readonly error = signal('');
 
   readonly form = this.fb.group({
     title: ['', Validators.required],
@@ -47,6 +48,8 @@ export class HouseManagePageComponent {
       return;
     }
 
+    this.feedback.set('');
+    this.error.set('');
     const value = this.form.getRawValue();
     this.api
       .createHouse({
@@ -68,9 +71,14 @@ export class HouseManagePageComponent {
             available: room.available ?? true
           })) ?? []
       })
-      .subscribe((house) => {
-        this.createdHouse.set(house);
-        this.feedback.set('Casa criada no modo mock e adicionada ao marketplace.');
+      .subscribe({
+        next: (house) => {
+          this.createdHouse.set(house);
+          this.feedback.set('Casa criada e publicada no marketplace.');
+        },
+        error: () => {
+          this.error.set('Nao foi possivel criar a casa agora.');
+        }
       });
   }
 

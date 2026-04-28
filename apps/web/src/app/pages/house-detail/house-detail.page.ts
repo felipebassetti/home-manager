@@ -258,34 +258,45 @@ export class HouseDetailPageComponent implements OnInit {
         contactPhone: this.contactPhone().trim(),
         contactInstagram: this.contactInstagram().trim()
       })
-      .subscribe(() => {
-        this.feedback.set('Candidatura enviada. Agora e so acompanhar o status nesta vaga.');
-        this.applicationError.set('');
-        this.applicationMessage.set('');
-        this.contactPhone.set('');
-        this.contactInstagram.set('');
-        this.isSubmittingApplication.set(false);
+      .subscribe({
+        next: () => {
+          this.feedback.set('Candidatura enviada. Agora e so acompanhar o status nesta vaga.');
+          this.applicationError.set('');
+          this.applicationMessage.set('');
+          this.contactPhone.set('');
+          this.contactInstagram.set('');
+          this.isSubmittingApplication.set(false);
+        },
+        error: () => {
+          this.applicationError.set('Nao foi possivel enviar sua candidatura agora.');
+          this.isSubmittingApplication.set(false);
+        }
       });
   }
 
   updateApplicationStatus(applicationId: string, status: ApplicationStatus) {
-    this.api.updateApplicationStatus({ applicationId, status }).subscribe((updatedApplication) => {
-      if (!updatedApplication) {
-        return;
-      }
-
-      this.house.update((house) => {
-        if (!house) {
-          return house;
+    this.api.updateApplicationStatus({ applicationId, status }).subscribe({
+      next: (updatedApplication) => {
+        if (!updatedApplication) {
+          return;
         }
 
-        return {
-          ...house,
-          applications: house.applications.map((application) =>
-            application.id === updatedApplication.id ? { ...application, ...updatedApplication } : application
-          )
-        };
-      });
+        this.house.update((house) => {
+          if (!house) {
+            return house;
+          }
+
+          return {
+            ...house,
+            applications: house.applications.map((application) =>
+              application.id === updatedApplication.id ? { ...application, ...updatedApplication } : application
+            )
+          };
+        });
+      },
+      error: () => {
+        this.feedback.set('Nao foi possivel atualizar a candidatura agora.');
+      }
     });
   }
 

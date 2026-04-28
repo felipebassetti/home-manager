@@ -59,6 +59,10 @@
         <p class="error-message">{{ errorMessage() }}</p>
       }
 
+      @if (successMessage()) {
+        <p class="success-message">{{ successMessage() }}</p>
+      }
+
       <form class="login-form" (ngSubmit)="submit()">
         @if (mode() === 'signup') {
           <label>

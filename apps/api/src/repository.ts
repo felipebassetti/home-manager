@@ -11,6 +11,8 @@ import {
 import type {
   AddMemberInput,
   Application,
+  ApplicationListItem,
+  ApplicationStatus,
   CreateApplicationInput,
   CreateChargeInput,
   CreateHouseInput,
@@ -59,9 +61,27 @@ const withDetails = (house: House): HouseDetail => {
   return {
     ...summary,
     members: houseMembers,
-    applications: applications.filter((application) => application.houseId === house.id),
+    applications: applications
+      .filter((application) => application.houseId === house.id)
+      .map((application) => ({
+        ...application,
+        profile: profiles.find((profile) => profile.id === application.userId)
+      })),
     charges: houseCharges,
     payments: housePayments
+  };
+};
+
+const toApplicationListItem = (application: Application): ApplicationListItem => {
+  const house = houses.find((item) => item.id === application.houseId);
+  const room = application.roomId ? rooms.find((item) => item.id === application.roomId) : undefined;
+
+  return {
+    ...application,
+    houseTitle: house?.title ?? 'Casa',
+    houseNeighborhood: house?.neighborhood ?? '-',
+    houseCity: house?.city ?? '-',
+    roomTitle: room?.title ?? null
   };
 };
 
@@ -76,6 +96,12 @@ const filterHouses = (houseList: HouseSummary[], filters: URLSearchParams) => {
     const matchesPrice = maxPrice > 0 ? house.lowestPrice <= maxPrice : true;
     return matchesCity && matchesNeighborhood && matchesPrice;
   });
+};
+
+type RepositoryEnv = {
+  USE_MOCK_DATA?: string;
+  SUPABASE_URL?: string;
+  SUPABASE_SERVICE_ROLE_KEY?: string;
 };
 
 class MockRepository implements Repository {
@@ -125,19 +151,48 @@ class MockRepository implements Repository {
     return withDetails(createdHouse);
   }
 
+  async getApplicationById(applicationId: string): Promise<Application | null> {
+    const application = applications.find((item) => item.id === applicationId);
+    return application ? { ...application, profile: profiles.find((profile) => profile.id === application.userId) } : null;
+  }
+
   async createApplication(input: CreateApplicationInput): Promise<Application> {
+    const createdAt = nowIso();
     const created: Application = {
       id: crypto.randomUUID(),
       houseId: input.houseId,
       roomId: input.roomId,
       userId: input.userId,
-      status: 'pending',
+      contactPhone: input.contactPhone,
+      contactInstagram: input.contactInstagram?.trim() || null,
+      status: 'submitted',
       message: input.message,
-      createdAt: nowIso()
+      createdAt,
+      statusUpdatedAt: createdAt,
+      profile: profiles.find((profile) => profile.id === input.userId)
     };
 
     applications.unshift(created);
     return created;
+  }
+
+  async listApplicationsByUser(userId: string): Promise<ApplicationListItem[]> {
+    return applications
+      .filter((application) => application.userId === userId)
+      .map((application) => toApplicationListItem({ ...application, profile: profiles.find((profile) => profile.id === application.userId) }))
+      .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+  }
+
+  async updateApplicationStatus(applicationId: string, status: ApplicationStatus): Promise<Application | null> {
+    const application = applications.find((item) => item.id === applicationId);
+    if (!application) {
+      return null;
+    }
+
+    application.status = status;
+    application.statusUpdatedAt = nowIso();
+    application.profile = profiles.find((profile) => profile.id === application.userId);
+    return application;
   }
 
   async addMember(houseId: string, input: AddMemberInput): Promise<HouseMember> {
@@ -178,6 +233,10 @@ class MockRepository implements Repository {
 
     charges.unshift(created);
     return created;
+  }
+
+  async getChargeById(chargeId: string): Promise<MonthlyCharge | null> {
+    return charges.find((item) => item.id === chargeId) ?? null;
   }
 
   async listPayments(houseId?: string): Promise<Array<Payment & { profile?: Profile; charge?: MonthlyCharge }>> {
@@ -256,7 +315,7 @@ class SupabaseRepository implements Repository {
           createdAt: String(house.created_at),
           rooms: houseRooms.map((room) => ({
             id: String(room.id),
-            houseId: String(room.houseId ?? room.house_id),
+            houseId: String((room as Room & { house_id?: string }).houseId ?? (room as Room & { house_id?: string }).house_id),
             title: String(room.title),
             price: Number(room.price),
             available: Boolean(room.available)
@@ -271,7 +330,7 @@ class SupabaseRepository implements Repository {
   async getHouseById(houseId: string): Promise<HouseDetail | null> {
     const { data: house, error } = await this.client
       .from('houses')
-      .select('*, rooms(*), house_members(*, profiles(*)), applications(*), monthly_charges(*, payments(*, profiles(*)))')
+      .select('*, rooms(*), house_members(*, profiles(*)), applications(*, profiles(*)), monthly_charges(*, payments(*, profiles(*)))')
       .eq('id', houseId)
       .single();
 
@@ -320,8 +379,12 @@ class SupabaseRepository implements Repository {
         roomId: application.room_id ? String(application.room_id) : null,
         userId: String(application.user_id),
         status: application.status as Application['status'],
+        contactPhone: String(application.contact_phone ?? ''),
+        contactInstagram: application.contact_instagram ? String(application.contact_instagram) : null,
         message: String(application.message ?? ''),
-        createdAt: String(application.created_at)
+        createdAt: String(application.created_at),
+        statusUpdatedAt: String(application.status_updated_at ?? application.created_at),
+        profile: application.profiles as Profile | undefined
       })),
       charges: [],
       payments: []
@@ -407,17 +470,51 @@ class SupabaseRepository implements Repository {
     return created;
   }
 
+  async getApplicationById(applicationId: string): Promise<Application | null> {
+    const { data, error } = await this.client
+      .from('applications')
+      .select('*, profiles(*)')
+      .eq('id', applicationId)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      return null;
+    }
+
+    return {
+      id: String(data.id),
+      houseId: String(data.house_id),
+      roomId: data.room_id ? String(data.room_id) : null,
+      userId: String(data.user_id),
+      contactPhone: String(data.contact_phone ?? ''),
+      contactInstagram: data.contact_instagram ? String(data.contact_instagram) : null,
+      status: data.status as Application['status'],
+      message: String(data.message ?? ''),
+      createdAt: String(data.created_at),
+      statusUpdatedAt: String(data.status_updated_at ?? data.created_at),
+      profile: data.profiles as Profile | undefined
+    };
+  }
+
   async createApplication(input: CreateApplicationInput): Promise<Application> {
+    const statusUpdatedAt = nowIso();
     const { data, error } = await this.client
       .from('applications')
       .insert({
         house_id: input.houseId,
         room_id: input.roomId,
         user_id: input.userId,
-        status: 'pending',
-        message: input.message
+        contact_phone: input.contactPhone,
+        contact_instagram: input.contactInstagram?.trim() || null,
+        status: 'submitted',
+        message: input.message,
+        status_updated_at: statusUpdatedAt
       })
-      .select()
+      .select('*, profiles(*)')
       .single();
 
     if (error || !data) {
@@ -429,9 +526,77 @@ class SupabaseRepository implements Repository {
       houseId: String(data.house_id),
       roomId: data.room_id ? String(data.room_id) : null,
       userId: String(data.user_id),
+      contactPhone: String(data.contact_phone ?? ''),
+      contactInstagram: data.contact_instagram ? String(data.contact_instagram) : null,
       status: data.status as Application['status'],
       message: String(data.message ?? ''),
-      createdAt: String(data.created_at)
+      createdAt: String(data.created_at),
+      statusUpdatedAt: String(data.status_updated_at ?? data.created_at),
+      profile: data.profiles as Profile | undefined
+    };
+  }
+
+  async listApplicationsByUser(userId: string): Promise<ApplicationListItem[]> {
+    const { data, error } = await this.client
+      .from('applications')
+      .select('*, houses(title, neighborhood, city), rooms(title), profiles(*)')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    return ((data as Record<string, unknown>[] | null) ?? []).map((application) => ({
+      id: String(application.id),
+      houseId: String(application.house_id),
+      roomId: application.room_id ? String(application.room_id) : null,
+      userId: String(application.user_id),
+      contactPhone: String(application.contact_phone ?? ''),
+      contactInstagram: application.contact_instagram ? String(application.contact_instagram) : null,
+      status: application.status as Application['status'],
+      message: String(application.message ?? ''),
+      createdAt: String(application.created_at),
+      statusUpdatedAt: String(application.status_updated_at ?? application.created_at),
+      profile: application.profiles as Profile | undefined,
+      houseTitle: String((application.houses as Record<string, unknown> | null)?.title ?? 'Casa'),
+      houseNeighborhood: String((application.houses as Record<string, unknown> | null)?.neighborhood ?? '-'),
+      houseCity: String((application.houses as Record<string, unknown> | null)?.city ?? '-'),
+      roomTitle: (application.rooms as Record<string, unknown> | null)?.title ? String((application.rooms as Record<string, unknown>).title) : null
+    }));
+  }
+
+  async updateApplicationStatus(applicationId: string, status: ApplicationStatus): Promise<Application | null> {
+    const { data, error } = await this.client
+      .from('applications')
+      .update({
+        status,
+        status_updated_at: nowIso()
+      })
+      .eq('id', applicationId)
+      .select('*, profiles(*)')
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      return null;
+    }
+
+    return {
+      id: String(data.id),
+      houseId: String(data.house_id),
+      roomId: data.room_id ? String(data.room_id) : null,
+      userId: String(data.user_id),
+      contactPhone: String(data.contact_phone ?? ''),
+      contactInstagram: data.contact_instagram ? String(data.contact_instagram) : null,
+      status: data.status as Application['status'],
+      message: String(data.message ?? ''),
+      createdAt: String(data.created_at),
+      statusUpdatedAt: String(data.status_updated_at ?? data.created_at),
+      profile: data.profiles as Profile | undefined
     };
   }
 
@@ -518,6 +683,27 @@ class SupabaseRepository implements Repository {
     };
   }
 
+  async getChargeById(chargeId: string): Promise<MonthlyCharge | null> {
+    const { data, error } = await this.client.from('monthly_charges').select('*').eq('id', chargeId).maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      return null;
+    }
+
+    return {
+      id: String(data.id),
+      houseId: String(data.house_id),
+      title: String(data.title),
+      amount: Number(data.amount),
+      dueDate: String(data.due_date),
+      createdAt: String(data.created_at)
+    };
+  }
+
   async listPayments(houseId?: string): Promise<Array<Payment & { profile?: Profile; charge?: MonthlyCharge }>> {
     let query = this.client.from('payments').select('*, profiles(*), monthly_charges(*)').order('created_at', { ascending: false });
     if (houseId) {
@@ -584,7 +770,7 @@ class SupabaseRepository implements Repository {
   }
 }
 
-export const createRepository = (env: Env): Repository => {
+export const createRepository = (env: RepositoryEnv): Repository => {
   if (
     env.USE_MOCK_DATA === 'true' ||
     !env.SUPABASE_URL ||

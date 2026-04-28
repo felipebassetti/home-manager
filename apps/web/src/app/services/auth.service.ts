@@ -24,6 +24,7 @@ export class AuthService {
   readonly isSupabaseConfigured = Boolean(appRuntimeConfig.supabaseUrl && appRuntimeConfig.supabaseAnonKey);
   readonly isReady = signal(!this.isSupabaseConfigured);
   readonly sessionProfile = signal<ActiveProfile | null>(this.readStoredProfile());
+  readonly accessToken = signal<string | null>(null);
   readonly activeProfile = computed(() => this.sessionProfile() ?? this.guestProfile);
   readonly isAuthenticated = computed(() => this.sessionProfile() !== null);
   readonly accountLabel = computed(() => {
@@ -67,6 +68,8 @@ export class AuthService {
 
     void this.restoreSupabaseSession();
     this.supabase.auth.onAuthStateChange((_event, session) => {
+      this.accessToken.set(session?.access_token ?? null);
+
       if (!session?.user) {
         this.sessionProfile.set(null);
         this.clearStoredProfile();
@@ -166,7 +169,7 @@ export class AuthService {
       }
     });
 
-    if (!result.error && result.data.user) {
+    if (!result.error && result.data.user && result.data.session) {
       await this.syncSupabaseProfile(result.data.user, accountType);
     }
 
@@ -180,6 +183,7 @@ export class AuthService {
   async signOut() {
     if (!this.supabase) {
       this.sessionProfile.set(null);
+      this.accessToken.set(null);
       this.clearStoredProfile();
       this.markReady();
       return;
@@ -187,6 +191,7 @@ export class AuthService {
 
     await this.supabase.auth.signOut();
     this.sessionProfile.set(null);
+    this.accessToken.set(null);
     this.clearStoredProfile();
     this.markReady();
   }
@@ -232,6 +237,8 @@ export class AuthService {
     }
 
     const { data } = await this.supabase.auth.getSession();
+    this.accessToken.set(data.session?.access_token ?? null);
+
     if (data.session?.user) {
       const profile = await this.syncSupabaseProfile(data.session.user);
       this.sessionProfile.set(profile);

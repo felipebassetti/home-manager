@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@10.33.2",
+  "devDependencies": {
+    "supabase": "^2.54.11"
+  },
   "scripts": {
     "dev:web": "pnpm --dir apps/web dev",
     "dev:web:local": "pnpm --dir apps/web dev:local",
@@ -14,6 +17,9 @@
     "dev:cloudflare": "pnpm -r --parallel --filter flatsharing-web --filter flatsharing-api run dev:cloudflare",
     "build:web": "pnpm --dir apps/web build",
     "build:api": "pnpm --dir apps/api build",
-    "build": "pnpm build:web && pnpm build:api"
+    "build": "pnpm build:web && pnpm build:api",
+    "supabase:cli:version": "node scripts/supabase-cli.cjs --version",
+    "supabase:db:push": "node scripts/supabase-db-push.cjs",
+    "supabase:db:push:dry-run": "node scripts/supabase-db-push.cjs --dry-run"
   }
 }

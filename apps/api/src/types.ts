@@ -1,5 +1,6 @@
 export type MemberRole = 'admin' | 'member';
-export type ApplicationStatus = 'pending' | 'approved' | 'rejected';
+export type AccountType = 'house-admin' | 'super-admin' | 'member' | 'visitor';
+export type ApplicationStatus = 'submitted' | 'in_review' | 'contact_soon' | 'rejected';
 export type PaymentStatus = 'pending' | 'paid' | 'overdue';
 
 export interface Profile {
@@ -36,6 +37,7 @@ export interface HouseMember {
   role: MemberRole;
   status: 'active' | 'invited';
   createdAt: string;
+  profile?: Profile;
 }
 
 export interface Application {
@@ -43,9 +45,13 @@ export interface Application {
   houseId: string;
   roomId: string | null;
   userId: string;
+  contactPhone: string;
+  contactInstagram: string | null;
   status: ApplicationStatus;
   message: string;
   createdAt: string;
+  statusUpdatedAt: string;
+  profile?: Profile;
 }
 
 export interface MonthlyCharge {
@@ -80,6 +86,13 @@ export interface HouseDetail extends HouseSummary {
   payments: Array<Payment & { profile?: Profile; charge?: MonthlyCharge }>;
 }
 
+export interface ApplicationListItem extends Application {
+  houseTitle: string;
+  houseNeighborhood: string;
+  houseCity: string;
+  roomTitle: string | null;
+}
+
 export interface CreateHouseInput {
   ownerId: string;
   title: string;
@@ -97,6 +110,13 @@ export interface CreateApplicationInput {
   roomId: string | null;
   userId: string;
   message: string;
+  contactPhone: string;
+  contactInstagram?: string | null;
+}
+
+export interface UpdateApplicationStatusInput {
+  applicationId: string;
+  status: ApplicationStatus;
 }
 
 export interface AddMemberInput {
@@ -124,9 +144,13 @@ export interface Repository {
   listHouses(filters: URLSearchParams): Promise<HouseSummary[]>;
   getHouseById(houseId: string): Promise<HouseDetail | null>;
   createHouse(input: CreateHouseInput): Promise<HouseDetail>;
+  getApplicationById(applicationId: string): Promise<Application | null>;
   createApplication(input: CreateApplicationInput): Promise<Application>;
+  listApplicationsByUser(userId: string): Promise<ApplicationListItem[]>;
+  updateApplicationStatus(applicationId: string, status: ApplicationStatus): Promise<Application | null>;
   addMember(houseId: string, input: AddMemberInput): Promise<HouseMember>;
   createCharge(input: CreateChargeInput): Promise<MonthlyCharge>;
+  getChargeById(chargeId: string): Promise<MonthlyCharge | null>;
   listPayments(houseId?: string): Promise<Array<Payment & { profile?: Profile; charge?: MonthlyCharge }>>;
   upsertPayment(input: UpsertPaymentInput): Promise<Payment>;
 }
