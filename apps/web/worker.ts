@@ -1,4 +1,4 @@
-import apiWorker from '../../api/src/index';
+import apiWorker from '../api/src/index';
 
 type AssetBinding = {
   fetch: (request: Request) => Promise<Response>;
