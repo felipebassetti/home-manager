@@ -25,7 +25,7 @@
 </section>
 
 <section class="dashboard-grid">
-  @for (house of managedHouses(); track house.id) {
+  @for (house of paginatedManagedHouses().items; track house.id) {
     <article class="panel spotlight-card managed-house" appSpotlightCard>
       <div class="panel-head">
         <div>
@@ -46,3 +46,5 @@
     </article>
   }
 </section>
+
+<app-pagination [totalItems]="managedHouses().length" [currentPage]="paginatedManagedHouses().currentPage" [pageSize]="4" itemLabel="casas" (pageChange)="currentPage.set($event)" />

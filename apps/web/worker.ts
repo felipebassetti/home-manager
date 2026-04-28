@@ -7,7 +7,6 @@ type AssetBinding = {
 export interface Env {
   ASSETS: AssetBinding;
   APP_ORIGIN?: string;
-  USE_MOCK_DATA?: string;
   SUPABASE_URL?: string;
   SUPABASE_SERVICE_ROLE_KEY?: string;
 }

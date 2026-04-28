@@ -6,8 +6,6 @@ MVP de uma plataforma para casas compartilhadas com foco inicial em:
 - gestao simples de moradores
 - cobrancas mensais e controle manual de pagamentos
 
-Nesta primeira iteracao o projeto esta em **modo mock end to end**. O frontend funciona sem Supabase e sem Cloudflare Workers rodando. A integracao real ja esta preparada para a proxima fase.
-
 ## Documentacao
 
 - Visao geral: [docs/README.md](C:/Users/Admin/Documents/Github/home-manager/docs/README.md)
@@ -17,7 +15,7 @@ Nesta primeira iteracao o projeto esta em **modo mock end to end**. O frontend f
 
 - `apps/web`: Angular SPA
 - `apps/api`: Cloudflare Worker com endpoints base
-- `supabase/schema.sql`: schema inicial para a futura integracao
+- `supabase/schema.sql`: fonte de verdade do schema
 - `pnpm` workspace no root
 
 ## Estrutura
@@ -39,14 +37,13 @@ supabase/
   schema.sql
 ```
 
-## Fluxos prontos no mock
+## Fluxos prontos
 
 - listagem de casas com filtros por cidade, bairro e preco
 - detalhe da casa com quartos, cobrancas e candidatura
 - dashboard basico da casa
 - criacao de nova casa pelo admin
 - controle manual de pagamentos com status `pending`, `paid` e `overdue`
-- troca de perfil mockado entre admin, morador e visitante
 
 ## Como rodar
 
@@ -91,17 +88,12 @@ Durante `ng serve`, o frontend sempre fala com `/api` e o proxy do Angular redir
 pnpm build
 ```
 
-## Modo mock
-
-O frontend agora usa `/api` por padrao e tenta falar com o Worker em desenvolvimento. Se a API nao estiver rodando, parte dos fluxos ainda cai em mocks locais, mas o modo recomendado para desenvolvimento e subir um dos dois stacks acima.
-
 ## Preparacao para Supabase
 
 O Worker ja aceita:
 
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `USE_MOCK_DATA`
 - `APP_ORIGIN`
 
 Arquivo de exemplo:
@@ -144,7 +136,7 @@ POST /payments
 
 ## Proxima fase recomendada
 
-1. Conectar Supabase Auth e tabela `profiles`
-2. Persistir criacao de casas, membros e cobrancas
-3. Subir Worker com bindings reais
-4. Integrar Pagar.me no fluxo de cobranca
+1. Fechar policies de RLS por dominio
+2. Evoluir charges e payments para cobranca por morador
+3. Integrar Pagar.me no fluxo de cobranca
+4. Adicionar testes para permissoes e regras financeiras

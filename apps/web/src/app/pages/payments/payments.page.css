@@ -46,6 +46,15 @@
   border-top: 1px solid var(--border);
 }
 
+.empty-row {
+  display: block !important;
+}
+
+.empty-row p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

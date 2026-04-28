@@ -1,4 +1,5 @@
 export type MemberRole = 'admin' | 'member';
+export type SiteRole = 'site_admin' | 'site_operator';
 export type AccountType = 'house-admin' | 'super-admin' | 'member' | 'visitor';
 export type ApplicationStatus = 'submitted' | 'in_review' | 'contact_soon' | 'rejected';
 export type PaymentStatus = 'pending' | 'paid' | 'overdue';
@@ -11,6 +12,9 @@ export interface Profile {
 
 export interface ActiveProfile extends Profile {
   accountType: AccountType;
+  siteRoles: SiteRole[];
+  managedHouseIds: string[];
+  memberHouseIds: string[];
 }
 
 export interface Room {

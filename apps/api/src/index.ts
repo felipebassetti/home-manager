@@ -1,19 +1,19 @@
-import { createClient, type User } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 import { createRepository } from './repository';
 import type {
-  AccountType,
   AddMemberInput,
   ApplicationStatus,
   CreateApplicationInput,
   CreateChargeInput,
   CreateHouseInput,
   HouseDetail,
+  SiteRole,
+  UserAccess,
   UpsertPaymentInput
 } from './types';
 
 export interface Env {
   APP_ORIGIN?: string;
-  USE_MOCK_DATA?: string;
   SUPABASE_URL?: string;
   SUPABASE_SERVICE_ROLE_KEY?: string;
 }
@@ -21,32 +21,13 @@ export interface Env {
 type AuthContext = {
   id: string;
   email: string;
-  accountType: AccountType;
+  siteRoles: SiteRole[];
+  managedHouseIds: string[];
+  memberHouseIds: string[];
 };
 
 const isValidDateOnly = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00`));
 const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
-const normalizeAccountType = (value: unknown): AccountType => {
-  if (value === 'house-admin' || value === 'gestor' || value === 'manager') {
-    return 'house-admin';
-  }
-
-  if (value === 'super-admin') {
-    return 'super-admin';
-  }
-
-  if (value === 'member' || value === 'morador') {
-    return 'member';
-  }
-
-  return 'visitor';
-};
-
-const getAccountType = (user: User) => {
-  const metadata = user.user_metadata ?? {};
-  return normalizeAccountType(metadata['account_type'] ?? metadata['accountType'] ?? metadata['role']);
-};
 
 const getBearerToken = (request: Request) => {
   const authorization = request.headers.get('authorization') ?? '';
@@ -55,7 +36,7 @@ const getBearerToken = (request: Request) => {
 };
 
 const getRequestUser = async (request: Request, env: Env): Promise<AuthContext | null> => {
-  if (env.USE_MOCK_DATA === 'true' || !env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
     return null;
   }
 
@@ -78,9 +59,16 @@ const getRequestUser = async (request: Request, env: Env): Promise<AuthContext |
   return {
     id: data.user.id,
     email: data.user.email ?? '',
-    accountType: getAccountType(data.user)
+    siteRoles: [],
+    managedHouseIds: [],
+    memberHouseIds: []
   };
 };
+
+const withUserAccess = (user: AuthContext, access: UserAccess): AuthContext => ({
+  ...user,
+  ...access
+});
 
 const validateCreateChargeInput = (input: CreateChargeInput) => {
   if (!input.houseId?.trim()) {
@@ -151,12 +139,13 @@ const json = (data: unknown, init: ResponseInit = {}, origin = '*') =>
 
 const parseBody = async <T>(request: Request) => (await request.json()) as T;
 
-const isHouseManager = (user: AuthContext, house: HouseDetail) =>
-  user.accountType === 'super-admin' ||
-  house.ownerId === user.id ||
-  house.members.some((member) => member.userId === user.id && member.role === 'admin');
+const isSiteAdmin = (user: AuthContext) => user.siteRoles.includes('site_admin');
 
-const isHouseMember = (user: AuthContext, house: HouseDetail) => house.members.some((member) => member.userId === user.id);
+const isHouseManager = (user: AuthContext, house: HouseDetail) =>
+  isSiteAdmin(user) || house.ownerId === user.id || user.managedHouseIds.includes(house.id);
+
+const isHouseMember = (user: AuthContext, house: HouseDetail) =>
+  isHouseManager(user, house) || user.memberHouseIds.includes(house.id);
 
 const sanitizeHouseDetail = (house: HouseDetail, user: AuthContext | null): HouseDetail => {
   const canManage = user ? isHouseManager(user, house) : false;
@@ -180,27 +169,29 @@ export default {
   async fetch(request, env): Promise<Response> {
     const url = new URL(request.url);
     const origin = env.APP_ORIGIN ?? '*';
+    const isConfigured = Boolean(env.SUPABASE_URL && env.SUPABASE_SERVICE_ROLE_KEY);
 
     if (request.method === 'OPTIONS') {
       return json({ ok: true }, { status: 204 }, origin);
     }
-
-    const repository = createRepository(env);
     const path = url.pathname.replace(/\/+$/, '') || '/';
-    const auth = await getRequestUser(request, env);
 
     try {
       if (request.method === 'GET' && path === '/health') {
         return json(
           {
             ok: true,
-            mode: env.USE_MOCK_DATA === 'true' ? 'mock' : 'supabase',
+            mode: isConfigured ? 'supabase' : 'misconfigured',
             date: new Date().toISOString()
           },
           { status: 200 },
           origin
         );
       }
+
+      const repository = createRepository(env);
+      const requestUser = await getRequestUser(request, env);
+      const auth = requestUser ? withUserAccess(requestUser, await repository.getUserAccess(requestUser.id)) : null;
 
       if (request.method === 'GET' && path === '/houses') {
         const data = await repository.listHouses(url.searchParams);
@@ -219,7 +210,7 @@ export default {
       }
 
       if (request.method === 'POST' && path === '/houses') {
-        if (!auth || (auth.accountType !== 'house-admin' && auth.accountType !== 'super-admin')) {
+        if (!auth) {
           return json({ error: 'Unauthorized' }, { status: 401 }, origin);
         }
 
@@ -368,20 +359,9 @@ export default {
           return json({ data }, { status: 200 }, origin);
         }
 
-        const houses = await repository.listHouses(new URLSearchParams());
-        const managedHouseIds =
-          auth.accountType === 'super-admin'
-            ? houses.map((house) => house.id)
-            : (
-                await Promise.all(
-                  houses.map(async (house) => {
-                    const detail = await repository.getHouseById(house.id);
-                    return detail && isHouseManager(auth, detail) ? house.id : null;
-                  })
-                )
-              ).filter((houseId): houseId is string => Boolean(houseId));
-
-        const payments = await Promise.all(managedHouseIds.map((managedHouseId) => repository.listPayments(managedHouseId)));
+        const payments = isSiteAdmin(auth)
+          ? [await repository.listPayments()]
+          : await Promise.all(auth.managedHouseIds.map((managedHouseId) => repository.listPayments(managedHouseId)));
         return json({ data: payments.flat() }, { status: 200 }, origin);
       }
 

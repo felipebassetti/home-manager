@@ -134,10 +134,12 @@
           <label>
             <span>Whatsapp ou telefone</span>
             <input
-              type="text"
+              type="tel"
               [value]="contactPhone()"
-              (input)="contactPhone.set($any($event.target).value)"
-              placeholder="+55 41 99999-0000"
+              (input)="onPhoneInput($any($event.target).value)"
+              placeholder="(41) 99999-0000"
+              inputmode="numeric"
+              autocomplete="tel"
             />
           </label>
 
@@ -146,8 +148,10 @@
             <input
               type="text"
               [value]="contactInstagram()"
-              (input)="contactInstagram.set($any($event.target).value)"
+              (input)="onInstagramInput($any($event.target).value)"
               placeholder="@seuinstagram"
+              autocapitalize="off"
+              spellcheck="false"
             />
           </label>
 
@@ -220,7 +224,15 @@
           <form class="member-form" [formGroup]="memberForm" (ngSubmit)="submitMember()">
             <label>
               <span>Email do usuario</span>
-              <input type="email" formControlName="email" placeholder="morador@email.com" />
+              <input
+                type="email"
+                formControlName="email"
+                placeholder="morador@email.com"
+                inputmode="email"
+                autocapitalize="off"
+                spellcheck="false"
+                (input)="onMemberEmailInput($any($event.target).value)"
+              />
               @if (memberFieldError('email')) {
                 <small class="field-error">{{ memberFieldError('email') }}</small>
               }

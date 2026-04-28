@@ -1,10 +1,10 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { createClient, type User } from '@supabase/supabase-js';
 import { appRuntimeConfig } from '../config/runtime-config';
-import { findMockProfileByEmail, mockProfiles, registerMockProfile } from '../data/mock-data';
-import type { AccountType, ActiveProfile } from '../models/domain.models';
+import type { AccountType, ActiveProfile, SiteRole } from '../models/domain.models';
 
 type PublicAccountType = Extract<AccountType, 'visitor' | 'house-admin'>;
+type StoredProfile = Partial<ActiveProfile> & Pick<ActiveProfile, 'id' | 'name' | 'email'>;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -13,14 +13,17 @@ export class AuthService {
     id: 'guest-visitor',
     name: 'Visitante',
     email: '',
-    accountType: 'visitor'
+    accountType: 'visitor',
+    siteRoles: [],
+    managedHouseIds: [],
+    memberHouseIds: []
   };
   private readyResolver: (() => void) | null = null;
   private readonly readyPromise = new Promise<void>((resolve) => {
     this.readyResolver = resolve;
   });
 
-  readonly profiles = mockProfiles;
+  readonly profiles: ActiveProfile[] = [];
   readonly isSupabaseConfigured = Boolean(appRuntimeConfig.supabaseUrl && appRuntimeConfig.supabaseAnonKey);
   readonly isReady = signal(!this.isSupabaseConfigured);
   readonly sessionProfile = signal<ActiveProfile | null>(this.readStoredProfile());
@@ -32,17 +35,7 @@ export class AuthService {
       return 'Entrar para candidatar';
     }
 
-    const type = this.activeProfile().accountType;
-    if (type === 'house-admin') {
-      return 'Gestor da casa';
-    }
-    if (type === 'super-admin') {
-      return 'Super admin';
-    }
-    if (type === 'member') {
-      return 'Morador';
-    }
-    return 'Candidato';
+    return this.profileRoleLabel(this.activeProfile().accountType);
   });
 
   readonly canAccessManagement = computed(() => {
@@ -50,8 +43,8 @@ export class AuthService {
       return false;
     }
 
-    const type = this.activeProfile().accountType;
-    return type === 'house-admin' || type === 'super-admin';
+    const profile = this.activeProfile();
+    return profile.siteRoles.length > 0 || profile.managedHouseIds.length > 0 || profile.accountType === 'house-admin';
   });
 
   readonly canTrackApplications = computed(() => this.isAuthenticated() && !this.canAccessManagement());
@@ -77,11 +70,7 @@ export class AuthService {
         return;
       }
 
-      const profile = this.profileFromSupabaseUser(session.user);
-      this.sessionProfile.set(profile);
-      this.storeProfile(profile);
-      void this.syncProfileRecord(profile);
-      this.markReady();
+      void this.setSessionProfileFromUser(session.user);
     });
   }
 
@@ -89,16 +78,37 @@ export class AuthService {
     await this.readyPromise;
   }
 
-  setActiveProfile(profileId: string) {
-    if (!this.isAuthenticated()) {
+  hasSiteRole(role: SiteRole, profile: ActiveProfile = this.activeProfile()) {
+    return profile.siteRoles.includes(role);
+  }
+
+  isSiteAdmin(profile: ActiveProfile = this.activeProfile()) {
+    return this.hasSiteRole('site_admin', profile);
+  }
+
+  managesHouse(houseId: string, profile: ActiveProfile = this.activeProfile()) {
+    return this.isSiteAdmin(profile) || profile.managedHouseIds.includes(houseId);
+  }
+
+  belongsToHouse(houseId: string, profile: ActiveProfile = this.activeProfile()) {
+    return this.managesHouse(houseId, profile) || profile.memberHouseIds.includes(houseId);
+  }
+
+  async refreshAccess() {
+    if (!this.supabase) {
       return;
     }
 
-    const profile = this.profiles.find((item) => item.id === profileId);
-    if (profile) {
-      this.sessionProfile.set(profile);
-      this.storeProfile(profile);
+    const { data } = await this.supabase.auth.getUser();
+    if (!data.user) {
+      return;
     }
+
+    await this.setSessionProfileFromUser(data.user);
+  }
+
+  setActiveProfile(profileId: string) {
+    void profileId;
   }
 
   profileRoleLabel(accountType: AccountType) {
@@ -118,51 +128,39 @@ export class AuthService {
   }
 
   async signInWithPassword(email: string, password: string, accountType?: PublicAccountType) {
+    const normalizedEmail = this.normalizeEmail(email);
+
     if (!this.supabase) {
-      if (password !== '123456') {
-        return {
-          mock: true,
-          error: { message: 'Use a senha padrao 123456 no modo local.' }
-        };
-      }
-
-      const existingProfile = findMockProfileByEmail(email);
-      const profile = existingProfile ?? registerMockProfile(email, undefined, accountType ?? 'visitor');
-      this.sessionProfile.set(profile);
-      this.storeProfile(profile);
-      this.markReady();
-
-      return { mock: true, user: profile };
+      void password;
+      void accountType;
+      return {
+        error: { message: 'Supabase auth nao esta configurado neste ambiente.' }
+      };
     }
 
-    const result = await this.supabase.auth.signInWithPassword({ email, password });
+    const result = await this.supabase.auth.signInWithPassword({ email: normalizedEmail, password });
 
     if (!result.error && result.data.user) {
-      await this.syncSupabaseProfile(result.data.user, accountType ?? 'visitor');
+      await this.setSessionProfileFromUser(result.data.user, accountType ?? 'visitor');
     }
 
     return result;
   }
 
   async signUpProfile(name: string, email: string, password: string, accountType: PublicAccountType = 'visitor') {
+    const normalizedEmail = this.normalizeEmail(email);
+
     if (!this.supabase) {
-      if (password.length < 6) {
-        return {
-          mock: true,
-          error: { message: 'Use uma senha com pelo menos 6 caracteres.' }
-        };
-      }
-
-      const profile = registerMockProfile(email, name, accountType);
-      this.sessionProfile.set(profile);
-      this.storeProfile(profile);
-      this.markReady();
-
-      return { mock: true, user: profile };
+      void name;
+      void password;
+      void accountType;
+      return {
+        error: { message: 'Supabase auth nao esta configurado neste ambiente.' }
+      };
     }
 
     const result = await this.supabase.auth.signUp({
-      email,
+      email: normalizedEmail,
       password,
       options: {
         data: { name, account_type: accountType }
@@ -170,7 +168,7 @@ export class AuthService {
     });
 
     if (!result.error && result.data.user && result.data.session) {
-      await this.syncSupabaseProfile(result.data.user, accountType);
+      await this.setSessionProfileFromUser(result.data.user, accountType);
     }
 
     return result;
@@ -207,7 +205,7 @@ export class AuthService {
     }
 
     try {
-      return JSON.parse(storedValue) as ActiveProfile;
+      return this.normalizeStoredProfile(JSON.parse(storedValue) as StoredProfile);
     } catch {
       localStorage.removeItem(this.storageKey);
       return null;
@@ -240,9 +238,7 @@ export class AuthService {
     this.accessToken.set(data.session?.access_token ?? null);
 
     if (data.session?.user) {
-      const profile = await this.syncSupabaseProfile(data.session.user);
-      this.sessionProfile.set(profile);
-      this.storeProfile(profile);
+      await this.setSessionProfileFromUser(data.session.user);
       this.markReady();
       return;
     }
@@ -252,7 +248,15 @@ export class AuthService {
     this.markReady();
   }
 
-  private async syncSupabaseProfile(user: User, fallbackAccountType: PublicAccountType = 'visitor') {
+  private async setSessionProfileFromUser(user: User, fallbackAccountType: PublicAccountType = 'visitor') {
+    const profile = await this.loadSupabaseProfile(user, fallbackAccountType);
+    this.sessionProfile.set(profile);
+    this.storeProfile(profile);
+    this.markReady();
+    return profile;
+  }
+
+  private async loadSupabaseProfile(user: User, fallbackAccountType: PublicAccountType) {
     if (!this.supabase) {
       return this.guestProfile;
     }
@@ -269,14 +273,66 @@ export class AuthService {
       syncedUser = data.user ?? user;
     }
 
-    const profile = this.profileFromSupabaseUser(syncedUser, fallbackAccountType);
-    await this.syncProfileRecord(profile);
-    this.sessionProfile.set(profile);
-    this.storeProfile(profile);
-    return profile;
+    const fallbackProfile = this.baseProfileFromSupabaseUser(syncedUser);
+    await this.syncProfileRecord(fallbackProfile);
+
+    const [{ data: profileData, error: profileError }, { data: roleRows, error: rolesError }, { data: memberRows, error: membersError }] =
+      await Promise.all([
+        this.supabase.from('profiles').select('name, email').eq('id', syncedUser.id).maybeSingle(),
+        this.supabase.from('user_roles').select('role').eq('user_id', syncedUser.id),
+        this.supabase.from('house_members').select('house_id, role').eq('user_id', syncedUser.id).eq('status', 'active')
+      ]);
+
+    if (profileError) {
+      console.error('Profile fetch failed', profileError);
+    }
+
+    if (rolesError) {
+      console.error('User roles fetch failed', rolesError);
+    }
+
+    if (membersError) {
+      console.error('House memberships fetch failed', membersError);
+    }
+
+    const siteRoles = Array.from(
+      new Set(
+        ((roleRows ?? []) as Array<{ role?: unknown }>)
+          .map((item) => item.role)
+          .filter((role): role is SiteRole => role === 'site_admin' || role === 'site_operator')
+      )
+    );
+    const managedHouseIds = Array.from(
+      new Set(
+        ((memberRows ?? []) as Array<{ house_id?: unknown; role?: unknown }>)
+          .filter((item) => item.role === 'admin')
+          .map((item) => String(item.house_id))
+      )
+    );
+    const memberHouseIds = Array.from(
+      new Set(((memberRows ?? []) as Array<{ house_id?: unknown }>).map((item) => String(item.house_id)))
+    );
+
+    return {
+      id: syncedUser.id,
+      name: this.readProfileName(profileData?.name, fallbackProfile.name),
+      email: this.normalizeEmail(profileData?.email ?? fallbackProfile.email),
+      accountType: this.deriveAccountType(
+        siteRoles,
+        managedHouseIds,
+        memberHouseIds,
+        this.normalizeAccountType(
+          syncedUser.user_metadata?.['account_type'] ?? syncedUser.user_metadata?.['accountType'] ?? syncedUser.user_metadata?.['role'],
+          fallbackAccountType
+        )
+      ),
+      siteRoles,
+      managedHouseIds,
+      memberHouseIds
+    } satisfies ActiveProfile;
   }
 
-  private async syncProfileRecord(profile: ActiveProfile) {
+  private async syncProfileRecord(profile: Pick<ActiveProfile, 'id' | 'name' | 'email'>) {
     if (!this.supabase) {
       return;
     }
@@ -285,7 +341,7 @@ export class AuthService {
       {
         id: profile.id,
         name: profile.name,
-        email: profile.email
+        email: this.normalizeEmail(profile.email)
       },
       { onConflict: 'id' }
     );
@@ -295,17 +351,56 @@ export class AuthService {
     }
   }
 
-  private profileFromSupabaseUser(user: User, fallbackAccountType: AccountType = 'visitor'): ActiveProfile {
+  private baseProfileFromSupabaseUser(user: User) {
     const metadata = user.user_metadata ?? {};
-    const email = user.email ?? '';
+    const email = this.normalizeEmail(user.email ?? '');
     const name = this.readMetadataString(metadata['name']) || this.readMetadataString(metadata['full_name']) || this.nameFromEmail(email);
 
     return {
       id: user.id,
       name,
-      email,
-      accountType: this.normalizeAccountType(metadata['account_type'] ?? metadata['accountType'] ?? metadata['role'], fallbackAccountType)
+      email
     };
+  }
+
+  private normalizeStoredProfile(profile: StoredProfile): ActiveProfile {
+    const siteRoles = Array.isArray(profile.siteRoles)
+      ? profile.siteRoles.filter((role): role is SiteRole => role === 'site_admin' || role === 'site_operator')
+      : [];
+    const managedHouseIds = Array.isArray(profile.managedHouseIds) ? profile.managedHouseIds.map(String) : [];
+    const memberHouseIds = Array.isArray(profile.memberHouseIds) ? profile.memberHouseIds.map(String) : [];
+    const fallbackAccountType = this.normalizeAccountType(profile.accountType, 'visitor');
+
+    return {
+      id: profile.id,
+      name: profile.name,
+      email: this.normalizeEmail(profile.email),
+      accountType: this.deriveAccountType(siteRoles, managedHouseIds, memberHouseIds, fallbackAccountType),
+      siteRoles,
+      managedHouseIds,
+      memberHouseIds
+    };
+  }
+
+  private deriveAccountType(
+    siteRoles: SiteRole[],
+    managedHouseIds: string[],
+    memberHouseIds: string[],
+    fallback: PublicAccountType | AccountType
+  ): AccountType {
+    if (siteRoles.includes('site_admin')) {
+      return 'super-admin';
+    }
+
+    if (managedHouseIds.length > 0) {
+      return 'house-admin';
+    }
+
+    if (memberHouseIds.length > 0) {
+      return 'member';
+    }
+
+    return fallback === 'super-admin' || fallback === 'member' || fallback === 'house-admin' ? fallback : 'visitor';
   }
 
   private hasAccountTypeMetadata(user: User) {
@@ -313,7 +408,7 @@ export class AuthService {
     return Boolean(metadata['account_type'] ?? metadata['accountType'] ?? metadata['role']);
   }
 
-  private normalizeAccountType(value: unknown, fallback: AccountType): AccountType {
+  private normalizeAccountType(value: unknown, fallback: PublicAccountType | AccountType): AccountType {
     if (value === 'house-admin' || value === 'gestor' || value === 'manager') {
       return 'house-admin';
     }
@@ -337,6 +432,11 @@ export class AuthService {
     return typeof value === 'string' ? value.trim() : '';
   }
 
+  private readProfileName(value: unknown, fallback: string) {
+    const name = typeof value === 'string' ? value.trim() : '';
+    return name || fallback;
+  }
+
   private nameFromEmail(email: string) {
     return (
       email
@@ -346,6 +446,10 @@ export class AuthService {
         .map((part) => part[0]?.toUpperCase() + part.slice(1))
         .join(' ') || 'Usuario'
     );
+  }
+
+  private normalizeEmail(email: string) {
+    return email.trim().toLowerCase();
   }
 
   private markReady() {

@@ -3,7 +3,6 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-04-26",
   "vars": {
-    "APP_ORIGIN": "http://localhost:4200",
-    "USE_MOCK_DATA": "true"
+    "APP_ORIGIN": "http://localhost:4200"
   }
 }

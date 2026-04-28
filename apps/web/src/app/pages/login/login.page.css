@@ -276,6 +276,14 @@
   font-size: 0.82rem;
 }
 
+.field-message {
+  font-size: 0.8rem;
+}
+
+.field-message.error {
+  color: var(--danger-text);
+}
+
 .submit-button {
   min-height: 48px;
   border-radius: 8px;

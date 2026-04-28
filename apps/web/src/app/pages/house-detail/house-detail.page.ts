@@ -7,6 +7,7 @@ import { PaymentStatusComponent } from '../../components/payment-status/payment-
 import type { ApplicationStatus, HouseDetail, Payment } from '../../models/domain.models';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.service';
+import { formatInstagramHandleInput, formatPhoneInput, isValidPhoneInput, normalizeEmailInput } from '../../utils/input-formatters';
 
 @Component({
   selector: 'app-house-detail-page',
@@ -47,15 +48,36 @@ export class HouseDetailPageComponent implements OnInit {
     role: this.fb.nonNullable.control<'member' | 'admin'>('member')
   });
 
-  readonly accountType = computed(() => this.auth.activeProfile().accountType);
   readonly isAuthenticated = computed(() => this.auth.isAuthenticated());
-  readonly isVisitor = computed(() => this.accountType() === 'visitor');
+  readonly houseAccess = computed(() => {
+    const house = this.house();
+    const profile = this.auth.activeProfile();
+    if (!house || !this.isAuthenticated()) {
+      return {
+        isVisitor: false,
+        isMember: false,
+        canManageHouse: false,
+        canSeeFinancials: false
+      };
+    }
+
+    const membership = house.members.find((member) => member.userId === profile.id && member.status === 'active');
+    const isSiteAdmin = this.auth.isSiteAdmin(profile);
+    const canManageHouse = isSiteAdmin || house.ownerId === profile.id || membership?.role === 'admin';
+    const isMember = canManageHouse || Boolean(membership);
+
+    return {
+      isVisitor: !isMember,
+      isMember,
+      canManageHouse,
+      canSeeFinancials: isMember
+    };
+  });
+  readonly isVisitor = computed(() => this.houseAccess().isVisitor);
   readonly canApply = computed(() => this.isAuthenticated() && this.isVisitor());
-  readonly isMember = computed(() => this.accountType() === 'member');
-  readonly isHouseAdmin = computed(() => this.accountType() === 'house-admin');
-  readonly isSuperAdmin = computed(() => this.accountType() === 'super-admin');
-  readonly canManageHouse = computed(() => this.isHouseAdmin() || this.isSuperAdmin());
-  readonly canSeeFinancials = computed(() => this.isMember() || this.canManageHouse());
+  readonly isMember = computed(() => this.houseAccess().isMember);
+  readonly canManageHouse = computed(() => this.houseAccess().canManageHouse);
+  readonly canSeeFinancials = computed(() => this.houseAccess().canSeeFinancials);
 
   readonly galleryImages = computed(() => {
     const house = this.house();
@@ -242,6 +264,11 @@ export class HouseDetailPageComponent implements OnInit {
       return;
     }
 
+    if (!isValidPhoneInput(this.contactPhone())) {
+      this.applicationError.set('Use um telefone com DDD e numero valido.');
+      return;
+    }
+
     if (this.applicationMessage().trim().length < 12) {
       this.applicationError.set('Escreva uma mensagem um pouco mais completa para o gestor.');
       return;
@@ -422,7 +449,7 @@ export class HouseDetailPageComponent implements OnInit {
     }
 
     const value = this.memberForm.getRawValue();
-    const email = value.email.trim().toLowerCase();
+    const email = normalizeEmailInput(value.email);
     if (!email) {
       this.memberError.set('Informe o email do morador.');
       return;
@@ -476,5 +503,17 @@ export class HouseDetailPageComponent implements OnInit {
     }
 
     return 'Nao foi possivel adicionar o morador agora.';
+  }
+
+  onPhoneInput(value: string) {
+    this.contactPhone.set(formatPhoneInput(value));
+  }
+
+  onInstagramInput(value: string) {
+    this.contactInstagram.set(formatInstagramHandleInput(value));
+  }
+
+  onMemberEmailInput(value: string) {
+    this.memberForm.controls.email.setValue(normalizeEmailInput(value), { emitEvent: false });
   }
 }

@@ -16,26 +16,34 @@
   </section>
 } @else {
   <section class="payment-table">
-    <header>
-      <span>Morador</span>
-      <span>Cobranca</span>
-      <span>Valor</span>
-      <span>Status</span>
-      <span>Acoes</span>
-    </header>
+    @if (payments().length) {
+      <header>
+        <span>Morador</span>
+        <span>Cobranca</span>
+        <span>Valor</span>
+        <span>Status</span>
+        <span>Acoes</span>
+      </header>
 
-    @for (payment of payments(); track payment.id) {
-      <article>
-        <strong>{{ payment.profile?.name ?? payment.userId }}</strong>
-        <span>{{ payment.charge?.title ?? 'Cobranca manual' }}</span>
-        <span>{{ payment.amount | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
-        <app-payment-status [status]="payment.status" />
-        <div class="actions">
-          <button type="button" class="success" (click)="markAs(payment, 'paid')">Pago</button>
-          <button type="button" class="warning" (click)="markAs(payment, 'pending')">Pendente</button>
-          <button type="button" class="danger" (click)="markAs(payment, 'overdue')">Atrasado</button>
-        </div>
+      @for (payment of paginatedPayments().items; track payment.id) {
+        <article>
+          <strong>{{ payment.profile?.name ?? payment.userId }}</strong>
+          <span>{{ payment.charge?.title ?? 'Cobranca manual' }}</span>
+          <span>{{ payment.amount | currency: 'BRL' : 'symbol' : '1.0-0' }}</span>
+          <app-payment-status [status]="payment.status" />
+          <div class="actions">
+            <button type="button" class="success" (click)="markAs(payment, 'paid')">Pago</button>
+            <button type="button" class="warning" (click)="markAs(payment, 'pending')">Pendente</button>
+            <button type="button" class="danger" (click)="markAs(payment, 'overdue')">Atrasado</button>
+          </div>
+        </article>
+      }
+    } @else {
+      <article class="empty-row">
+        <p>Nenhum pagamento encontrado para as casas visiveis.</p>
       </article>
     }
   </section>
+
+  <app-pagination [totalItems]="payments().length" [currentPage]="paginatedPayments().currentPage" [pageSize]="10" itemLabel="pagamentos" (pageChange)="currentPage.set($event)" />
 }

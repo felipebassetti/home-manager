@@ -46,10 +46,8 @@ export class App implements AfterViewInit, OnDestroy {
   }
 
   protected navItems() {
-    const accountType = this.auth.activeProfile().accountType;
-
     if (this.auth.canAccessManagement()) {
-      return accountType === 'super-admin'
+      return this.auth.isSiteAdmin()
         ? [...this.baseNavItems, { href: '/admin', label: 'Metricas' }, { href: '/my-houses', label: 'Casas' }]
         : [...this.baseNavItems, { href: '/my-houses', label: 'Minhas casas' }];
     }

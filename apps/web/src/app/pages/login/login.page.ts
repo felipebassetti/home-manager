@@ -3,6 +3,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { isValidEmailInput, normalizeEmailInput, normalizeNameInput } from '../../utils/input-formatters';
 
 type LoginAccountType = 'visitor' | 'house-admin';
 type LoginMode = 'login' | 'signup';
@@ -14,6 +15,7 @@ type LoginMode = 'login' | 'signup';
   styleUrl: './login.page.css'
 })
 export class LoginPageComponent {
+  private readonly minPasswordLength = 6;
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -54,6 +56,24 @@ export class LoginPageComponent {
     this.successMessage.set('');
     this.isSubmitting.set(true);
 
+    if (this.mode() === 'signup' && this.name().trim().length < 3) {
+      this.errorMessage.set('Use um nome com pelo menos 3 caracteres.');
+      this.isSubmitting.set(false);
+      return;
+    }
+
+    if (!isValidEmailInput(this.email())) {
+      this.errorMessage.set('Use um email valido.');
+      this.isSubmitting.set(false);
+      return;
+    }
+
+    if (this.password().length < this.minPasswordLength) {
+      this.errorMessage.set(`Use uma senha com pelo menos ${this.minPasswordLength} caracteres.`);
+      this.isSubmitting.set(false);
+      return;
+    }
+
     if (this.mode() === 'signup' && this.password() !== this.confirmPassword()) {
       this.errorMessage.set('As senhas nao conferem.');
       this.isSubmitting.set(false);
@@ -68,8 +88,8 @@ export class LoginPageComponent {
 
     const result =
       this.mode() === 'signup'
-        ? await this.auth.signUpProfile(this.name().trim(), this.email().trim(), this.password(), this.accountType())
-        : await this.auth.signInWithPassword(this.email().trim(), this.password());
+        ? await this.auth.signUpProfile(this.name().trim(), normalizeEmailInput(this.email()), this.password(), this.accountType())
+        : await this.auth.signInWithPassword(normalizeEmailInput(this.email()), this.password());
     this.isSubmitting.set(false);
 
     if ('error' in result && result.error) {
@@ -119,6 +139,46 @@ export class LoginPageComponent {
     }
 
     return 'Entrar';
+  }
+
+  protected onNameInput(value: string) {
+    this.name.set(normalizeNameInput(value));
+  }
+
+  protected onEmailInput(value: string) {
+    this.email.set(normalizeEmailInput(value));
+  }
+
+  protected nameError() {
+    if (this.mode() !== 'signup' || !this.name()) {
+      return '';
+    }
+
+    return this.name().trim().length < 3 ? 'Use pelo menos 3 caracteres.' : '';
+  }
+
+  protected emailError() {
+    if (!this.email()) {
+      return '';
+    }
+
+    return isValidEmailInput(this.email()) ? '' : 'Use um email valido.';
+  }
+
+  protected passwordError() {
+    if (!this.password()) {
+      return '';
+    }
+
+    return this.password().length < this.minPasswordLength ? `Minimo de ${this.minPasswordLength} caracteres.` : '';
+  }
+
+  protected confirmPasswordError() {
+    if (this.mode() !== 'signup' || !this.confirmPassword()) {
+      return '';
+    }
+
+    return this.password() !== this.confirmPassword() ? 'As senhas precisam ser iguais.' : '';
   }
 
   protected heroEyebrow() {

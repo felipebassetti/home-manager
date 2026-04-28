@@ -72,8 +72,9 @@ export class HouseManagePageComponent {
           })) ?? []
       })
       .subscribe({
-        next: (house) => {
+        next: async (house) => {
           this.createdHouse.set(house);
+          await this.auth.refreshAccess();
           this.feedback.set('Casa criada e publicada no marketplace.');
         },
         error: () => {

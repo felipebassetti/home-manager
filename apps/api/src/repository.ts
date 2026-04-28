@@ -1,13 +1,4 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import {
-  applications,
-  charges,
-  houses,
-  members,
-  payments,
-  profiles,
-  rooms
-} from './mock-data';
 import type {
   AddMemberInput,
   Application,
@@ -16,7 +7,6 @@ import type {
   CreateApplicationInput,
   CreateChargeInput,
   CreateHouseInput,
-  House,
   HouseDetail,
   HouseMember,
   HouseSummary,
@@ -25,258 +15,55 @@ import type {
   Profile,
   Repository,
   Room,
+  SiteRole,
   UpsertPaymentInput
 } from './types';
 
 const nowIso = () => new Date().toISOString();
 
-const withSummary = (house: House): HouseSummary => {
-  const houseRooms = rooms.filter((room) => room.houseId === house.id);
-  return {
-    ...house,
-    rooms: houseRooms,
-    availableRooms: houseRooms.filter((room) => room.available).length,
-    lowestPrice: houseRooms.reduce((lowest, room) => Math.min(lowest, room.price), Number.POSITIVE_INFINITY)
-  };
-};
-
-const withDetails = (house: House): HouseDetail => {
-  const summary = withSummary(house);
-  const houseMembers = members
-    .filter((member) => member.houseId === house.id)
-    .map((member) => ({
-      ...member,
-      profile: profiles.find((profile) => profile.id === member.userId)
-    }));
-
-  const houseCharges = charges.filter((charge) => charge.houseId === house.id);
-  const housePayments = payments
-    .filter((payment) => houseCharges.some((charge) => charge.id === payment.chargeId))
-    .map((payment) => ({
-      ...payment,
-      profile: profiles.find((profile) => profile.id === payment.userId),
-      charge: houseCharges.find((charge) => charge.id === payment.chargeId)
-    }));
-
-  return {
-    ...summary,
-    members: houseMembers,
-    applications: applications
-      .filter((application) => application.houseId === house.id)
-      .map((application) => ({
-        ...application,
-        profile: profiles.find((profile) => profile.id === application.userId)
-      })),
-    charges: houseCharges,
-    payments: housePayments
-  };
-};
-
-const toApplicationListItem = (application: Application): ApplicationListItem => {
-  const house = houses.find((item) => item.id === application.houseId);
-  const room = application.roomId ? rooms.find((item) => item.id === application.roomId) : undefined;
-
-  return {
-    ...application,
-    houseTitle: house?.title ?? 'Casa',
-    houseNeighborhood: house?.neighborhood ?? '-',
-    houseCity: house?.city ?? '-',
-    roomTitle: room?.title ?? null
-  };
-};
-
-const filterHouses = (houseList: HouseSummary[], filters: URLSearchParams) => {
-  const city = filters.get('city')?.toLowerCase();
-  const neighborhood = filters.get('neighborhood')?.toLowerCase();
-  const maxPrice = Number(filters.get('maxPrice') ?? 0);
-
-  return houseList.filter((house) => {
-    const matchesCity = city ? house.city.toLowerCase().includes(city) : true;
-    const matchesNeighborhood = neighborhood ? house.neighborhood.toLowerCase().includes(neighborhood) : true;
-    const matchesPrice = maxPrice > 0 ? house.lowestPrice <= maxPrice : true;
-    return matchesCity && matchesNeighborhood && matchesPrice;
-  });
-};
-
 type RepositoryEnv = {
-  USE_MOCK_DATA?: string;
   SUPABASE_URL?: string;
   SUPABASE_SERVICE_ROLE_KEY?: string;
 };
 
-class MockRepository implements Repository {
-  async listHouses(filters: URLSearchParams): Promise<HouseSummary[]> {
-    return filterHouses(houses.map(withSummary), filters);
-  }
-
-  async getHouseById(houseId: string): Promise<HouseDetail | null> {
-    const house = houses.find((item) => item.id === houseId);
-    return house ? withDetails(house) : null;
-  }
-
-  async createHouse(input: CreateHouseInput): Promise<HouseDetail> {
-    const createdHouse: House = {
-      id: crypto.randomUUID(),
-      ownerId: input.ownerId,
-      title: input.title,
-      description: input.description,
-      city: input.city,
-      neighborhood: input.neighborhood,
-      address: input.address,
-      imageUrl: input.imageUrl,
-      amenities: input.amenities,
-      createdAt: nowIso()
-    };
-
-    houses.unshift(createdHouse);
-    members.unshift({
-      id: crypto.randomUUID(),
-      houseId: createdHouse.id,
-      userId: input.ownerId,
-      role: 'admin',
-      status: 'active',
-      createdAt: nowIso()
-    });
-
-    input.rooms.forEach((room) => {
-      rooms.push({
-        id: crypto.randomUUID(),
-        houseId: createdHouse.id,
-        title: room.title,
-        price: room.price,
-        available: room.available
-      });
-    });
-
-    return withDetails(createdHouse);
-  }
-
-  async getApplicationById(applicationId: string): Promise<Application | null> {
-    const application = applications.find((item) => item.id === applicationId);
-    return application ? { ...application, profile: profiles.find((profile) => profile.id === application.userId) } : null;
-  }
-
-  async createApplication(input: CreateApplicationInput): Promise<Application> {
-    const createdAt = nowIso();
-    const created: Application = {
-      id: crypto.randomUUID(),
-      houseId: input.houseId,
-      roomId: input.roomId,
-      userId: input.userId,
-      contactPhone: input.contactPhone,
-      contactInstagram: input.contactInstagram?.trim() || null,
-      status: 'submitted',
-      message: input.message,
-      createdAt,
-      statusUpdatedAt: createdAt,
-      profile: profiles.find((profile) => profile.id === input.userId)
-    };
-
-    applications.unshift(created);
-    return created;
-  }
-
-  async listApplicationsByUser(userId: string): Promise<ApplicationListItem[]> {
-    return applications
-      .filter((application) => application.userId === userId)
-      .map((application) => toApplicationListItem({ ...application, profile: profiles.find((profile) => profile.id === application.userId) }))
-      .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
-  }
-
-  async updateApplicationStatus(applicationId: string, status: ApplicationStatus): Promise<Application | null> {
-    const application = applications.find((item) => item.id === applicationId);
-    if (!application) {
-      return null;
-    }
-
-    application.status = status;
-    application.statusUpdatedAt = nowIso();
-    application.profile = profiles.find((profile) => profile.id === application.userId);
-    return application;
-  }
-
-  async addMember(houseId: string, input: AddMemberInput): Promise<HouseMember> {
-    const normalizedEmail = input.email.trim().toLowerCase();
-    const profile = profiles.find((item) => item.email.toLowerCase() === normalizedEmail);
-
-    if (!profile) {
-      throw new Error('Profile not found');
-    }
-
-    const existingMember = members.find((member) => member.houseId === houseId && member.userId === profile.id);
-    if (existingMember) {
-      throw new Error('Member already exists in house');
-    }
-
-    const created: HouseMember = {
-      id: crypto.randomUUID(),
-      houseId,
-      userId: profile.id,
-      role: input.role,
-      status: 'active',
-      createdAt: nowIso()
-    };
-
-    members.unshift(created);
-    return created;
-  }
-
-  async createCharge(input: CreateChargeInput): Promise<MonthlyCharge> {
-    const created: MonthlyCharge = {
-      id: crypto.randomUUID(),
-      houseId: input.houseId,
-      title: input.title,
-      amount: input.amount,
-      dueDate: input.dueDate,
-      createdAt: nowIso()
-    };
-
-    charges.unshift(created);
-    return created;
-  }
-
-  async getChargeById(chargeId: string): Promise<MonthlyCharge | null> {
-    return charges.find((item) => item.id === chargeId) ?? null;
-  }
-
-  async listPayments(houseId?: string): Promise<Array<Payment & { profile?: Profile; charge?: MonthlyCharge }>> {
-    const houseCharges = houseId ? charges.filter((charge) => charge.houseId === houseId) : charges;
-    return payments
-      .filter((payment) => houseCharges.some((charge) => charge.id === payment.chargeId))
-      .map((payment) => ({
-        ...payment,
-        profile: profiles.find((profile) => profile.id === payment.userId),
-        charge: charges.find((charge) => charge.id === payment.chargeId)
-      }));
-  }
-
-  async upsertPayment(input: UpsertPaymentInput): Promise<Payment> {
-    const existing = input.paymentId ? payments.find((payment) => payment.id === input.paymentId) : undefined;
-
-    if (existing) {
-      existing.amount = input.amount;
-      existing.status = input.status;
-      existing.paidAt = input.paidAt ?? existing.paidAt;
-      return existing;
-    }
-
-    const created: Payment = {
-      id: crypto.randomUUID(),
-      chargeId: input.chargeId,
-      userId: input.userId,
-      amount: input.amount,
-      status: input.status,
-      paidAt: input.paidAt ?? null,
-      createdAt: nowIso()
-    };
-
-    payments.unshift(created);
-    return created;
-  }
-}
-
 class SupabaseRepository implements Repository {
   constructor(private readonly client: SupabaseClient) {}
+
+  async getUserAccess(userId: string) {
+    const [{ data: roleRows, error: rolesError }, { data: membershipRows, error: membershipsError }] = await Promise.all([
+      this.client.from('user_roles').select('role').eq('user_id', userId),
+      this.client.from('house_members').select('house_id, role').eq('user_id', userId).eq('status', 'active')
+    ]);
+
+    if (rolesError) {
+      throw rolesError;
+    }
+
+    if (membershipsError) {
+      throw membershipsError;
+    }
+
+    const { data: ownedHouses, error: ownedHousesError } = await this.client.from('houses').select('id').eq('owner_id', userId);
+    if (ownedHousesError) {
+      throw ownedHousesError;
+    }
+
+    const siteRoles = Array.from(
+      new Set(
+        ((roleRows ?? []) as Array<{ role?: unknown }>)
+          .map((item) => item.role)
+          .filter((role): role is SiteRole => role === 'site_admin' || role === 'site_operator')
+      )
+    );
+    const activeMemberships = (membershipRows ?? []) as Array<{ house_id: string; role: string }>;
+    const ownedHouseIds = ((ownedHouses ?? []) as Array<{ id: string }>).map((item) => String(item.id));
+
+    return {
+      siteRoles,
+      managedHouseIds: Array.from(new Set([...ownedHouseIds, ...activeMemberships.filter((item) => item.role === 'admin').map((item) => String(item.house_id))])),
+      memberHouseIds: Array.from(new Set([...ownedHouseIds, ...activeMemberships.map((item) => String(item.house_id))]))
+    };
+  }
 
   async listHouses(filters: URLSearchParams): Promise<HouseSummary[]> {
     let query = this.client.from('houses').select('*, rooms(*)').order('created_at', { ascending: false });
@@ -771,12 +558,8 @@ class SupabaseRepository implements Repository {
 }
 
 export const createRepository = (env: RepositoryEnv): Repository => {
-  if (
-    env.USE_MOCK_DATA === 'true' ||
-    !env.SUPABASE_URL ||
-    !env.SUPABASE_SERVICE_ROLE_KEY
-  ) {
-    return new MockRepository();
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('Supabase repository is not configured.');
   }
 
   return new SupabaseRepository(

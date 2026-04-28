@@ -72,10 +72,14 @@
               name="name"
               autocomplete="name"
               [value]="name()"
-              (input)="name.set($any($event.target).value)"
+              (input)="onNameInput($any($event.target).value)"
               [placeholder]="namePlaceholder()"
+              maxlength="80"
               required
             />
+            @if (nameError()) {
+              <small class="field-message error">{{ nameError() }}</small>
+            }
           </label>
         }
 
@@ -86,10 +90,16 @@
             name="email"
             autocomplete="email"
             [value]="email()"
-            (input)="email.set($any($event.target).value)"
+            (input)="onEmailInput($any($event.target).value)"
             placeholder="voce@email.com"
+            inputmode="email"
+            autocapitalize="off"
+            spellcheck="false"
             required
           />
+          @if (emailError()) {
+            <small class="field-message error">{{ emailError() }}</small>
+          }
         </label>
 
         <label>
@@ -101,8 +111,12 @@
             [value]="password()"
             (input)="password.set($any($event.target).value)"
             [placeholder]="auth.isSupabaseConfigured ? 'Sua senha' : '123456'"
+            minlength="6"
             required
           />
+          @if (passwordError()) {
+            <small class="field-message error">{{ passwordError() }}</small>
+          }
         </label>
 
         @if (mode() === 'signup') {
@@ -115,8 +129,12 @@
               [value]="confirmPassword()"
               (input)="confirmPassword.set($any($event.target).value)"
               placeholder="Repita a senha"
+              minlength="6"
               required
             />
+            @if (confirmPasswordError()) {
+              <small class="field-message error">{{ confirmPasswordError() }}</small>
+            }
           </label>
 
           <label class="terms-row">

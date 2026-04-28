@@ -1,20 +1,25 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { PaginationComponent } from '../../components/pagination/pagination.component';
 import type { HouseDetail, PaymentStatus } from '../../models/domain.models';
 import { ApiService } from '../../services/api.service';
+import { paginateItems } from '../../utils/pagination';
 
 @Component({
   selector: 'app-platform-metrics-page',
-  imports: [CommonModule, CurrencyPipe, RouterLink],
+  imports: [CommonModule, CurrencyPipe, RouterLink, PaginationComponent],
   templateUrl: './platform-metrics.page.html',
   styleUrl: './platform-metrics.page.css'
 })
 export class PlatformMetricsPageComponent implements OnInit {
   private readonly api = inject(ApiService);
+  private readonly pageSize = 8;
 
   readonly houses = signal<HouseDetail[]>([]);
+  readonly currentPage = signal(1);
   readonly isLoading = signal(true);
+  readonly paginatedHouses = computed(() => paginateItems(this.houses(), this.currentPage(), this.pageSize));
 
   readonly totalRooms = computed(() => this.houses().reduce((total, house) => total + house.rooms.length, 0));
   readonly totalOpenRooms = computed(() => this.houses().reduce((total, house) => total + house.availableRooms, 0));
@@ -28,6 +33,7 @@ export class PlatformMetricsPageComponent implements OnInit {
     this.api.listHouses().subscribe((houses) => {
       if (!houses.length) {
         this.houses.set([]);
+        this.currentPage.set(1);
         this.isLoading.set(false);
         return;
       }
@@ -44,6 +50,7 @@ export class PlatformMetricsPageComponent implements OnInit {
           remaining -= 1;
           if (remaining === 0) {
             this.houses.set(details.sort((left, right) => right.createdAt.localeCompare(left.createdAt)));
+            this.currentPage.set(1);
             this.isLoading.set(false);
           }
         });

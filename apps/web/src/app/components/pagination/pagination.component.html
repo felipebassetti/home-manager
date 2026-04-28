@@ -1,0 +1,25 @@
+@if (totalItems > 0 && totalPages > 1) {
+  <nav class="pagination" aria-label="Paginacao">
+    <p class="pagination-summary">Mostrando {{ startItem }}-{{ endItem }} de {{ totalItems }} {{ itemLabel }}</p>
+
+    <div class="pagination-controls">
+      <button type="button" class="pagination-nav" (click)="changePage(currentPageSafe - 1)" [disabled]="currentPageSafe === 1">
+        Anterior
+      </button>
+
+      @for (page of visiblePages; track $index) {
+        @if (page === 'ellipsis') {
+          <span class="pagination-ellipsis">...</span>
+        } @else {
+          <button type="button" [class.active]="currentPageSafe === page" (click)="changePage(page)">
+            {{ page }}
+          </button>
+        }
+      }
+
+      <button type="button" class="pagination-nav" (click)="changePage(currentPageSafe + 1)" [disabled]="currentPageSafe === totalPages">
+        Proxima
+      </button>
+    </div>
+  </nav>
+}

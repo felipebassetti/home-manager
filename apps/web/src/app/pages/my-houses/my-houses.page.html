@@ -55,7 +55,7 @@
   </section>
 } @else {
   <section class="house-admin-list">
-    @for (house of visibleHouses(); track house.id) {
+    @for (house of paginatedVisibleHouses().items; track house.id) {
       <article class="managed-house spotlight-card" appSpotlightCard>
         <img [src]="house.imageUrl" [alt]="house.title" />
 
@@ -85,4 +85,6 @@
       </article>
     }
   </section>
+
+  <app-pagination [totalItems]="visibleHouses().length" [currentPage]="paginatedVisibleHouses().currentPage" [pageSize]="6" itemLabel="casas" (pageChange)="currentPage.set($event)" />
 }

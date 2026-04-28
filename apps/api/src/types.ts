@@ -1,7 +1,13 @@
 export type MemberRole = 'admin' | 'member';
-export type AccountType = 'house-admin' | 'super-admin' | 'member' | 'visitor';
+export type SiteRole = 'site_admin' | 'site_operator';
 export type ApplicationStatus = 'submitted' | 'in_review' | 'contact_soon' | 'rejected';
 export type PaymentStatus = 'pending' | 'paid' | 'overdue';
+
+export interface UserAccess {
+  siteRoles: SiteRole[];
+  managedHouseIds: string[];
+  memberHouseIds: string[];
+}
 
 export interface Profile {
   id: string;
@@ -141,6 +147,7 @@ export interface UpsertPaymentInput {
 }
 
 export interface Repository {
+  getUserAccess(userId: string): Promise<UserAccess>;
   listHouses(filters: URLSearchParams): Promise<HouseSummary[]>;
   getHouseById(houseId: string): Promise<HouseDetail | null>;
   createHouse(input: CreateHouseInput): Promise<HouseDetail>;

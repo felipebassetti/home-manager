@@ -9,7 +9,7 @@
 <app-filters [initialFilters]="activeFilters()" (filtersChange)="onFiltersChange($event)" />
 
 <section class="results-grid">
-  @for (house of houses(); track house.id) {
+  @for (house of paginatedHouses().items; track house.id) {
     <app-house-card [house]="house" />
   } @empty {
     <div class="empty-state">
@@ -18,3 +18,5 @@
     </div>
   }
 </section>
+
+<app-pagination [totalItems]="houses().length" [currentPage]="paginatedHouses().currentPage" [pageSize]="12" itemLabel="casas" (pageChange)="currentPage.set($event)" />

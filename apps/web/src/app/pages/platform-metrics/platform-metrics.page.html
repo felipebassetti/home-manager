@@ -51,7 +51,7 @@
     </header>
 
     <div class="table-list">
-      @for (house of houses(); track house.id) {
+      @for (house of paginatedHouses().items; track house.id) {
         <article>
           <div>
             <strong>{{ house.title }}</strong>
@@ -66,4 +66,6 @@
       }
     </div>
   </section>
+
+  <app-pagination [totalItems]="houses().length" [currentPage]="paginatedHouses().currentPage" [pageSize]="8" itemLabel="casas" (pageChange)="currentPage.set($event)" />
 }

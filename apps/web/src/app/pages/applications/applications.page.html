@@ -17,47 +17,96 @@
     </section>
   }
 
-  <section class="filter-row">
-    @for (filter of ['all', 'submitted', 'in_review', 'contact_soon', 'rejected']; track filter) {
-      <button type="button" [class.active]="activeFilter() === filter" (click)="activeFilter.set($any(filter))">
-        {{ filterLabel($any(filter)) }}
-      </button>
-    }
+  <section class="table-toolbar">
+    <label class="search-field">
+      <span>Buscar</span>
+      <input
+        type="text"
+        [value]="searchTerm()"
+        (input)="setSearchTerm($any($event.target).value)"
+        placeholder="Casa, bairro, vaga, telefone ou mensagem"
+      />
+    </label>
+
+    <div class="filter-row">
+      @for (filter of ['all', 'submitted', 'in_review', 'contact_soon', 'rejected']; track filter) {
+        <button type="button" [class.active]="activeFilter() === filter" (click)="setFilter($any(filter))">
+          {{ filterLabel($any(filter)) }}
+        </button>
+      }
+    </div>
   </section>
 
-  <section class="applications-list">
-    @for (application of visibleApplications(); track application.id) {
-      <article class="application-card spotlight-card" appSpotlightCard>
-        <div class="application-head">
-          <div>
-            <strong>{{ application.houseTitle }}</strong>
-            <p>{{ application.houseCity }} - {{ application.houseNeighborhood }}</p>
-          </div>
-          <span class="status-pill" [ngClass]="application.status">{{ statusLabel(application.status) }}</span>
-        </div>
+  @if (filteredApplications().length) {
+    <section class="applications-table-shell">
+      <div class="table-head">
+        <strong>{{ filteredApplications().length }} candidaturas filtradas</strong>
+        <span>{{ activeFilter() === 'all' ? 'Todos os status' : filterLabel(activeFilter()) }}</span>
+      </div>
 
-        <div class="application-meta">
-          <span>{{ application.roomTitle ?? 'Qualquer vaga' }}</span>
-          <span>Enviada em {{ application.createdAt | date: 'dd/MM/yyyy' }}</span>
-          <span>Atualizada em {{ application.statusUpdatedAt | date: 'dd/MM/yyyy' }}</span>
-        </div>
+      <div class="table-scroll">
+        <table class="applications-table">
+          <thead>
+            <tr>
+              <th>Casa</th>
+              <th>Vaga</th>
+              <th>Status</th>
+              <th>Contato</th>
+              <th>Mensagem</th>
+              <th>Datas</th>
+              <th></th>
+            </tr>
+          </thead>
 
-        <p class="message">{{ application.message }}</p>
+          <tbody>
+            @for (application of paginatedApplications().items; track application.id) {
+              <tr>
+                <td>
+                  <div class="cell-stack">
+                    <strong>{{ application.houseTitle }}</strong>
+                    <span>{{ application.houseCity }} - {{ application.houseNeighborhood }}</span>
+                  </div>
+                </td>
+                <td>{{ application.roomTitle ?? 'Qualquer vaga' }}</td>
+                <td>
+                  <span class="status-pill" [ngClass]="application.status">{{ statusLabel(application.status) }}</span>
+                </td>
+                <td>
+                  <div class="cell-stack compact">
+                    <span>{{ application.contactPhone }}</span>
+                    @if (application.contactInstagram) {
+                      <span>{{ application.contactInstagram }}</span>
+                    }
+                  </div>
+                </td>
+                <td class="message-cell">{{ messagePreview(application.message) }}</td>
+                <td>
+                  <div class="cell-stack compact">
+                    <span>Envio: {{ application.createdAt | date: 'dd/MM/yyyy' }}</span>
+                    <span>Update: {{ application.statusUpdatedAt | date: 'dd/MM/yyyy' }}</span>
+                  </div>
+                </td>
+                <td class="action-cell">
+                  <a [routerLink]="['/houses', application.houseId]">Abrir</a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  } @else {
+    <article class="empty-panel spotlight-card" appSpotlightCard>
+      <strong>Nenhuma candidatura por aqui.</strong>
+      <p>Quando voce enviar uma candidatura, ela vai aparecer nesta aba.</p>
+    </article>
+  }
 
-        <div class="contact-meta">
-          <span>{{ application.contactPhone }}</span>
-          @if (application.contactInstagram) {
-            <span>{{ application.contactInstagram }}</span>
-          }
-        </div>
-
-        <a [routerLink]="['/houses', application.houseId]">Abrir casa</a>
-      </article>
-    } @empty {
-      <article class="empty-panel spotlight-card" appSpotlightCard>
-        <strong>Nenhuma candidatura por aqui.</strong>
-        <p>Quando voce enviar uma candidatura, ela vai aparecer nesta aba.</p>
-      </article>
-    }
-  </section>
+  <app-pagination
+    [totalItems]="filteredApplications().length"
+    [currentPage]="paginatedApplications().currentPage"
+    [pageSize]="6"
+    itemLabel="candidaturas"
+    (pageChange)="currentPage.set($event)"
+  />
 }
