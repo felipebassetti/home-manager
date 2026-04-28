@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --local --port 8787",
+    "dev:local": "wrangler dev --local --port 8787",
+    "dev:cloudflare": "wrangler dev --remote --port 8787",
     "build": "wrangler deploy --dry-run",
     "deploy": "wrangler deploy"
   },

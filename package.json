@@ -4,8 +4,14 @@
   "private": true,
   "packageManager": "pnpm@10.33.2",
   "scripts": {
-    "dev:web": "pnpm --dir apps/web start",
+    "dev:web": "pnpm --dir apps/web dev",
+    "dev:web:local": "pnpm --dir apps/web dev:local",
+    "dev:web:cloudflare": "pnpm --dir apps/web dev:cloudflare",
     "dev:api": "pnpm --dir apps/api dev",
+    "dev:api:local": "pnpm --dir apps/api dev:local",
+    "dev:api:cloudflare": "pnpm --dir apps/api dev:cloudflare",
+    "dev:local": "pnpm -r --parallel --filter flatsharing-web --filter flatsharing-api run dev:local",
+    "dev:cloudflare": "pnpm -r --parallel --filter flatsharing-web --filter flatsharing-api run dev:cloudflare",
     "build:web": "pnpm --dir apps/web build",
     "build:api": "pnpm --dir apps/api build",
     "build": "pnpm build:web && pnpm build:api"

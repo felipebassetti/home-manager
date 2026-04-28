@@ -50,22 +50,40 @@ supabase/
 
 ## Como rodar
 
-No root:
+Instalacao:
 
 ```bash
 pnpm install
+```
+
+Fluxo padrao, frontend apontando para a API do Worker em modo Cloudflare:
+
+```bash
+pnpm dev:cloudflare
+```
+
+Fluxo 100% local, frontend + API local:
+
+```bash
+pnpm dev:local
+```
+
+Se quiser subir cada parte separadamente:
+
+```bash
 pnpm dev:web
+pnpm dev:api:cloudflare
+pnpm dev:api:local
 ```
 
 App Angular: `http://localhost:4200`
 
-Se quiser subir o Worker tambem:
+API de desenvolvimento sempre exposta em: `http://127.0.0.1:8787`
 
-```bash
-pnpm dev:api
-```
+Durante `ng serve`, o frontend sempre fala com `/api` e o proxy do Angular redireciona para a porta `8787`. A diferenca entre `cloudflare` e `local` fica no modo do `wrangler dev`:
 
-Worker local: `http://127.0.0.1:8787`
+- `pnpm dev:cloudflare`: `wrangler dev --remote`
+- `pnpm dev:local`: `wrangler dev --local`
 
 ## Build
 
@@ -75,13 +93,7 @@ pnpm build
 
 ## Modo mock
 
-O frontend usa `apps/web/src/environments/environment.ts` com `useMockApi: true`.
-
-Isso significa:
-
-- a SPA abre mesmo sem backend
-- criacao de casa, candidatura e alteracao de pagamento funcionam localmente
-- os dados vivem em memoria durante a sessao da aplicacao
+O frontend agora usa `/api` por padrao e tenta falar com o Worker em desenvolvimento. Se a API nao estiver rodando, parte dos fluxos ainda cai em mocks locais, mas o modo recomendado para desenvolvimento e subir um dos dois stacks acima.
 
 ## Preparacao para Supabase
 
@@ -133,7 +145,6 @@ POST /payments
 ## Proxima fase recomendada
 
 1. Conectar Supabase Auth e tabela `profiles`
-2. Trocar `useMockApi` para `false`
+2. Persistir criacao de casas, membros e cobrancas
 3. Subir Worker com bindings reais
-4. Persistir criacao de casas, membros e cobrancas
-5. Integrar Pagar.me no fluxo de cobranca
+4. Integrar Pagar.me no fluxo de cobranca

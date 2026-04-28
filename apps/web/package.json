@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --proxy-config proxy.api.json",
+    "dev": "ng serve --proxy-config proxy.api.json",
+    "dev:local": "ng serve --proxy-config proxy.api.json",
+    "dev:cloudflare": "ng serve --proxy-config proxy.api.json",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

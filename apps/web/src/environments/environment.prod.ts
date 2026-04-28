@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   apiBaseUrl: '/api',
-  useMockApi: true,
+  useMockApi: false,
   supabaseUrl: '',
   supabaseAnonKey: ''
 };
