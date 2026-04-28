@@ -18,6 +18,7 @@
     "build:web": "pnpm --dir apps/web build",
     "build:api": "pnpm --dir apps/api build",
     "build": "pnpm build:web && pnpm build:api",
+    "deploy:web": "pnpm --dir apps/web build && pnpm --dir apps/web run deploy",
     "supabase:cli:version": "node scripts/supabase-cli.cjs --version",
     "supabase:db:push": "node scripts/supabase-db-push.cjs",
     "supabase:db:push:dry-run": "node scripts/supabase-db-push.cjs --dry-run"

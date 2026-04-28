@@ -6,7 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { isValidEmailInput, normalizeEmailInput, normalizeNameInput } from '../../utils/input-formatters';
 
 type LoginAccountType = 'visitor' | 'house-admin';
-type LoginMode = 'login' | 'signup';
+type LoginMode = 'login' | 'signup' | 'forgot-password' | 'reset-password';
 
 @Component({
   selector: 'app-login-page',
@@ -45,10 +45,34 @@ export class LoginPageComponent {
   protected errorMessage = signal('');
   protected successMessage = signal('');
 
+  constructor() {
+    this.route.queryParamMap.subscribe((params) => {
+      const requestedMode = params.get('mode');
+
+      if (requestedMode === 'recovery') {
+        this.mode.set('reset-password');
+        this.errorMessage.set('');
+        this.successMessage.set('Defina uma nova senha para recuperar o acesso da sua conta.');
+        this.password.set('');
+        this.confirmPassword.set('');
+        return;
+      }
+
+      if (this.mode() === 'reset-password') {
+        this.mode.set('login');
+      }
+    });
+  }
+
   switchMode(mode: LoginMode) {
     this.mode.set(mode);
     this.errorMessage.set('');
     this.successMessage.set('');
+
+    if (mode === 'forgot-password') {
+      this.password.set('');
+      this.confirmPassword.set('');
+    }
   }
 
   async submit() {
@@ -56,13 +80,33 @@ export class LoginPageComponent {
     this.successMessage.set('');
     this.isSubmitting.set(true);
 
+    if (this.mode() === 'forgot-password') {
+      if (!isValidEmailInput(this.email())) {
+        this.errorMessage.set('Use um email valido.');
+        this.isSubmitting.set(false);
+        return;
+      }
+
+      const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/login?mode=recovery` : undefined;
+      const result = await this.auth.requestPasswordReset(normalizeEmailInput(this.email()), redirectTo);
+      this.isSubmitting.set(false);
+
+      if ('error' in result && result.error) {
+        this.errorMessage.set(result.error.message);
+        return;
+      }
+
+      this.successMessage.set('Enviamos um link de recuperacao para seu email. Abra a mensagem e volte por ela para redefinir a senha.');
+      return;
+    }
+
     if (this.mode() === 'signup' && this.name().trim().length < 3) {
       this.errorMessage.set('Use um nome com pelo menos 3 caracteres.');
       this.isSubmitting.set(false);
       return;
     }
 
-    if (!isValidEmailInput(this.email())) {
+    if (this.mode() !== 'reset-password' && !isValidEmailInput(this.email())) {
       this.errorMessage.set('Use um email valido.');
       this.isSubmitting.set(false);
       return;
@@ -74,7 +118,7 @@ export class LoginPageComponent {
       return;
     }
 
-    if (this.mode() === 'signup' && this.password() !== this.confirmPassword()) {
+    if ((this.mode() === 'signup' || this.mode() === 'reset-password') && this.password() !== this.confirmPassword()) {
       this.errorMessage.set('As senhas nao conferem.');
       this.isSubmitting.set(false);
       return;
@@ -83,6 +127,28 @@ export class LoginPageComponent {
     if (this.mode() === 'signup' && !this.acceptedTerms()) {
       this.errorMessage.set('Aceite os termos para criar sua conta.');
       this.isSubmitting.set(false);
+      return;
+    }
+
+    if (this.mode() === 'reset-password') {
+      const result = await this.auth.updatePassword(this.password());
+      this.isSubmitting.set(false);
+
+      if ('error' in result && result.error) {
+        this.errorMessage.set(result.error.message);
+        return;
+      }
+
+      await this.auth.signOut();
+      this.password.set('');
+      this.confirmPassword.set('');
+      this.successMessage.set('Senha atualizada com sucesso. Agora faca login com a nova senha.');
+      this.mode.set('login');
+      await this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: {},
+        replaceUrl: true
+      });
       return;
     }
 
@@ -134,6 +200,14 @@ export class LoginPageComponent {
       return 'Enviando...';
     }
 
+    if (this.mode() === 'forgot-password') {
+      return 'Enviar link de recuperacao';
+    }
+
+    if (this.mode() === 'reset-password') {
+      return 'Salvar nova senha';
+    }
+
     if (this.mode() === 'signup') {
       return this.accountType() === 'house-admin' ? 'Criar conta de gestor' : 'Criar conta de candidato';
     }
@@ -174,7 +248,7 @@ export class LoginPageComponent {
   }
 
   protected confirmPasswordError() {
-    if (this.mode() !== 'signup' || !this.confirmPassword()) {
+    if ((this.mode() !== 'signup' && this.mode() !== 'reset-password') || !this.confirmPassword()) {
       return '';
     }
 
@@ -182,6 +256,10 @@ export class LoginPageComponent {
   }
 
   protected heroEyebrow() {
+    if (this.mode() === 'forgot-password' || this.mode() === 'reset-password') {
+      return 'Recuperacao de acesso';
+    }
+
     if (this.mode() === 'login') {
       return 'Acesso flatsharing';
     }
@@ -190,6 +268,14 @@ export class LoginPageComponent {
   }
 
   protected heroTitle() {
+    if (this.mode() === 'forgot-password') {
+      return 'Recupere o acesso da sua conta com seguranca.';
+    }
+
+    if (this.mode() === 'reset-password') {
+      return 'Crie uma nova senha para voltar a entrar na flatsharing.';
+    }
+
     if (this.mode() === 'login') {
       return 'Entre para continuar sua jornada na flatsharing.';
     }
@@ -200,6 +286,14 @@ export class LoginPageComponent {
   }
 
   protected heroDescription() {
+    if (this.mode() === 'forgot-password') {
+      return 'Informe seu email para receber um link de recuperacao e redefinir sua senha sem precisar criar uma nova conta.';
+    }
+
+    if (this.mode() === 'reset-password') {
+      return 'Use uma nova senha segura para recuperar seu login e seguir acompanhando casas, candidaturas, moradores e pagamentos.';
+    }
+
     if (this.mode() === 'login') {
       return 'Acesse sua conta para acompanhar candidaturas, casas, moradores e pagamentos em um so lugar.';
     }
@@ -210,6 +304,10 @@ export class LoginPageComponent {
   }
 
   protected heroPill() {
+    if (this.mode() === 'forgot-password' || this.mode() === 'reset-password') {
+      return 'Fluxo simples para recuperar seu acesso';
+    }
+
     if (this.mode() === 'login') {
       return 'Marketplace e gestao no mesmo sistema';
     }

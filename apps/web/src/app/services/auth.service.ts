@@ -178,6 +178,30 @@ export class AuthService {
     return this.signUpProfile(name, email, password, 'visitor');
   }
 
+  async requestPasswordReset(email: string, redirectTo?: string) {
+    const normalizedEmail = this.normalizeEmail(email);
+
+    if (!this.supabase) {
+      return {
+        error: { message: 'Supabase auth nao esta configurado neste ambiente.' }
+      };
+    }
+
+    return this.supabase.auth.resetPasswordForEmail(normalizedEmail, {
+      redirectTo
+    });
+  }
+
+  async updatePassword(password: string) {
+    if (!this.supabase) {
+      return {
+        error: { message: 'Supabase auth nao esta configurado neste ambiente.' }
+      };
+    }
+
+    return this.supabase.auth.updateUser({ password });
+  }
+
   async signOut() {
     if (!this.supabase) {
       this.sessionProfile.set(null);

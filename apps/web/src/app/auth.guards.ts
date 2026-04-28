@@ -28,9 +28,14 @@ export const requireManagementGuard: CanActivateFn = async (_route, state) => {
   return auth.canAccessManagement() ? true : redirectTree(router, '/');
 };
 
-export const guestOnlyGuard: CanActivateFn = async () => {
+export const guestOnlyGuard: CanActivateFn = async (route) => {
   const auth = inject(AuthService);
   const router = inject(Router);
+
+  if (route.queryParamMap.get('mode') === 'recovery') {
+    return true;
+  }
+
   await auth.waitUntilReady();
 
   if (!auth.isAuthenticated()) {
