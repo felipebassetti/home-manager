@@ -403,7 +403,8 @@
 
   .login-entry {
     min-height: 42px;
-    width: 100%;
+    width: auto;
+    padding-inline: 16px;
   }
 
   .account-box {
