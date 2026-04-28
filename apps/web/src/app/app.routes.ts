@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { guestOnlyGuard, requireAuthGuard, requireManagementGuard } from './auth.guards';
 import { ApplicationsPageComponent } from './pages/applications/applications.page';
 import { DashboardPageComponent } from './pages/dashboard/dashboard.page';
 import { HomePageComponent } from './pages/home/home.page';
@@ -12,14 +13,14 @@ import { PlatformMetricsPageComponent } from './pages/platform-metrics/platform-
 
 export const routes: Routes = [
   { path: '', component: HomePageComponent },
-  { path: 'login', component: LoginPageComponent },
+  { path: 'login', component: LoginPageComponent, canActivate: [guestOnlyGuard] },
   { path: 'houses', component: HousesPageComponent },
   { path: 'houses/:id', component: HouseDetailPageComponent },
-  { path: 'applications', component: ApplicationsPageComponent },
-  { path: 'dashboard', component: DashboardPageComponent },
-  { path: 'my-houses', component: MyHousesPageComponent },
-  { path: 'admin', component: PlatformMetricsPageComponent },
-  { path: 'house-manage', component: HouseManagePageComponent },
-  { path: 'payments', component: PaymentsPageComponent },
+  { path: 'applications', component: ApplicationsPageComponent, canActivate: [requireAuthGuard] },
+  { path: 'dashboard', component: DashboardPageComponent, canActivate: [requireManagementGuard] },
+  { path: 'my-houses', component: MyHousesPageComponent, canActivate: [requireManagementGuard] },
+  { path: 'admin', component: PlatformMetricsPageComponent, canActivate: [requireManagementGuard] },
+  { path: 'house-manage', component: HouseManagePageComponent, canActivate: [requireManagementGuard] },
+  { path: 'payments', component: PaymentsPageComponent, canActivate: [requireManagementGuard] },
   { path: '**', redirectTo: '' }
 ];

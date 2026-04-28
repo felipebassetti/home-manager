@@ -8,6 +8,45 @@ export interface Env {
   SUPABASE_SERVICE_ROLE_KEY?: string;
 }
 
+const isValidDateOnly = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00`));
+const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+const validateCreateChargeInput = (input: CreateChargeInput) => {
+  if (!input.houseId?.trim()) {
+    return 'houseId is required';
+  }
+
+  if (!input.title?.trim()) {
+    return 'title is required';
+  }
+
+  if (!Number.isFinite(input.amount) || input.amount <= 0) {
+    return 'amount must be greater than zero';
+  }
+
+  if (!isValidDateOnly(input.dueDate?.trim() ?? '')) {
+    return 'dueDate must use YYYY-MM-DD';
+  }
+
+  return null;
+};
+
+const validateAddMemberInput = (input: AddMemberInput) => {
+  if (!input.email?.trim()) {
+    return 'email is required';
+  }
+
+  if (!isValidEmail(input.email.trim())) {
+    return 'email must be valid';
+  }
+
+  if (input.role !== 'admin' && input.role !== 'member') {
+    return 'role must be admin or member';
+  }
+
+  return null;
+};
+
 const json = (data: unknown, init: ResponseInit = {}, origin = '*') =>
   new Response(JSON.stringify(data), {
     ...init,
@@ -78,13 +117,31 @@ export default {
       if (request.method === 'POST' && /^\/houses\/[^/]+\/members$/.test(path)) {
         const houseId = path.split('/')[2];
         const payload = await parseBody<AddMemberInput>(request);
-        const data = await repository.addMember(houseId, payload);
+        const validationError = validateAddMemberInput(payload);
+        if (validationError) {
+          return json({ error: validationError }, { status: 400 }, origin);
+        }
+
+        const data = await repository.addMember(houseId, {
+          email: payload.email.trim(),
+          role: payload.role
+        });
         return json({ data }, { status: 201 }, origin);
       }
 
       if (request.method === 'POST' && path === '/charges') {
         const payload = await parseBody<CreateChargeInput>(request);
-        const data = await repository.createCharge(payload);
+        const validationError = validateCreateChargeInput(payload);
+        if (validationError) {
+          return json({ error: validationError }, { status: 400 }, origin);
+        }
+
+        const data = await repository.createCharge({
+          ...payload,
+          houseId: payload.houseId.trim(),
+          title: payload.title.trim(),
+          dueDate: payload.dueDate.trim()
+        });
         return json({ data }, { status: 201 }, origin);
       }
 

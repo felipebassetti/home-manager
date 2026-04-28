@@ -1,0 +1,10 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "flatsharing-web",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-04-26",
+  "assets": {
+    "directory": "./dist/flatsharing-web/browser",
+    "binding": "ASSETS"
+  }
+}

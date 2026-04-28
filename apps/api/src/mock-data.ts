@@ -9,17 +9,17 @@ import type {
 } from './types';
 
 export const profiles: Profile[] = [
-  { id: 'user-admin-1', name: 'Ana Paula Souza', email: 'ana@republichouse.app' },
-  { id: 'user-member-1', name: 'Bruno Lima', email: 'bruno@republichouse.app' },
-  { id: 'user-member-2', name: 'Carla Nunes', email: 'carla@republichouse.app' },
-  { id: 'user-visitor-1', name: 'Diego Martins', email: 'diego@republichouse.app' }
+  { id: 'user-admin-1', name: 'Ana Paula Souza', email: 'ana@flatsharing.app' },
+  { id: 'user-member-1', name: 'Bruno Lima', email: 'bruno@flatsharing.app' },
+  { id: 'user-member-2', name: 'Carla Nunes', email: 'carla@flatsharing.app' },
+  { id: 'user-visitor-1', name: 'Diego Martins', email: 'diego@flatsharing.app' }
 ];
 
 export const houses: House[] = [
   {
     id: 'house-curitiba-centro',
     ownerId: 'user-admin-1',
-    title: 'Republic House Centro',
+    title: 'flatsharing Centro',
     description: 'Casa compartilhada com rotina tranquila, internet de alta velocidade e foco em estudantes e jovens profissionais em Curitiba.',
     city: 'Curitiba',
     neighborhood: 'Centro',
@@ -51,6 +51,126 @@ export const houses: House[] = [
     imageUrl: 'assets/images/house-savassi.png',
     amenities: ['contas inclusas', 'espaco de estudo', 'mercado perto'],
     createdAt: '2026-04-12T15:00:00.000Z'
+  },
+  {
+    id: 'house-curitiba-bigorrilho',
+    ownerId: 'user-admin-1',
+    title: 'Casa Bigorrilho Jardim',
+    description: 'Casa com quartos individuais, cozinha ampla e facil acesso a ciclovias, mercados e linhas para o centro.',
+    city: 'Curitiba',
+    neighborhood: 'Bigorrilho',
+    address: 'Rua Padre Anchieta, 1850',
+    imageUrl: 'assets/images/house-pinheiros.png',
+    amenities: ['wifi 600mb', 'quintal', 'cozinha ampla', 'bicicletario'],
+    createdAt: '2026-04-10T11:30:00.000Z'
+  },
+  {
+    id: 'house-curitiba-cabral',
+    ownerId: 'user-admin-1',
+    title: 'Moradia Cabral Norte',
+    description: 'Imovel silencioso com escritorio compartilhado, lavanderia e quartos para rotina de estudo e trabalho remoto.',
+    city: 'Curitiba',
+    neighborhood: 'Cabral',
+    address: 'Rua Sao Pedro, 640',
+    imageUrl: 'assets/images/house-curitiba.png',
+    amenities: ['coworking', 'lavanderia', 'limpeza quinzenal', 'sala de TV'],
+    createdAt: '2026-04-09T10:00:00.000Z'
+  },
+  {
+    id: 'house-curitiba-cristo-rei',
+    ownerId: 'user-admin-1',
+    title: 'flatsharing Cristo Rei',
+    description: 'Casa perto de mercados e transporte, com quartos compactos, contas organizadas e rotina tranquila.',
+    city: 'Curitiba',
+    neighborhood: 'Cristo Rei',
+    address: 'Rua Oyapock, 322',
+    imageUrl: 'assets/images/house-savassi.png',
+    amenities: ['contas inclusas', 'cozinha equipada', 'mercado perto', 'wifi 400mb'],
+    createdAt: '2026-04-08T14:20:00.000Z'
+  },
+  {
+    id: 'house-curitiba-prado-velho',
+    ownerId: 'user-admin-1',
+    title: 'Casa Prado Velho Campus',
+    description: 'Opcao pratica para estudantes, com vagas economicas, area de estudo e deslocamento rapido para universidades.',
+    city: 'Curitiba',
+    neighborhood: 'Prado Velho',
+    address: 'Rua Imaculada Conceicao, 920',
+    imageUrl: 'assets/images/house-curitiba.png',
+    amenities: ['espaco de estudo', 'contas inclusas', 'lavanderia', 'onibus perto'],
+    createdAt: '2026-04-07T09:40:00.000Z'
+  },
+  {
+    id: 'house-curitiba-campo-comprido',
+    ownerId: 'user-admin-1',
+    title: 'Casa Campo Comprido',
+    description: 'Sobrado com quintal, quartos mobiliados e gestao simples para quem busca uma rotina mais residencial.',
+    city: 'Curitiba',
+    neighborhood: 'Campo Comprido',
+    address: 'Rua Eduardo Sprada, 4110',
+    imageUrl: 'assets/images/house-pinheiros.png',
+    amenities: ['quintal', 'quartos mobiliados', 'garagem bike', 'wifi 500mb'],
+    createdAt: '2026-04-06T16:15:00.000Z'
+  },
+  {
+    id: 'house-curitiba-bacacheri',
+    ownerId: 'user-admin-1',
+    title: 'Casa Bacacheri',
+    description: 'Casa bem ventilada, com quartos individuais, area externa e combinados claros para despesas mensais.',
+    city: 'Curitiba',
+    neighborhood: 'Bacacheri',
+    address: 'Rua Estados Unidos, 1212',
+    imageUrl: 'assets/images/house-savassi.png',
+    amenities: ['area externa', 'limpeza semanal', 'armario individual', 'wifi 500mb'],
+    createdAt: '2026-04-05T13:10:00.000Z'
+  },
+  {
+    id: 'house-curitiba-boa-vista',
+    ownerId: 'user-admin-1',
+    title: 'Casa Boa Vista',
+    description: 'Moradia compartilhada com valores acessiveis, cozinha reformada e facil acesso a comercio de bairro.',
+    city: 'Curitiba',
+    neighborhood: 'Boa Vista',
+    address: 'Avenida Parana, 3100',
+    imageUrl: 'assets/images/house-curitiba.png',
+    amenities: ['cozinha reformada', 'mercado perto', 'contas rateadas', 'lavanderia'],
+    createdAt: '2026-04-04T08:00:00.000Z'
+  },
+  {
+    id: 'house-curitiba-agua-verde',
+    ownerId: 'user-admin-1',
+    title: 'Suite Agua Verde',
+    description: 'Casa organizada em rua tranquila, com suites e quartos individuais para moradores que valorizam privacidade.',
+    city: 'Curitiba',
+    neighborhood: 'Agua Verde',
+    address: 'Rua Chile, 690',
+    imageUrl: 'assets/images/house-pinheiros.png',
+    amenities: ['suite', 'cozinha equipada', 'lavanderia', 'limpeza semanal'],
+    createdAt: '2026-04-03T12:45:00.000Z'
+  },
+  {
+    id: 'house-curitiba-juveve',
+    ownerId: 'user-admin-1',
+    title: 'Casa Juveve Compacta',
+    description: 'Imovel pequeno e bem localizado, ideal para poucos moradores e rotina com despesas previsiveis.',
+    city: 'Curitiba',
+    neighborhood: 'Juveve',
+    address: 'Rua Rocha Pombo, 480',
+    imageUrl: 'assets/images/house-savassi.png',
+    amenities: ['poucos moradores', 'wifi 500mb', 'limpeza quinzenal', 'onibus perto'],
+    createdAt: '2026-04-02T17:00:00.000Z'
+  },
+  {
+    id: 'house-curitiba-portao',
+    ownerId: 'user-admin-1',
+    title: 'Casa Portao Sul',
+    description: 'Casa com quartos amplos, area comum integrada e acesso rapido a shopping, terminal e mercados.',
+    city: 'Curitiba',
+    neighborhood: 'Portao',
+    address: 'Avenida Presidente Kennedy, 3900',
+    imageUrl: 'assets/images/house-curitiba.png',
+    amenities: ['quartos amplos', 'area comum', 'terminal perto', 'wifi 600mb'],
+    createdAt: '2026-04-01T09:30:00.000Z'
   }
 ];
 
@@ -61,7 +181,30 @@ export const rooms: Room[] = [
   { id: 'room-batel-1', houseId: 'house-curitiba-batel', title: 'Quarto Premium', price: 1320, available: true },
   { id: 'room-batel-2', houseId: 'house-curitiba-batel', title: 'Quarto Standard', price: 1160, available: false },
   { id: 'room-reboucas-1', houseId: 'house-curitiba-reboucas', title: 'Quarto Frente', price: 790, available: true },
-  { id: 'room-reboucas-2', houseId: 'house-curitiba-reboucas', title: 'Quarto Fundos', price: 740, available: true }
+  { id: 'room-reboucas-2', houseId: 'house-curitiba-reboucas', title: 'Quarto Fundos', price: 740, available: true },
+  { id: 'room-bigorrilho-1', houseId: 'house-curitiba-bigorrilho', title: 'Quarto Jardim', price: 1180, available: true },
+  { id: 'room-bigorrilho-2', houseId: 'house-curitiba-bigorrilho', title: 'Quarto Varanda', price: 1250, available: true },
+  { id: 'room-bigorrilho-3', houseId: 'house-curitiba-bigorrilho', title: 'Quarto Compacto', price: 980, available: false },
+  { id: 'room-cabral-1', houseId: 'house-curitiba-cabral', title: 'Quarto Home Office', price: 1240, available: true },
+  { id: 'room-cabral-2', houseId: 'house-curitiba-cabral', title: 'Quarto Individual', price: 1090, available: true },
+  { id: 'room-cristo-rei-1', houseId: 'house-curitiba-cristo-rei', title: 'Quarto Sol', price: 920, available: true },
+  { id: 'room-cristo-rei-2', houseId: 'house-curitiba-cristo-rei', title: 'Quarto Interno', price: 820, available: false },
+  { id: 'room-prado-1', houseId: 'house-curitiba-prado-velho', title: 'Vaga Estudante 01', price: 680, available: true },
+  { id: 'room-prado-2', houseId: 'house-curitiba-prado-velho', title: 'Quarto Individual', price: 790, available: true },
+  { id: 'room-prado-3', houseId: 'house-curitiba-prado-velho', title: 'Vaga Estudante 02', price: 650, available: true },
+  { id: 'room-campo-1', houseId: 'house-curitiba-campo-comprido', title: 'Quarto Quintal', price: 890, available: true },
+  { id: 'room-campo-2', houseId: 'house-curitiba-campo-comprido', title: 'Quarto Mobiliado', price: 960, available: false },
+  { id: 'room-bacacheri-1', houseId: 'house-curitiba-bacacheri', title: 'Quarto Frente', price: 870, available: true },
+  { id: 'room-bacacheri-2', houseId: 'house-curitiba-bacacheri', title: 'Quarto Lateral', price: 820, available: true },
+  { id: 'room-boa-vista-1', houseId: 'house-curitiba-boa-vista', title: 'Quarto Individual 01', price: 760, available: true },
+  { id: 'room-boa-vista-2', houseId: 'house-curitiba-boa-vista', title: 'Quarto Individual 02', price: 790, available: true },
+  { id: 'room-agua-verde-1', houseId: 'house-curitiba-agua-verde', title: 'Suite 02', price: 1380, available: true },
+  { id: 'room-agua-verde-2', houseId: 'house-curitiba-agua-verde', title: 'Quarto Individual', price: 1120, available: false },
+  { id: 'room-juveve-1', houseId: 'house-curitiba-juveve', title: 'Quarto Compacto', price: 930, available: true },
+  { id: 'room-juveve-2', houseId: 'house-curitiba-juveve', title: 'Quarto Principal', price: 1080, available: false },
+  { id: 'room-portao-1', houseId: 'house-curitiba-portao', title: 'Quarto Amplo', price: 880, available: true },
+  { id: 'room-portao-2', houseId: 'house-curitiba-portao', title: 'Quarto Fundos', price: 820, available: true },
+  { id: 'room-portao-3', houseId: 'house-curitiba-portao', title: 'Suite Terrea', price: 1180, available: false }
 ];
 
 export const members: HouseMember[] = [

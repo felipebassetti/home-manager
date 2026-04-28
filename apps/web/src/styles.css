@@ -1,9 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
 * {
   box-sizing: border-box;
 }
 
 :root {
   color-scheme: light;
+  --font-sans: "Manrope", "Segoe UI", Roboto, Arial, sans-serif;
+  --font-display: var(--font-sans);
   --bg: #fbf7f2;
   --surface: #ffffff;
   --surface-subtle: #fffdfb;
@@ -35,11 +39,7 @@ html,
 body {
   height: 100%;
   margin: 0;
-  font-family:
-    Inter,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  font-family: var(--font-sans);
   background: var(--bg);
   color: var(--text);
 }
@@ -48,6 +48,7 @@ body {
   line-height: 1.45;
   overflow-x: hidden;
   overflow-y: auto;
+  font-family: var(--font-sans);
 }
 
 img {
@@ -81,8 +82,19 @@ h1,
 h2,
 h3,
 h4,
+h5,
+h6,
 p {
   margin-top: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
 }
 
 .spotlight-card {

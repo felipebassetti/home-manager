@@ -1,8 +1,8 @@
 # AGENTS.md
 
-## Project: Republic House
+## Project: flatsharing
 
-Republic House is a shared housing management platform focused on:
+flatsharing is a shared housing management platform focused on:
 
 - Marketplace for shared houses
 - House management for admins

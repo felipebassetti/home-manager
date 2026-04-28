@@ -215,9 +215,64 @@
 .room-list,
 .charge-list,
 .payment-list,
-.application-list {
+.application-list,
+.charge-form,
+.member-form,
+.member-hints {
   display: grid;
   gap: 10px;
+}
+
+.charge-form label,
+.member-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.charge-form label > span,
+.member-form label > span {
+  color: var(--text-soft);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.charge-form input,
+.member-form input,
+.member-form select {
+  min-height: 48px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--surface-subtle);
+}
+
+.charge-submit {
+  margin-top: 4px;
+}
+
+.field-error {
+  color: var(--danger-text);
+  font-size: 0.8rem;
+}
+
+.member-hints strong {
+  font-size: 0.84rem;
+}
+
+.hint-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hint-list button {
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .room-card,

@@ -27,7 +27,7 @@ export class HomePageComponent implements OnInit {
   isNeighborhoodMenuOpen = false;
 
   ngOnInit() {
-    this.api.listHouses().subscribe((houses) => this.houses.set(houses.slice(0, 3)));
+    this.api.listHouses().subscribe((houses) => this.houses.set(houses.slice(0, 4)));
   }
 
   onPriceInput(event: Event) {

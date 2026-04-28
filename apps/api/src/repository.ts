@@ -141,10 +141,22 @@ class MockRepository implements Repository {
   }
 
   async addMember(houseId: string, input: AddMemberInput): Promise<HouseMember> {
+    const normalizedEmail = input.email.trim().toLowerCase();
+    const profile = profiles.find((item) => item.email.toLowerCase() === normalizedEmail);
+
+    if (!profile) {
+      throw new Error('Profile not found');
+    }
+
+    const existingMember = members.find((member) => member.houseId === houseId && member.userId === profile.id);
+    if (existingMember) {
+      throw new Error('Member already exists in house');
+    }
+
     const created: HouseMember = {
       id: crypto.randomUUID(),
       houseId,
-      userId: input.userId,
+      userId: profile.id,
       role: input.role,
       status: 'active',
       createdAt: nowIso()
@@ -424,15 +436,45 @@ class SupabaseRepository implements Repository {
   }
 
   async addMember(houseId: string, input: AddMemberInput): Promise<HouseMember> {
+    const normalizedEmail = input.email.trim().toLowerCase();
+    const { data: profile, error: profileError } = await this.client
+      .from('profiles')
+      .select('id, name, email')
+      .ilike('email', normalizedEmail)
+      .maybeSingle();
+
+    if (profileError) {
+      throw profileError;
+    }
+
+    if (!profile) {
+      throw new Error('Profile not found');
+    }
+
+    const { data: existingMember, error: existingMemberError } = await this.client
+      .from('house_members')
+      .select('id')
+      .eq('house_id', houseId)
+      .eq('user_id', profile.id)
+      .maybeSingle();
+
+    if (existingMemberError) {
+      throw existingMemberError;
+    }
+
+    if (existingMember) {
+      throw new Error('Member already exists in house');
+    }
+
     const { data, error } = await this.client
       .from('house_members')
       .insert({
         house_id: houseId,
-        user_id: input.userId,
+        user_id: profile.id,
         role: input.role,
         status: 'active'
       })
-      .select()
+      .select('*, profiles(*)')
       .single();
 
     if (error || !data) {
@@ -445,7 +487,8 @@ class SupabaseRepository implements Repository {
       userId: String(data.user_id),
       role: data.role === 'admin' ? 'admin' : 'member',
       status: (data.status as 'active' | 'invited' | undefined) ?? 'active',
-      createdAt: String(data.created_at)
+      createdAt: String(data.created_at),
+      profile: data.profiles as Profile | undefined
     };
   }
 

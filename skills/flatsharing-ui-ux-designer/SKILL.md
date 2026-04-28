@@ -1,9 +1,9 @@
 ---
-name: republic-house-ui-ux-designer
-description: Redesign and refine Republic House product interfaces, UX flows, UI copy, information hierarchy, and operational dashboards for shared-housing workflows. Use when you need to improve or create screens for marketplace browsing, house management, member operations, charges, payments, responsive layouts, or product-level visual consistency in this system.
+name: flatsharing-ui-ux-designer
+description: Redesign and refine flatsharing product interfaces, UX flows, UI copy, information hierarchy, and operational dashboards for shared-housing workflows. Use when you need to improve or create screens for marketplace browsing, house management, member operations, charges, payments, responsive layouts, or product-level visual consistency in this system.
 ---
 
-# Republic House UI/UX Designer
+# flatsharing UI/UX Designer
 
 Design for an operational product first, not a marketing page.
 
@@ -18,7 +18,7 @@ Design for an operational product first, not a marketing page.
 7. Prefer denser, quieter layouts with clear grouping, predictable actions, and obvious status.
 8. Keep the output aligned with the existing Angular structure unless a layout change clearly improves usability.
 
-## Republic House Product Rules
+## flatsharing Product Rules
 
 - Treat the app as a workflow tool for housing operations.
 - Make house admins efficient first; visitor flows still need to feel trustworthy and easy to scan.

@@ -133,7 +133,7 @@ export interface UpdateApplicationStatusInput {
 }
 
 export interface AddMemberInput {
-  userId: string;
+  email: string;
   role: MemberRole;
 }
 

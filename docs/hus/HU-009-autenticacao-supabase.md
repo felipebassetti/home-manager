@@ -6,7 +6,7 @@ Como admin ou morador, quero entrar com autenticacao real, para acessar dados e 
 
 ## Status
 
-- Status: `planned`
+- Status: `blocked`
 - Prioridade: `P1`
 - Origem: `tech`
 
@@ -49,4 +49,5 @@ Fora de escopo:
 
 ## Observacoes
 
-- A base tecnica do `auth.service` ja existe, mas ainda esta incompleta como fluxo de produto
+- Cliente Supabase, logout e guardas de rota foram integrados ao frontend
+- Falta configurar credenciais reais (`runtime-config.js`, `.dev.vars`) e autenticar Wrangler para validar o ambiente end to end

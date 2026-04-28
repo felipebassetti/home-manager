@@ -77,6 +77,10 @@ export class App implements AfterViewInit, OnDestroy {
     return this.router.url === '/';
   }
 
+  protected isAuthRoute() {
+    return this.router.url.startsWith('/login');
+  }
+
   protected async signOut() {
     await this.auth.signOut();
     await this.router.navigateByUrl('/');

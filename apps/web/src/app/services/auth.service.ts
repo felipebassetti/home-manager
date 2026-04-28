@@ -1,6 +1,6 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { createClient, type User } from '@supabase/supabase-js';
-import { environment } from '../../environments/environment';
+import { appRuntimeConfig } from '../config/runtime-config';
 import { findMockProfileByEmail, mockProfiles, registerMockProfile } from '../data/mock-data';
 import type { AccountType, ActiveProfile } from '../models/domain.models';
 
@@ -8,16 +8,21 @@ type PublicAccountType = Extract<AccountType, 'visitor' | 'house-admin'>;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly storageKey = 'republic-house-auth-profile';
+  private readonly storageKey = 'flatsharing-auth-profile';
   private readonly guestProfile: ActiveProfile = {
     id: 'guest-visitor',
     name: 'Visitante',
     email: '',
     accountType: 'visitor'
   };
+  private readyResolver: (() => void) | null = null;
+  private readonly readyPromise = new Promise<void>((resolve) => {
+    this.readyResolver = resolve;
+  });
 
   readonly profiles = mockProfiles;
-  readonly isSupabaseConfigured = Boolean(environment.supabaseUrl && environment.supabaseAnonKey);
+  readonly isSupabaseConfigured = Boolean(appRuntimeConfig.supabaseUrl && appRuntimeConfig.supabaseAnonKey);
+  readonly isReady = signal(!this.isSupabaseConfigured);
   readonly sessionProfile = signal<ActiveProfile | null>(this.readStoredProfile());
   readonly activeProfile = computed(() => this.sessionProfile() ?? this.guestProfile);
   readonly isAuthenticated = computed(() => this.sessionProfile() !== null);
@@ -51,11 +56,12 @@ export class AuthService {
   readonly canTrackApplications = computed(() => this.isAuthenticated() && !this.canAccessManagement());
 
   private readonly supabase = this.isSupabaseConfigured
-    ? createClient(environment.supabaseUrl, environment.supabaseAnonKey)
+    ? createClient(appRuntimeConfig.supabaseUrl, appRuntimeConfig.supabaseAnonKey)
     : null;
 
   constructor() {
     if (!this.supabase) {
+      this.markReady();
       return;
     }
 
@@ -64,13 +70,20 @@ export class AuthService {
       if (!session?.user) {
         this.sessionProfile.set(null);
         this.clearStoredProfile();
+        this.markReady();
         return;
       }
 
       const profile = this.profileFromSupabaseUser(session.user);
       this.sessionProfile.set(profile);
       this.storeProfile(profile);
+      void this.syncProfileRecord(profile);
+      this.markReady();
     });
+  }
+
+  async waitUntilReady() {
+    await this.readyPromise;
   }
 
   setActiveProfile(profileId: string) {
@@ -101,7 +114,7 @@ export class AuthService {
     return 'Candidato';
   }
 
-  async signInWithPassword(email: string, password: string, accountType: PublicAccountType = 'visitor') {
+  async signInWithPassword(email: string, password: string, accountType?: PublicAccountType) {
     if (!this.supabase) {
       if (password !== '123456') {
         return {
@@ -111,9 +124,10 @@ export class AuthService {
       }
 
       const existingProfile = findMockProfileByEmail(email);
-      const profile = existingProfile ?? registerMockProfile(email, undefined, accountType);
+      const profile = existingProfile ?? registerMockProfile(email, undefined, accountType ?? 'visitor');
       this.sessionProfile.set(profile);
       this.storeProfile(profile);
+      this.markReady();
 
       return { mock: true, user: profile };
     }
@@ -121,7 +135,7 @@ export class AuthService {
     const result = await this.supabase.auth.signInWithPassword({ email, password });
 
     if (!result.error && result.data.user) {
-      await this.syncSupabaseProfile(result.data.user, accountType);
+      await this.syncSupabaseProfile(result.data.user, accountType ?? 'visitor');
     }
 
     return result;
@@ -139,6 +153,7 @@ export class AuthService {
       const profile = registerMockProfile(email, name, accountType);
       this.sessionProfile.set(profile);
       this.storeProfile(profile);
+      this.markReady();
 
       return { mock: true, user: profile };
     }
@@ -166,12 +181,14 @@ export class AuthService {
     if (!this.supabase) {
       this.sessionProfile.set(null);
       this.clearStoredProfile();
+      this.markReady();
       return;
     }
 
     await this.supabase.auth.signOut();
     this.sessionProfile.set(null);
     this.clearStoredProfile();
+    this.markReady();
   }
 
   private readStoredProfile() {
@@ -210,24 +227,27 @@ export class AuthService {
 
   private async restoreSupabaseSession() {
     if (!this.supabase) {
+      this.markReady();
       return;
     }
 
     const { data } = await this.supabase.auth.getSession();
     if (data.session?.user) {
-      const profile = this.profileFromSupabaseUser(data.session.user);
+      const profile = await this.syncSupabaseProfile(data.session.user);
       this.sessionProfile.set(profile);
       this.storeProfile(profile);
+      this.markReady();
       return;
     }
 
     this.sessionProfile.set(null);
     this.clearStoredProfile();
+    this.markReady();
   }
 
-  private async syncSupabaseProfile(user: User, fallbackAccountType: PublicAccountType) {
+  private async syncSupabaseProfile(user: User, fallbackAccountType: PublicAccountType = 'visitor') {
     if (!this.supabase) {
-      return;
+      return this.guestProfile;
     }
 
     let syncedUser = user;
@@ -243,8 +263,29 @@ export class AuthService {
     }
 
     const profile = this.profileFromSupabaseUser(syncedUser, fallbackAccountType);
+    await this.syncProfileRecord(profile);
     this.sessionProfile.set(profile);
     this.storeProfile(profile);
+    return profile;
+  }
+
+  private async syncProfileRecord(profile: ActiveProfile) {
+    if (!this.supabase) {
+      return;
+    }
+
+    const { error } = await this.supabase.from('profiles').upsert(
+      {
+        id: profile.id,
+        name: profile.name,
+        email: profile.email
+      },
+      { onConflict: 'id' }
+    );
+
+    if (error) {
+      console.error('Profile sync failed', error);
+    }
   }
 
   private profileFromSupabaseUser(user: User, fallbackAccountType: AccountType = 'visitor'): ActiveProfile {
@@ -298,5 +339,14 @@ export class AuthService {
         .map((part) => part[0]?.toUpperCase() + part.slice(1))
         .join(' ') || 'Usuario'
     );
+  }
+
+  private markReady() {
+    if (!this.isReady()) {
+      this.isReady.set(true);
+    }
+
+    this.readyResolver?.();
+    this.readyResolver = null;
   }
 }

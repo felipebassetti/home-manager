@@ -32,7 +32,8 @@ create table if not exists house_members (
   user_id uuid not null references profiles (id),
   role text not null check (role in ('admin', 'member')),
   status text not null default 'active',
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  unique (house_id, user_id)
 );
 
 create table if not exists applications (
@@ -63,3 +64,36 @@ create table if not exists payments (
   paid_at timestamptz,
   created_at timestamptz not null default now()
 );
+
+alter table profiles
+  drop constraint if exists profiles_id_fkey;
+
+alter table profiles
+  add constraint profiles_id_fkey
+  foreign key (id)
+  references auth.users (id)
+  on delete cascade;
+
+alter table profiles enable row level security;
+
+drop policy if exists "profiles_select_own" on profiles;
+create policy "profiles_select_own"
+  on profiles
+  for select
+  to authenticated
+  using (auth.uid() = id);
+
+drop policy if exists "profiles_insert_own" on profiles;
+create policy "profiles_insert_own"
+  on profiles
+  for insert
+  to authenticated
+  with check (auth.uid() = id);
+
+drop policy if exists "profiles_update_own" on profiles;
+create policy "profiles_update_own"
+  on profiles
+  for update
+  to authenticated
+  using (auth.uid() = id)
+  with check (auth.uid() = id);

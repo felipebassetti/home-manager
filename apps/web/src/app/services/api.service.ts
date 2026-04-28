@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { catchError, delay, map, of } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { catchError, defer, delay, map, of } from 'rxjs';
+import { appRuntimeConfig } from '../config/runtime-config';
 import {
   addMockMember,
   createMockApplication,
@@ -23,6 +23,7 @@ import type {
   CreateHouseInput,
   HouseDetail,
   HouseFilters,
+  HouseMember,
   HouseSummary,
   MonthlyCharge,
   Payment,
@@ -37,8 +38,8 @@ interface ApiResponse<T> {
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = environment.apiBaseUrl;
-  private readonly useMockApi = environment.useMockApi;
+  private readonly baseUrl = appRuntimeConfig.apiBaseUrl;
+  private readonly useMockApi = appRuntimeConfig.useMockApi;
 
   listHouses(filters: HouseFilters = {}) {
     if (this.useMockApi) {
@@ -122,13 +123,10 @@ export class ApiService {
 
   addMember(houseId: string, input: AddMemberInput) {
     if (this.useMockApi) {
-      return of(addMockMember(houseId, input)).pipe(delay(120));
+      return defer(() => of(addMockMember(houseId, input))).pipe(delay(120));
     }
 
-    return this.http.post<ApiResponse<unknown>>(`${this.baseUrl}/houses/${houseId}/members`, input).pipe(
-      map((response) => response.data),
-      catchError(() => of(addMockMember(houseId, input)))
-    );
+    return this.http.post<ApiResponse<HouseMember>>(`${this.baseUrl}/houses/${houseId}/members`, input).pipe(map((response) => response.data));
   }
 
   createCharge(input: CreateChargeInput) {
@@ -136,10 +134,7 @@ export class ApiService {
       return of(createMockCharge(input)).pipe(delay(120));
     }
 
-    return this.http.post<ApiResponse<MonthlyCharge>>(`${this.baseUrl}/charges`, input).pipe(
-      map((response) => response.data),
-      catchError(() => of(createMockCharge(input)))
-    );
+    return this.http.post<ApiResponse<MonthlyCharge>>(`${this.baseUrl}/charges`, input).pipe(map((response) => response.data));
   }
 
   listPayments(houseId?: string) {

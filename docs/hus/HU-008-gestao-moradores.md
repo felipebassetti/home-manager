@@ -6,7 +6,7 @@ Como admin da casa, quero adicionar e acompanhar moradores, para manter a casa o
 
 ## Status
 
-- Status: `planned`
+- Status: `done`
 - Prioridade: `P1`
 - Origem: `produto`
 
@@ -47,4 +47,5 @@ Fora de escopo:
 
 ## Observacoes
 
-- O endpoint ja existe, mas ainda falta a camada de UX
+- Fluxo implementado no detalhe da casa com adicao por email, role inicial e feedback de erro
+- Backend agora resolve perfil por email e impede membro duplicado na mesma casa

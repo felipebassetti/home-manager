@@ -1,16 +1,16 @@
-<div class="shell" [style.--topbar-offset.px]="topbarHeight()">
+<div class="shell" [class.auth-shell]="isAuthRoute()" [style.--topbar-offset.px]="topbarHeight()">
   <header class="topbar" #topbarRef>
     <div class="topbar-inner">
-      <a routerLink="/" class="brand" aria-label="Republic House">
+      <a routerLink="/" class="brand" aria-label="flatsharing">
         @if (!logoFallback()) {
           <img
             class="brand-logo"
             [src]="logoSrc"
-            alt="Republic House"
+            alt="flatsharing"
             (error)="logoFallback.set(true)"
           />
         } @else {
-          <span class="brand-text">Republic House</span>
+          <span class="brand-text">flatsharing</span>
         }
       </a>
 
@@ -27,15 +27,24 @@
       </nav>
 
       <div class="topbar-side">
-        <a routerLink="/login" class="login-entry">
-          {{ isAuthenticated() ? 'Minha conta' : 'Login / Cadastro' }}
-        </a>
+        @if (isAuthenticated()) {
+          <div class="account-box">
+            <div class="account-meta">
+              <strong>{{ auth.activeProfile().name }}</strong>
+              <span>{{ profileRoleLabel(auth.activeProfile().accountType) }}</span>
+            </div>
+
+            <button type="button" class="logout-button" (click)="signOut()">Sair</button>
+          </div>
+        } @else {
+          <a routerLink="/login" class="login-entry">Login / Cadastro</a>
+        }
       </div>
     </div>
   </header>
 
   <main class="page-frame">
-    @if (!isHomeRoute()) {
+    @if (!isHomeRoute() && !isAuthRoute()) {
       <section class="context-strip">
         <strong>{{ sectionLabel() }}</strong>
         <p>{{ sectionDescription() }}</p>
@@ -48,16 +57,16 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <a routerLink="/" class="footer-brand-link" aria-label="Flashsharing">
+        <a routerLink="/" class="footer-brand-link" aria-label="flatsharing">
           @if (!logoFallback()) {
             <img
               class="footer-brand-logo"
               [src]="logoSrc"
-              alt="Flashsharing"
+              alt="flatsharing"
               (error)="logoFallback.set(true)"
             />
           } @else {
-            <span class="footer-brand-text">Flashsharing</span>
+            <span class="footer-brand-text">flatsharing</span>
           }
         </a>
         <p>Plataforma para encontrar, anunciar e gerir casas compartilhadas.</p>

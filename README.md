@@ -1,4 +1,4 @@
-# Republic House MVP
+# flatsharing MVP
 
 MVP de uma plataforma para casas compartilhadas com foco inicial em:
 
@@ -96,6 +96,18 @@ Arquivo de exemplo:
 
 ```txt
 apps/api/.dev.vars.example
+```
+
+No frontend, a configuracao publica de runtime fica em:
+
+```txt
+apps/web/public/runtime-config.js
+```
+
+Exemplo para modo real:
+
+```txt
+apps/web/public/runtime-config.example.js
 ```
 
 Schema inicial:

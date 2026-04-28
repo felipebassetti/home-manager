@@ -1,5 +1,0 @@
-interface:
-  display_name: "Republic House UI/UX"
-  short_description: "UI/UX para marketplace e operacao"
-  default_prompt: "Use $republic-house-ui-ux-designer to redesign Republic House screens and flows with a calm, operational product style."
-  model: gpt-4

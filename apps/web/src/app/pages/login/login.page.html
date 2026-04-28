@@ -1,92 +1,146 @@
 <section class="login-shell">
-  <article class="login-card">
-    <div class="login-copy">
-      <span class="eyebrow">{{ mode() === 'login' ? 'Acesse sua conta' : 'Criar conta' }}</span>
-      <h1>
-        {{
-          mode() === 'login'
-            ? 'Entre como candidato ou gestor.'
-            : 'Cadastre seu perfil na Republic House.'
-        }}
-      </h1>
-      <p>
-        Escolha o tipo de acesso para abrir a experiencia correta depois do login.
-        @if (!auth.isSupabaseConfigured) {
-          <span>No modo local, contas existentes usam a senha <strong>123456</strong>.</span>
-        }
-      </p>
-    </div>
+  <aside class="login-hero" aria-label="flatsharing">
+    <a routerLink="/" class="hero-brand" aria-label="Voltar para o inicio">
+      <img src="assets/images/logo.png" alt="flatsharing" />
+    </a>
 
-    <div class="mode-tabs" aria-label="Alternar login e cadastro">
-      <button type="button" [class.active]="mode() === 'login'" (click)="switchMode('login')">Login</button>
-      <button type="button" [class.active]="mode() === 'signup'" (click)="switchMode('signup')">Cadastrar</button>
-    </div>
-
-    <section class="role-switch" aria-label="Tipo de acesso">
-      <span>Perfil de acesso</span>
-      <div class="role-options">
-        @for (option of roleOptions; track option.value) {
-          <button
-            type="button"
-            [class.active]="accountType() === option.value"
-            (click)="accountType.set(option.value)"
-          >
-            <strong>{{ option.label }}</strong>
-            <small>{{ option.description }}</small>
-          </button>
-        }
+    <div class="hero-copy">
+      <span>{{ heroEyebrow() }}</span>
+      <h1>{{ heroTitle() }}</h1>
+      <p>{{ heroDescription() }}</p>
+      <div class="hero-pill">
+        <span aria-hidden="true"></span>
+        {{ heroPill() }}
       </div>
-    </section>
+    </div>
 
-    <form class="login-form" (ngSubmit)="submit()">
+    <p class="hero-footer">flatsharing</p>
+  </aside>
+
+  <div class="login-panel">
+    <div class="mobile-brand">
+      <a routerLink="/" aria-label="Voltar para o inicio">
+        <img src="assets/images/logo.png" alt="flatsharing" />
+      </a>
+    </div>
+
+    <div class="form-shell">
+      <a routerLink="/" class="back-link">
+        <span aria-hidden="true">&lt;</span>
+        Voltar ao marketplace
+      </a>
+
+      <header class="form-header">
+        <h1>{{ mode() === 'login' ? 'Acessar minha conta' : signupTitle() }}</h1>
+        <p>
+          {{
+            mode() === 'login'
+              ? 'Use seu email e senha para continuar. O tipo de perfil sera identificado pela sua conta.'
+              : signupDescription()
+          }}
+        </p>
+      </header>
+
       @if (mode() === 'signup') {
-        <label>
-          <span>Nome</span>
-          <input
-            type="text"
-            name="name"
-            autocomplete="name"
-            [value]="name()"
-            (input)="name.set($any($event.target).value)"
-            placeholder="Seu nome"
-            required
-          />
-        </label>
+        <div class="account-tabs" aria-label="Tipo de cadastro">
+          @for (option of roleOptions; track option.value) {
+            <button
+              type="button"
+              [class.active]="accountType() === option.value"
+              (click)="accountType.set(option.value)"
+            >
+              {{ option.label }}
+            </button>
+          }
+        </div>
       }
-
-      <label>
-        <span>Email</span>
-        <input
-          type="email"
-          name="email"
-          autocomplete="email"
-          [value]="email()"
-          (input)="email.set($any($event.target).value)"
-          placeholder="voce@email.com"
-          required
-        />
-      </label>
-
-      <label>
-        <span>Senha</span>
-        <input
-          type="password"
-          name="password"
-          [autocomplete]="mode() === 'signup' ? 'new-password' : 'current-password'"
-          [value]="password()"
-          (input)="password.set($any($event.target).value)"
-          placeholder="123456"
-          required
-        />
-      </label>
-
-      <button type="submit" [disabled]="isSubmitting()">
-        {{ isSubmitting() ? 'Enviando...' : mode() === 'signup' ? 'Criar conta' : 'Entrar' }}
-      </button>
 
       @if (errorMessage()) {
         <p class="error-message">{{ errorMessage() }}</p>
       }
-    </form>
-  </article>
+
+      <form class="login-form" (ngSubmit)="submit()">
+        @if (mode() === 'signup') {
+          <label>
+            <span>{{ nameLabel() }}</span>
+            <input
+              type="text"
+              name="name"
+              autocomplete="name"
+              [value]="name()"
+              (input)="name.set($any($event.target).value)"
+              [placeholder]="namePlaceholder()"
+              required
+            />
+          </label>
+        }
+
+        <label>
+          <span>E-mail</span>
+          <input
+            type="email"
+            name="email"
+            autocomplete="email"
+            [value]="email()"
+            (input)="email.set($any($event.target).value)"
+            placeholder="voce@email.com"
+            required
+          />
+        </label>
+
+        <label>
+          <span>Senha</span>
+          <input
+            type="password"
+            name="password"
+            [autocomplete]="mode() === 'signup' ? 'new-password' : 'current-password'"
+            [value]="password()"
+            (input)="password.set($any($event.target).value)"
+            [placeholder]="auth.isSupabaseConfigured ? 'Sua senha' : '123456'"
+            required
+          />
+        </label>
+
+        @if (mode() === 'signup') {
+          <label>
+            <span>Confirmar senha</span>
+            <input
+              type="password"
+              name="confirmPassword"
+              autocomplete="new-password"
+              [value]="confirmPassword()"
+              (input)="confirmPassword.set($any($event.target).value)"
+              placeholder="Repita a senha"
+              required
+            />
+          </label>
+
+          <label class="terms-row">
+            <input
+              type="checkbox"
+              name="terms"
+              [checked]="acceptedTerms()"
+              (change)="acceptedTerms.set($any($event.target).checked)"
+            />
+            <span>Ao criar minha conta, aceito os termos de uso e a politica de privacidade.</span>
+          </label>
+        }
+
+        @if (!auth.isSupabaseConfigured) {
+          <p class="local-note">Modo local: contas existentes usam a senha 123456.</p>
+        }
+
+        <button class="submit-button" type="submit" [disabled]="isSubmitting()">
+          {{ submitLabel() }}
+        </button>
+      </form>
+
+      <p class="form-footer">
+        {{ mode() === 'login' ? 'Ainda nao tem conta?' : 'Ja tenho conta.' }}
+        <button type="button" (click)="switchMode(mode() === 'login' ? 'signup' : 'login')">
+          {{ mode() === 'login' ? 'Cadastrar agora' : 'Fazer login' }}
+        </button>
+      </p>
+    </div>
+  </div>
 </section>

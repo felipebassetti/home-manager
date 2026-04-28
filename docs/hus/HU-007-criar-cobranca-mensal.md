@@ -6,7 +6,7 @@ Como admin da casa, quero criar cobrancas mensais, para registrar valores devido
 
 ## Status
 
-- Status: `planned`
+- Status: `done`
 - Prioridade: `P1`
 - Origem: `produto`
 
@@ -47,4 +47,5 @@ Fora de escopo:
 
 ## Observacoes
 
-- O endpoint ja existe na API, mas falta fluxo claro de UI
+- Fluxo de UI implementado no detalhe da casa com validacao local e feedback de erro
+- API `POST /charges` agora rejeita payload invalido com `400`

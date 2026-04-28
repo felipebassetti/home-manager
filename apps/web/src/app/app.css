@@ -54,6 +54,25 @@
   z-index: 1;
 }
 
+.auth-shell {
+  background: #fff;
+}
+
+.auth-shell::before {
+  display: none;
+}
+
+.auth-shell .topbar,
+.auth-shell .site-footer {
+  display: none;
+}
+
+.auth-shell .page-frame {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+}
+
 .topbar {
   position: fixed;
   inset: 0 0 auto;
@@ -151,6 +170,28 @@
   justify-content: flex-end;
 }
 
+.account-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.account-meta {
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.account-meta strong {
+  font-size: 0.92rem;
+}
+
+.account-meta span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .login-entry {
   display: inline-flex;
   align-items: center;
@@ -171,6 +212,16 @@
 .login-entry:hover {
   transform: translateY(-1px);
   box-shadow: 0 18px 28px rgba(227, 28, 95, 0.24);
+}
+
+.logout-button {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .page-frame {
@@ -303,6 +354,15 @@
     justify-content: center;
   }
 
+  .account-box,
+  .account-meta {
+    width: 100%;
+  }
+
+  .account-box {
+    justify-content: center;
+  }
+
   .footer-inner {
     grid-template-columns: 1fr;
     padding-inline: 16px;
@@ -324,6 +384,15 @@
   .login-entry {
     min-height: 42px;
     width: 100%;
+  }
+
+  .account-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .account-meta {
+    text-align: center;
   }
 
   .footer-columns {

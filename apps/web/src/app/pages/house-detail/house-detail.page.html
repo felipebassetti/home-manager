@@ -217,6 +217,47 @@
 
         <section class="operation-panel">
           <h3>Moradores</h3>
+          <form class="member-form" [formGroup]="memberForm" (ngSubmit)="submitMember()">
+            <label>
+              <span>Email do usuario</span>
+              <input type="email" formControlName="email" placeholder="morador@email.com" />
+              @if (memberFieldError('email')) {
+                <small class="field-error">{{ memberFieldError('email') }}</small>
+              }
+            </label>
+
+            <label>
+              <span>Role inicial</span>
+              <select formControlName="role">
+                <option value="member">Morador</option>
+                <option value="admin">Admin</option>
+              </select>
+            </label>
+
+            <button type="submit" class="primary-action" [disabled]="isSubmittingMember()">
+              {{ isSubmittingMember() ? 'Adicionando...' : 'Adicionar morador' }}
+            </button>
+
+            @if (memberError()) {
+              <p class="error-text">{{ memberError() }}</p>
+            }
+
+            @if (memberFeedback()) {
+              <p class="success-text">{{ memberFeedback() }}</p>
+            }
+          </form>
+
+          @if (!auth.isSupabaseConfigured && localMemberSuggestions().length) {
+            <div class="member-hints">
+              <strong>Contas locais disponiveis</strong>
+              <div class="hint-list">
+                @for (profile of localMemberSuggestions(); track profile.email) {
+                  <button type="button" (click)="memberForm.controls.email.setValue(profile.email)">{{ profile.label }}</button>
+                }
+              </div>
+            </div>
+          }
+
           <app-member-list [members]="currentHouse.members" />
         </section>
       </div>
@@ -231,6 +272,50 @@
       </div>
 
       <div class="operations-grid">
+        @if (canManageHouse()) {
+          <section class="operation-panel">
+            <h3>Nova cobranca mensal</h3>
+
+            <form class="charge-form" [formGroup]="chargeForm" (ngSubmit)="submitCharge()">
+              <label>
+                <span>Titulo</span>
+                <input type="text" formControlName="title" placeholder="Ex.: Mensalidade Maio" />
+                @if (chargeFieldError('title')) {
+                  <small class="field-error">{{ chargeFieldError('title') }}</small>
+                }
+              </label>
+
+              <label>
+                <span>Valor</span>
+                <input type="number" formControlName="amount" min="1" step="0.01" placeholder="0,00" />
+                @if (chargeFieldError('amount')) {
+                  <small class="field-error">{{ chargeFieldError('amount') }}</small>
+                }
+              </label>
+
+              <label>
+                <span>Vencimento</span>
+                <input type="date" formControlName="dueDate" />
+                @if (chargeFieldError('dueDate')) {
+                  <small class="field-error">{{ chargeFieldError('dueDate') }}</small>
+                }
+              </label>
+
+              <button type="submit" class="primary-action charge-submit" [disabled]="isSubmittingCharge()">
+                {{ isSubmittingCharge() ? 'Salvando...' : 'Criar cobranca' }}
+              </button>
+
+              @if (chargeError()) {
+                <p class="error-text">{{ chargeError() }}</p>
+              }
+
+              @if (chargeFeedback()) {
+                <p class="success-text">{{ chargeFeedback() }}</p>
+              }
+            </form>
+          </section>
+        }
+
         <section class="operation-panel">
           <h3>Cobrancas</h3>
           <div class="charge-list">

@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "republic-house-web": {
+    "flatsharing-web": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -63,10 +63,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "republic-house-web:build:production"
+              "buildTarget": "flatsharing-web:build:production"
             },
             "development": {
-              "buildTarget": "republic-house-web:build:development"
+              "buildTarget": "flatsharing-web:build:development"
             }
           },
           "defaultConfiguration": "development"

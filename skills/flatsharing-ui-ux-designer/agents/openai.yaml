@@ -1,0 +1,5 @@
+interface:
+  display_name: "flatsharing UI/UX"
+  short_description: "UI/UX para marketplace e operacao"
+  default_prompt: "Use $flatsharing-ui-ux-designer to redesign flatsharing screens and flows with a calm, operational product style."
+  model: gpt-4

@@ -100,7 +100,7 @@ export interface CreateApplicationInput {
 }
 
 export interface AddMemberInput {
-  userId: string;
+  email: string;
   role: MemberRole;
 }
 
