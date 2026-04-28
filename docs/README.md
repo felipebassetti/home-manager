@@ -1,6 +1,6 @@
 # Documentacao
 
-Esta pasta concentra a documentacao operacional do projeto.
+Esta pasta concentra a documentacao operacional do projeto. 
 
 ## Estrutura
 
