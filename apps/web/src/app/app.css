@@ -229,7 +229,7 @@
   width: var(--page-width);
   max-width: var(--page-width);
   margin: 0 auto;
-  padding: calc(var(--topbar-offset) + 12px) var(--page-inline) 40px;
+  padding: 4vh 4vh ;
   scroll-padding-top: calc(var(--topbar-offset) + 12px);
 }
 
